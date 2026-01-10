@@ -2,155 +2,249 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master Hub | Ahmed Sayed</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AHMED | LIVING HUB</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;600;800&family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --accent: #00f2ff;
-            --secondary: #7000ff;
-            --glass: rgba(255, 255, 255, 0.04);
-            --border: rgba(255, 255, 255, 0.1);
+            --primary: #00f2ff;
+            --secondary: #bd00ff;
+            --bg: #020205;
+            --glass: rgba(255, 255, 255, 0.06);
+            --border: rgba(255, 255, 255, 0.15);
+            --nav-glass: rgba(0, 0, 0, 0.6);
         }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
             margin: 0; font-family: 'Tajawal', sans-serif;
-            background: #020205; color: white; min-height: 100vh;
+            background: var(--bg); color: white; height: 100vh;
             display: flex; justify-content: center; align-items: center;
-            overflow-x: hidden;
+            overflow: hidden; user-select: none;
         }
 
-        .bg-vibe {
-            position: fixed; inset: 0; z-index: -1;
-            background: radial-gradient(circle at 50% 50%, #0a0a1a 0%, #020205 100%);
+        /* 1. خلفية حية ومتحركة (استعادة الألوان) */
+        .cursor-aurora {
+            position: fixed; width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(0,242,255,0.2) 0%, rgba(189,0,255,0.15) 40%, transparent 70%);
+            border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%);
+            z-index: -1; filter: blur(60px); mix-blend-mode: screen;
         }
+        
+        .floating-orb {
+            position: fixed; border-radius: 50%; filter: blur(40px); z-index: -2;
+            animation: orbFloat 10s infinite alternate;
+        }
+        .orb1 { width: 300px; height: 300px; background: #7000ff; top: -50px; left: -50px; opacity: 0.2; }
+        .orb2 { width: 400px; height: 400px; background: #00f2ff; bottom: -100px; right: -100px; opacity: 0.15; animation-delay: -5s; }
+        @keyframes orbFloat { from { transform: translate(0,0); } to { transform: translate(30px, 30px); } }
 
-        .app-shell {
-            width: 90%; max-width: 420px;
+        /* 2. إطار التطبيق العائم (حركة أقوى) */
+        .app-frame {
+            width: 100%; max-width: 400px; height: 95vh; max-height: 850px;
             background: var(--glass); backdrop-filter: blur(30px);
-            border: 1px solid var(--border); border-radius: 45px;
-            padding: 40px 25px; box-shadow: 0 50px 100px rgba(0,0,0,0.7);
-            text-align: center; animation: bob 4s ease-in-out infinite;
-            margin: 20px 0; position: relative;
+            border: 1px solid var(--border); border-radius: 35px;
+            position: relative; overflow: hidden;
+            display: flex; flex-direction: column;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.8), inset 0 0 20px rgba(255,255,255,0.05);
+            animation: floatApp 5s ease-in-out infinite;
         }
+        @keyframes floatApp { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
 
-        @keyframes bob { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-15px); } }
-
-        /* زر الموسيقى النابض */
-        .music-toggle {
-            position: absolute; top: 25px; left: 25px;
-            width: 40px; height: 40px; background: var(--glass);
-            border: 1px solid var(--border); border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
-            cursor: pointer; z-index: 10; transition: 0.3s; color: white;
+        /* 3. الهيدر الحي (صور تتبدل) */
+        .header-area { flex-shrink: 0; position: relative; height: 280px; overflow: hidden; }
+        .live-bg-container { position: absolute; inset: 0; }
+        .live-img { 
+            position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; 
+            opacity: 0; transition: opacity 1.5s ease; mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
         }
-        .music-toggle.playing {
-            border-color: var(--accent);
-            box-shadow: 0 0 15px var(--accent);
-            animation: pulseMusic 1.5s infinite;
+        .live-img.active { opacity: 0.8; transform: scale(1.05); transition: opacity 1.5s ease, transform 6s linear; }
+
+        .header-content { position: absolute; bottom: 20px; width: 100%; text-align: center; z-index: 5; }
+        
+        .pfp-wrapper {
+            width: 110px; height: 110px; margin: 0 auto; position: relative;
         }
-        @keyframes pulseMusic {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+        .pfp-img {
+            width: 100%; height: 100%; border-radius: 50%; border: 3px solid rgba(255,255,255,0.2);
+            object-fit: cover; box-shadow: 0 0 30px rgba(0,242,255,0.3); cursor: pointer;
+            transition: 0.3s;
         }
-
-        .top-id {
-            font-family: 'Plus Jakarta Sans'; font-size: 11px; letter-spacing: 5px;
-            text-transform: uppercase; opacity: 0.5; margin-bottom: 40px;
-            display: block; color: var(--accent); animation: pulseText 2s infinite alternate;
+        .pfp-img:active { transform: scale(0.95); }
+        .status-dot {
+            width: 15px; height: 15px; background: #00ff88; border: 2px solid #000;
+            border-radius: 50%; position: absolute; bottom: 8px; right: 8px;
+            box-shadow: 0 0 10px #00ff88; animation: pulseDot 2s infinite;
         }
+        @keyframes pulseDot { 0% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(0, 255, 136, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0); } }
 
-        .pfp-stage { width: 130px; height: 130px; margin: 0 auto 30px; position: relative; }
-        .pfp-stage img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; z-index: 5; position: relative; cursor: pointer; border: 3px solid var(--border); }
-        .pfp-ring { position: absolute; inset: -10px; border-radius: 50%; border: 2px solid var(--accent); animation: spinRing 4s linear infinite; }
-        .pfp-ring-2 { position: absolute; inset: -18px; border-radius: 50%; border: 1px dashed var(--secondary); animation: spinRing 6s linear infinite reverse; }
-        @keyframes spinRing { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .user-name { font-size: 28px; font-weight: 900; margin: 10px 0 5px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        .user-bio { font-size: 14px; color: rgba(255,255,255,0.8); background: rgba(0,0,0,0.3); padding: 5px 15px; border-radius: 20px; display: inline-block; backdrop-filter: blur(5px); }
 
-        h1 { font-size: 28px; margin: 0; font-weight: 900; }
-        .bio-line { font-size: 15px; color: var(--accent); margin: 8px 0; }
+        /* المحتوى والتبويبات */
+        .content-area { flex-grow: 1; overflow-y: auto; padding: 20px; scrollbar-width: none; padding-bottom: 90px; }
+        .content-area::-webkit-scrollbar { display: none; }
+        
+        .tab-section { display: none; animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .tab-section.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        .daily-post { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 25px; padding: 12px; margin: 20px 0; text-align: right; }
-        .post-img { width: 100%; border-radius: 18px; margin-bottom: 10px; display: none; object-fit: cover; max-height: 200px; }
-        .post-text { font-size: 13px; opacity: 0.8; line-height: 1.5; }
+        /* كارت الموسيقى */
+        .music-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
+            border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; padding: 15px;
+            display: flex; align-items: center; gap: 15px; margin-bottom: 25px; cursor: pointer;
+            position: relative; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: 0.3s;
+        }
+        .music-card:active { transform: scale(0.98); }
+        .play-icon {
+            width: 40px; height: 40px; background: var(--primary); border-radius: 50%; color: #000;
+            display: flex; justify-content: center; align-items: center; font-size: 14px; box-shadow: 0 0 15px var(--primary);
+        }
+        .music-info { flex-grow: 1; text-align: right; }
+        .music-title { font-size: 13px; font-weight: bold; color: white; margin-bottom: 5px; }
+        .music-wave { display: flex; gap: 4px; align-items: flex-end; height: 15px; }
+        .bar { width: 3px; background: rgba(255,255,255,0.5); border-radius: 2px; height: 3px; transition: 0.2s; }
+        .music-card.playing .bar { background: var(--primary); animation: wave 0.6s infinite alternate; }
+        @keyframes wave { 0% { height: 3px; } 100% { height: 15px; } }
 
-        .links-stack { display: grid; gap: 10px; margin-bottom: 25px; }
-        .link-card { background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 15px; border-radius: 20px; color: white; text-decoration: none; font-weight: bold; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .link-card:hover { background: white; color: black; transform: scale(1.03); }
+        /* الروابط */
+        .links-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .link-box {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+            padding: 18px; border-radius: 20px; text-align: center; text-decoration: none;
+            color: white; transition: 0.3s; position: relative; overflow: hidden;
+        }
+        .link-box:hover { background: rgba(255,255,255,0.15); border-color: var(--primary); transform: translateY(-3px); }
+        .link-box i { font-size: 24px; margin-bottom: 10px; color: var(--primary); text-shadow: 0 0 10px var(--primary); }
+        .link-box span { display: block; font-size: 12px; font-weight: bold; }
 
-        .chat-input { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border); padding: 15px; border-radius: 20px; color: white; text-align: center; outline: none; box-sizing: border-box; }
+        /* المنشورات */
+        .post-item { margin-bottom: 20px; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 20px; border: 1px solid var(--border); }
+        .post-img { width: 100%; border-radius: 15px; display: block; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .post-caption { padding: 12px 5px 5px; font-size: 13px; opacity: 0.9; line-height: 1.5; text-align: right; }
 
-        #admin-panel { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.98); backdrop-filter: blur(25px); padding: 30px; overflow-y: auto; }
-        .admin-wrap { max-width: 450px; margin: 0 auto; text-align: right; }
-        label { display: block; font-size: 12px; color: var(--accent); margin-top: 15px; }
-        input, textarea { width: 100%; background: #111; border: 1px solid #333; color: white; padding: 12px; border-radius: 12px; margin-top: 5px; box-sizing: border-box; font-family: 'Tajawal'; }
-        .msg-card { background: #1a1a1a; padding: 12px; border-radius: 12px; margin-bottom: 10px; position: relative; border-right: 3px solid var(--accent); font-size: 13px; }
+        /* شريط التنقل السفلي */
+        .bottom-nav {
+            position: absolute; bottom: 20px; left: 20px; right: 20px;
+            background: rgba(20, 20, 20, 0.8); backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 12px 30px; border-radius: 50px;
+            display: flex; justify-content: space-between; z-index: 100;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .nav-item { 
+            color: rgba(255,255,255,0.4); cursor: pointer; transition: 0.3s; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .nav-item i { font-size: 20px; margin-bottom: 2px; }
+        .nav-item span { font-size: 9px; font-weight: bold; }
+        .nav-item.active { color: var(--primary); transform: scale(1.1); text-shadow: 0 0 10px var(--primary); }
+        .nav-item.active span { color: white; }
+
+        /* لوحة التحكم */
+        #admin-panel { display: none; position: fixed; inset: 0; background: #000; z-index: 10000; padding: 25px; overflow-y: auto; }
+        .admin-input { width: 100%; background: #111; border: 1px solid #333; color: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; }
+        .save-float { position: fixed; bottom: 20px; left: 20px; right: 20px; background: var(--primary); color: black; font-weight: bold; border: none; padding: 15px; border-radius: 50px; cursor: pointer; box-shadow: 0 0 20px rgba(0,242,255,0.5); }
     </style>
 </head>
 <body>
 
-    <div class="bg-vibe"></div>
+    <div class="floating-orb orb1"></div>
+    <div class="floating-orb orb2"></div>
+    <div class="cursor-aurora" id="aurora"></div>
 
-    <div class="app-shell">
-        <div class="music-toggle" id="music-btn" onclick="toggleMusic()">
-            <i class="fas fa-music"></i>
-        </div>
-        <audio id="bg-music" loop></audio>
-
-        <span class="top-id" id="ui-top-id">AHMED HUB</span>
-        
-        <div class="pfp-stage" id="secret-btn">
-            <div class="pfp-ring"></div>
-            <div class="pfp-ring-2"></div>
-            <img id="ui-pfp" src="https://via.placeholder.com/150">
-        </div>
-
-        <h1 id="ui-name">أحمد سيد</h1>
-        <div class="bio-line" id="ui-bio">Designer & Developer</div>
-
-        <div class="daily-post" id="ui-post-box">
-            <img id="ui-post-img" src="" class="post-img">
-            <div id="ui-post-text" class="post-text">لا يوجد تحديث اليوم..</div>
+    <div class="app-frame">
+        <div class="header-area">
+            <div class="live-bg-container" id="live-slider">
+                </div>
+            <div class="header-content">
+                <div class="pfp-wrapper" id="secret-trigger">
+                    <img id="ui-pfp" src="https://via.placeholder.com/150" class="pfp-img">
+                    <div class="status-dot"></div>
+                </div>
+                <h1 class="user-name" id="ui-name">أحمد سيد</h1>
+                <div class="user-bio" id="ui-bio">Living The Dream</div>
+            </div>
         </div>
 
-        <div class="links-stack" id="ui-links"></div>
+        <div class="content-area">
+            
+            <div id="tab-home" class="tab-section active">
+                <div class="music-card" id="music-btn" onclick="toggleMusic()">
+                    <div class="play-icon"><i class="fas fa-play" id="play-icon"></i></div>
+                    <div class="music-info">
+                        <div class="music-title" id="music-status">اضغط لتشغيل الموسيقى 🎵</div>
+                        <div class="music-wave">
+                            <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                        </div>
+                    </div>
+                </div>
+                <audio id="bg-music" loop></audio>
 
-        <input type="text" id="v-msg" class="chat-input" placeholder="اترك تعليقاً سرياً...">
-        <button onclick="sendMsg()" style="background:none; border:none; color:var(--accent); cursor:pointer; margin-top:10px; font-weight:bold;">إرسال</button>
+                <div class="links-grid" id="ui-links"></div>
+            </div>
+
+            <div id="tab-feed" class="tab-section">
+                <div id="posts-wrapper"></div>
+            </div>
+
+            <div id="tab-msg" class="tab-section">
+                <div style="text-align:center; margin-top:30px;">
+                    <i class="fas fa-paper-plane" style="font-size:50px; color:var(--primary); margin-bottom:20px; filter: drop-shadow(0 0 10px var(--primary));"></i>
+                    <h3>تواصل معي</h3>
+                    <input type="text" id="v-msg" style="width:100%; background:rgba(255,255,255,0.1); border:none; padding:15px; border-radius:15px; color:white; text-align:center; margin-bottom:15px;" placeholder="اكتب رسالتك...">
+                    <button onclick="sendMsg()" style="background:var(--secondary); border:none; padding:15px 30px; border-radius:50px; color:white; font-weight:bold; cursor:pointer;">إرسال</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="switchTab('home')">
+                <i class="fas fa-home"></i>
+                <span>الرئيسية</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('feed')">
+                <i class="fas fa-layer-group"></i>
+                <span>يومياتي</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('msg')">
+                <i class="fas fa-comment-alt"></i>
+                <span>راسلني</span>
+            </div>
+        </div>
     </div>
 
     <div id="admin-panel">
-        <div class="admin-wrap">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h2 style="color:var(--accent)">Master Control ⚙️</h2>
-                <button onclick="closeAdmin()" style="background:none; border:none; color:white; font-size:30px; cursor:pointer;">×</button>
-            </div>
+        <h3 style="color:var(--primary);">Control Panel ⚙️</h3>
+        <button onclick="closeAdmin()" style="float:left; background:none; border:none; color:white; font-size:20px;">✖</button>
+        <br><br>
+        
+        <input type="text" id="adm-name" class="admin-input" placeholder="الاسم">
+        <input type="text" id="adm-bio" class="admin-input" placeholder="الوصف">
+        <input type="text" id="adm-pfp" class="admin-input" placeholder="رابط الصورة الشخصية">
+        <input type="text" id="adm-music" class="admin-input" placeholder="رابط الموسيقى (MP3)">
+        
+        <h4 style="color:#888;">المنشورات (Feed)</h4>
+        <input type="text" id="adm-img-1" class="admin-input" placeholder="صورة 1"><input type="text" id="adm-txt-1" class="admin-input" placeholder="نص 1">
+        <input type="text" id="adm-img-2" class="admin-input" placeholder="صورة 2"><input type="text" id="adm-txt-2" class="admin-input" placeholder="نص 2">
+        <input type="text" id="adm-img-3" class="admin-input" placeholder="صورة 3"><input type="text" id="adm-txt-3" class="admin-input" placeholder="نص 3">
 
-            <label>اسم الموقع العلوي (HUB NAME):</label><input type="text" id="adm-top-id">
-            <label>رابط صورتك الشخصية:</label><input type="text" id="adm-pfp">
-            <label>الاسم الكامل:</label><input type="text" id="adm-name">
-            <label>الوصف (Bio):</label><input type="text" id="adm-bio">
-            
-            <label style="color:#ffbd00">رابط الأغنية المباشر (Direct MP3 Link):</label>
-            <input type="text" id="adm-music-url" placeholder="https://example.com/song.mp3">
+        <h4 style="color:#888;">الروابط</h4>
+        <input type="text" id="adm-wa" class="admin-input" placeholder="WhatsApp">
+        <input type="text" id="adm-ig" class="admin-input" placeholder="Instagram">
+        <input type="text" id="adm-fb" class="admin-input" placeholder="Facebook">
 
-            <h4 style="color:var(--accent); margin-top:20px; border-top:1px solid #333; padding-top:10px;">المنشور اليومي:</h4>
-            <label>رابط صورة المنشور:</label><input type="text" id="adm-post-img">
-            <label>نص المنشور:</label><textarea id="adm-post-text"></textarea>
-            
-            <h4 style="color:var(--accent); margin-top:20px; border-top:1px solid #333; padding-top:10px;">روابط السوشيال:</h4>
-            <input type="text" id="adm-wa" placeholder="WhatsApp Link">
-            <input type="text" id="adm-ig" placeholder="Instagram Link">
-            <input type="text" id="adm-fb" placeholder="Facebook Link">
-
-            <button onclick="saveMaster()" style="width:100%; background:var(--accent); color:black; font-weight:900; border:none; padding:18px; border-radius:20px; cursor:pointer; margin:20px 0;">حفظ كل التغييرات</button>
-
-            <div class="admin-messages-box">
-                <h3 style="color:var(--accent)">التعليقات الواردة (<span id="adm-msg-count">0</span>)</h3>
-                <div id="admin-comments-list"></div>
-            </div>
+        <div style="height:60px;"></div>
+        <button onclick="saveMaster()" class="save-float">حفظ ونشر</button>
+        
+        <div style="margin-top:20px;">
+            <h4>الرسائل (<span id="adm-msg-count">0</span>)</h4>
+            <div id="admin-msgs"></div>
         </div>
     </div>
 
@@ -158,7 +252,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
     <script>
-        // --- ضع إعدادات Firebase الخاصة بك هنا ---
         const firebaseConfig = {
             apiKey: "AIza...",
             authDomain: "mypersonalapp-2f2cc.firebaseapp.com",
@@ -171,115 +264,164 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
+        // 1. تشغيل الخلفية الحية (صور تتبدل تلقائياً في الهيدر)
+        const liveImages = [
+            "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=800&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=800&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1534972195531-d756b9bfa9f2?q=80&w=800&auto=format&fit=crop"
+        ];
+        const sliderContainer = document.getElementById('live-slider');
+        
+        function initLiveHeader() {
+            // تنظيف الحاوية أولاً
+            sliderContainer.innerHTML = '';
+            liveImages.forEach((url, i) => {
+                const img = document.createElement('img');
+                img.src = url;
+                img.className = i === 0 ? 'live-img active' : 'live-img';
+                sliderContainer.appendChild(img);
+            });
+
+            let idx = 0;
+            setInterval(() => {
+                const imgs = document.querySelectorAll('.live-img');
+                imgs[idx].classList.remove('active');
+                idx = (idx + 1) % imgs.length;
+                imgs[idx].classList.add('active');
+            }, 4000);
+        }
+        initLiveHeader();
+
+        // 2. الشفق يتبع الماوس
+        const aurora = document.getElementById('aurora');
+        document.addEventListener('mousemove', (e) => {
+            aurora.style.left = e.clientX + 'px';
+            aurora.style.top = e.clientY + 'px';
+        });
+
+        // 3. التبديل بين التبويبات
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tabName).classList.add('active');
+            
+            const icons = { 'home': 0, 'feed': 1, 'msg': 2 };
+            document.querySelectorAll('.nav-item')[icons[tabName]].classList.add('active');
+        }
+
+        // 4. الموسيقى
         const audio = document.getElementById('bg-music');
-        const musicBtn = document.getElementById('music-btn');
+        const musicCard = document.getElementById('music-btn');
+        const playIcon = document.getElementById('play-icon');
+        const musicStatus = document.getElementById('music-status');
 
         function toggleMusic() {
-            if (audio.paused) {
+            if(audio.paused) {
                 audio.play();
-                musicBtn.classList.add('playing');
+                musicCard.classList.add('playing');
+                playIcon.classList.remove('fa-play'); playIcon.classList.add('fa-pause');
+                musicStatus.innerText = "جاري الاستماع... 🎶";
             } else {
                 audio.pause();
-                musicBtn.classList.remove('playing');
+                musicCard.classList.remove('playing');
+                playIcon.classList.remove('fa-pause'); playIcon.classList.add('fa-play');
+                musicStatus.innerText = "اضغط للتشغيل 🎵";
             }
         }
 
-        // دخول الأدمن
+        // 5. الإدارة
         let taps = 0;
-        document.getElementById('secret-btn').onclick = () => {
+        document.getElementById('secret-trigger').onclick = () => {
             taps++;
             if(taps === 3) {
-                let p = prompt("Password:");
-                if(p === "1234") {
+                if(prompt("كلمة السر:") === "1234") {
                     document.getElementById('admin-panel').style.display = 'block';
-                    loadAdminData();
+                    loadAdmin();
                 }
                 taps = 0;
             }
         };
         function closeAdmin() { document.getElementById('admin-panel').style.display = 'none'; }
 
-        // مزامنة الواجهة
+        // 6. المزامنة
         db.ref('appData').on('value', snap => {
             const d = snap.val();
             if(!d) return;
-            
-            document.getElementById('ui-top-id').innerText = d.topId || "AHMED HUB";
+
+            document.getElementById('ui-name').innerText = d.name || "الاسم";
+            document.getElementById('ui-bio').innerText = d.bio || "Bio";
             document.getElementById('ui-pfp').src = d.pfp || "https://via.placeholder.com/150";
-            document.getElementById('ui-name').innerText = d.name || "أحمد سيد";
-            document.getElementById('ui-bio').innerText = d.bio || "Designer";
             
-            // تحديث رابط الموسيقى
-            if(d.musicUrl && audio.src !== d.musicUrl) {
-                audio.src = d.musicUrl;
-            }
+            if(d.musicUrl && audio.src !== d.musicUrl) audio.src = d.musicUrl;
 
-            const pImg = document.getElementById('ui-post-img');
-            if(d.postImg) { pImg.src = d.postImg; pImg.style.display = 'block'; } else { pImg.style.display = 'none'; }
-            document.getElementById('ui-post-text').innerText = d.postText || "لا يوجد تحديث اليوم..";
+            const linksGrid = document.getElementById('ui-links');
+            linksGrid.innerHTML = "";
+            if(d.wa) linksGrid.innerHTML += `<a href="${d.wa}" target="_blank" class="link-box"><i class="fab fa-whatsapp"></i><span>واتساب</span></a>`;
+            if(d.ig) linksGrid.innerHTML += `<a href="${d.ig}" target="_blank" class="link-box"><i class="fab fa-instagram"></i><span>إنستجرام</span></a>`;
+            if(d.fb) linksGrid.innerHTML += `<a href="${d.fb}" target="_blank" class="link-box"><i class="fab fa-facebook"></i><span>فيسبوك</span></a>`;
 
-            const stack = document.getElementById('ui-links');
-            stack.innerHTML = "";
-            if(d.wa) stack.innerHTML += `<a href="${d.wa}" target="_blank" class="link-card"><i class="fab fa-whatsapp"></i> واتساب</a>`;
-            if(d.ig) stack.innerHTML += `<a href="${d.ig}" target="_blank" class="link-card"><i class="fab fa-instagram"></i> إنستجرام</a>`;
-            if(d.fb) stack.innerHTML += `<a href="${d.fb}" target="_blank" class="link-card"><i class="fab fa-facebook"></i> فيسبوك</a>`;
+            const postsWrap = document.getElementById('posts-wrapper');
+            postsWrap.innerHTML = "";
+            let hasPosts = false;
+            [1,2,3].forEach(n => {
+                if(d['img'+n] || d['txt'+n]) {
+                    hasPosts = true;
+                    let html = `<div class="post-item">`;
+                    if(d['img'+n]) html += `<img src="${d['img'+n]}" class="post-img">`;
+                    if(d['txt'+n]) html += `<div class="post-caption">${d['txt'+n]}</div>`;
+                    html += `</div>`;
+                    postsWrap.innerHTML += html;
+                }
+            });
+            if(!hasPosts) postsWrap.innerHTML = "<div style='text-align:center; opacity:0.5; font-size:12px; margin-top:30px;'>لا توجد منشورات حالياً 📭</div>";
         });
 
         function saveMaster() {
             db.ref('appData').update({
-                topId: document.getElementById('adm-top-id').value,
-                pfp: document.getElementById('adm-pfp').value,
                 name: document.getElementById('adm-name').value,
                 bio: document.getElementById('adm-bio').value,
-                musicUrl: document.getElementById('adm-music-url').value, // حفظ الموسيقى
-                postImg: document.getElementById('adm-post-img').value,
-                postText: document.getElementById('adm-post-text').value,
+                pfp: document.getElementById('adm-pfp').value,
+                musicUrl: document.getElementById('adm-music').value,
+                img1: document.getElementById('adm-img-1').value, txt1: document.getElementById('adm-txt-1').value,
+                img2: document.getElementById('adm-img-2').value, txt2: document.getElementById('adm-txt-2').value,
+                img3: document.getElementById('adm-img-3').value, txt3: document.getElementById('adm-txt-3').value,
                 wa: document.getElementById('adm-wa').value,
                 ig: document.getElementById('adm-ig').value,
                 fb: document.getElementById('adm-fb').value
-            }).then(() => { alert("تم التحديث! ✨"); closeAdmin(); });
+            }).then(() => { alert("تم الحفظ!"); closeAdmin(); });
         }
 
         function sendMsg() {
             const m = document.getElementById('v-msg').value;
-            if(m) {
-                db.ref('messages').push({ text: m, time: new Date().toLocaleString() });
-                alert("تم الإرسال! 💙");
-                document.getElementById('v-msg').value = "";
-            }
+            if(m) { db.ref('messages').push({text:m, time:new Date().toLocaleString()}); alert("تم الإرسال!"); document.getElementById('v-msg').value = ""; }
         }
 
-        function loadAdminData() {
+        function loadAdmin() {
             db.ref('appData').once('value', s => {
                 const d = s.val();
                 if(d) {
-                    document.getElementById('adm-top-id').value = d.topId || "";
-                    document.getElementById('adm-pfp').value = d.pfp || "";
                     document.getElementById('adm-name').value = d.name || "";
                     document.getElementById('adm-bio').value = d.bio || "";
-                    document.getElementById('adm-music-url').value = d.musicUrl || "";
-                    document.getElementById('adm-post-img').value = d.postImg || "";
-                    document.getElementById('adm-post-text').value = d.postText || "";
+                    document.getElementById('adm-pfp').value = d.pfp || "";
+                    document.getElementById('adm-music').value = d.musicUrl || "";
+                    document.getElementById('adm-img-1').value = d.img1 || ""; document.getElementById('adm-txt-1').value = d.txt1 || "";
+                    document.getElementById('adm-img-2').value = d.img2 || ""; document.getElementById('adm-txt-2').value = d.txt2 || "";
+                    document.getElementById('adm-img-3').value = d.img3 || ""; document.getElementById('adm-txt-3').value = d.txt3 || "";
                     document.getElementById('adm-wa').value = d.wa || "";
                     document.getElementById('adm-ig').value = d.ig || "";
                     document.getElementById('adm-fb').value = d.fb || "";
                 }
             });
-
-            db.ref('messages').on('value', snap => {
-                const list = document.getElementById('admin-comments-list');
-                document.getElementById('adm-msg-count').innerText = snap.numChildren();
+            db.ref('messages').on('value', s => {
+                const list = document.getElementById('admin-msgs');
+                document.getElementById('adm-msg-count').innerText = s.numChildren();
                 list.innerHTML = "";
-                snap.forEach(child => {
-                    const data = child.val();
-                    list.innerHTML = `<div class="msg-card"><i class="fas fa-trash" style="position:absolute; left:10px; color:#ff4d4d; cursor:pointer;" onclick="deleteMsg('${child.key}')"></i><div>${data.text}</div><span style="font-size:9px; opacity:0.5;">${data.time}</span></div>` + list.innerHTML;
+                s.forEach(c => {
+                    list.innerHTML += `<div style="background:#222; padding:8px; margin-bottom:5px; border-radius:8px; font-size:12px;">${c.val().text} <i class="fas fa-trash" style="color:red; float:left; cursor:pointer;" onclick="delMsg('${c.key}')"></i></div>`;
                 });
             });
         }
-
-        function deleteMsg(key) {
-            if(confirm("حذف التعليق؟")) db.ref('messages').child(key).remove();
-        }
+        function delMsg(k) { if(confirm("حذف؟")) db.ref('messages').child(k).remove(); }
     </script>
 </body>
 </html>
