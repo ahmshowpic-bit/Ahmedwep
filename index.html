@@ -14,7 +14,7 @@
             --bg: #020205;
             --glass: rgba(255, 255, 255, 0.06);
             --border: rgba(255, 255, 255, 0.15);
-            --nav-glass: rgba(0, 0, 0, 0.6);
+            --nav-glass: rgba(0, 0, 0, 0.85); /* خلفية داكنة أكثر للقائمة */
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -26,7 +26,7 @@
             overflow: hidden; user-select: none;
         }
 
-        /* 1. خلفية حية ومتحركة (استعادة الألوان) */
+        /* --- الخلفيات الحية --- */
         .cursor-aurora {
             position: fixed; width: 600px; height: 600px;
             background: radial-gradient(circle, rgba(0,242,255,0.2) 0%, rgba(189,0,255,0.15) 40%, transparent 70%);
@@ -42,114 +42,159 @@
         .orb2 { width: 400px; height: 400px; background: #00f2ff; bottom: -100px; right: -100px; opacity: 0.15; animation-delay: -5s; }
         @keyframes orbFloat { from { transform: translate(0,0); } to { transform: translate(30px, 30px); } }
 
-        /* 2. إطار التطبيق العائم (حركة أقوى) */
+        /* --- إطار التطبيق (التجاوب الذكي) --- */
         .app-frame {
-            width: 100%; max-width: 400px; height: 95vh; max-height: 850px;
+            width: 100%; max-width: 400px; 
+            height: 95vh; max-height: 850px;
             background: var(--glass); backdrop-filter: blur(30px);
             border: 1px solid var(--border); border-radius: 35px;
             position: relative; overflow: hidden;
             display: flex; flex-direction: column;
-            box-shadow: 0 30px 80px rgba(0,0,0,0.8), inset 0 0 20px rgba(255,255,255,0.05);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.8);
             animation: floatApp 5s ease-in-out infinite;
         }
-        @keyframes floatApp { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
 
-        /* 3. الهيدر الحي (صور تتبدل) */
-        .header-area { flex-shrink: 0; position: relative; height: 280px; overflow: hidden; }
+        /* تعديلات خاصة للموبايل (ليملأ الشاشة ويمنع المشاكل) */
+        @media (max-width: 480px) {
+            .app-frame {
+                width: 100%; height: 100dvh; /* dvh لضمان عدم تغطية المتصفح */
+                max-height: none; border-radius: 0; border: none;
+                animation: none; /* إيقاف العوم في الموبايل للثبات */
+            }
+            .cursor-aurora { width: 300px; height: 300px; } /* تصغير الشفق للموبايل */
+        }
+
+        @keyframes floatApp { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+        /* --- الهيدر --- */
+        .header-area { flex-shrink: 0; position: relative; height: 260px; overflow: hidden; }
         .live-bg-container { position: absolute; inset: 0; }
         .live-img { 
             position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; 
-            opacity: 0; transition: opacity 1.5s ease; mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+            opacity: 0; transition: opacity 1.5s ease; mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
         }
         .live-img.active { opacity: 0.8; transform: scale(1.05); transition: opacity 1.5s ease, transform 6s linear; }
 
-        .header-content { position: absolute; bottom: 20px; width: 100%; text-align: center; z-index: 5; }
+        .header-content { position: absolute; bottom: 15px; width: 100%; text-align: center; z-index: 5; }
         
-        .pfp-wrapper {
-            width: 110px; height: 110px; margin: 0 auto; position: relative;
-        }
+        .pfp-wrapper { width: 100px; height: 100px; margin: 0 auto; position: relative; }
         .pfp-img {
             width: 100%; height: 100%; border-radius: 50%; border: 3px solid rgba(255,255,255,0.2);
-            object-fit: cover; box-shadow: 0 0 30px rgba(0,242,255,0.3); cursor: pointer;
-            transition: 0.3s;
+            object-fit: cover; box-shadow: 0 0 30px rgba(0,242,255,0.3); cursor: pointer; transition: 0.3s;
         }
         .pfp-img:active { transform: scale(0.95); }
         .status-dot {
             width: 15px; height: 15px; background: #00ff88; border: 2px solid #000;
-            border-radius: 50%; position: absolute; bottom: 8px; right: 8px;
+            border-radius: 50%; position: absolute; bottom: 5px; right: 5px;
             box-shadow: 0 0 10px #00ff88; animation: pulseDot 2s infinite;
         }
-        @keyframes pulseDot { 0% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(0, 255, 136, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0); } }
+        @keyframes pulseDot { 0% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.4); } 100% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0); } }
 
-        .user-name { font-size: 28px; font-weight: 900; margin: 10px 0 5px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
-        .user-bio { font-size: 14px; color: rgba(255,255,255,0.8); background: rgba(0,0,0,0.3); padding: 5px 15px; border-radius: 20px; display: inline-block; backdrop-filter: blur(5px); }
+        .user-name { font-size: 26px; font-weight: 900; margin: 8px 0 4px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        .user-bio { font-size: 13px; color: rgba(255,255,255,0.9); background: rgba(0,0,0,0.4); padding: 4px 12px; border-radius: 15px; display: inline-block; backdrop-filter: blur(5px); }
 
-        /* المحتوى والتبويبات */
-        .content-area { flex-grow: 1; overflow-y: auto; padding: 20px; scrollbar-width: none; padding-bottom: 90px; }
+        /* --- منطقة المحتوى (تصحيح التمرير) --- */
+        .content-area { 
+            flex-grow: 1; 
+            overflow-y: auto; 
+            padding: 20px; 
+            padding-bottom: 100px; /* مساحة كافية أسفل المحتوى لعدم تغطية القائمة */
+            scrollbar-width: none; 
+            -webkit-overflow-scrolling: touch; /* تمرير ناعم للموبايل */
+        }
         .content-area::-webkit-scrollbar { display: none; }
         
-        .tab-section { display: none; animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .tab-section { display: none; animation: slideUp 0.4s ease; }
         .tab-section.active { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* كارت الموسيقى */
+        /* الموسيقى */
         .music-card {
             background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
-            border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; padding: 15px;
-            display: flex; align-items: center; gap: 15px; margin-bottom: 25px; cursor: pointer;
-            position: relative; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            transition: 0.3s;
+            border: 1px solid rgba(255,255,255,0.2); border-radius: 18px; padding: 12px;
+            display: flex; align-items: center; gap: 12px; margin-bottom: 20px; cursor: pointer;
+            position: relative; overflow: hidden; transition: 0.3s;
         }
         .music-card:active { transform: scale(0.98); }
         .play-icon {
-            width: 40px; height: 40px; background: var(--primary); border-radius: 50%; color: #000;
-            display: flex; justify-content: center; align-items: center; font-size: 14px; box-shadow: 0 0 15px var(--primary);
+            width: 35px; height: 35px; background: var(--primary); border-radius: 50%; color: #000;
+            display: flex; justify-content: center; align-items: center; font-size: 12px; box-shadow: 0 0 10px var(--primary);
         }
         .music-info { flex-grow: 1; text-align: right; }
-        .music-title { font-size: 13px; font-weight: bold; color: white; margin-bottom: 5px; }
-        .music-wave { display: flex; gap: 4px; align-items: flex-end; height: 15px; }
+        .music-title { font-size: 12px; font-weight: bold; color: white; margin-bottom: 4px; }
+        .music-wave { display: flex; gap: 3px; align-items: flex-end; height: 12px; }
         .bar { width: 3px; background: rgba(255,255,255,0.5); border-radius: 2px; height: 3px; transition: 0.2s; }
         .music-card.playing .bar { background: var(--primary); animation: wave 0.6s infinite alternate; }
         @keyframes wave { 0% { height: 3px; } 100% { height: 15px; } }
 
         /* الروابط */
-        .links-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .links-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .link-box {
             background: rgba(255,255,255,0.05); border: 1px solid var(--border);
-            padding: 18px; border-radius: 20px; text-align: center; text-decoration: none;
+            padding: 15px; border-radius: 18px; text-align: center; text-decoration: none;
             color: white; transition: 0.3s; position: relative; overflow: hidden;
         }
         .link-box:hover { background: rgba(255,255,255,0.15); border-color: var(--primary); transform: translateY(-3px); }
-        .link-box i { font-size: 24px; margin-bottom: 10px; color: var(--primary); text-shadow: 0 0 10px var(--primary); }
-        .link-box span { display: block; font-size: 12px; font-weight: bold; }
+        .link-box i { font-size: 22px; margin-bottom: 8px; color: var(--primary); text-shadow: 0 0 10px var(--primary); }
+        .link-box span { display: block; font-size: 11px; font-weight: bold; }
 
         /* المنشورات */
-        .post-item { margin-bottom: 20px; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 20px; border: 1px solid var(--border); }
-        .post-img { width: 100%; border-radius: 15px; display: block; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-        .post-caption { padding: 12px 5px 5px; font-size: 13px; opacity: 0.9; line-height: 1.5; text-align: right; }
+        .post-item { margin-bottom: 15px; background: rgba(255,255,255,0.03); padding: 8px; border-radius: 18px; border: 1px solid var(--border); }
+        .post-img { width: 100%; border-radius: 12px; display: block; }
+        .post-caption { padding: 10px 5px 5px; font-size: 12px; opacity: 0.9; line-height: 1.4; text-align: right; }
 
         /* شريط التنقل السفلي */
         .bottom-nav {
             position: absolute; bottom: 20px; left: 20px; right: 20px;
-            background: rgba(20, 20, 20, 0.8); backdrop-filter: blur(20px);
+            background: var(--nav-glass); backdrop-filter: blur(20px);
             border: 1px solid rgba(255,255,255,0.1);
-            padding: 12px 30px; border-radius: 50px;
+            padding: 10px 20px; border-radius: 50px;
             display: flex; justify-content: space-between; z-index: 100;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        /* تعديل للموبايل لتثبيت القائمة بالأسفل تماماً */
+        @media (max-width: 480px) {
+            .bottom-nav {
+                bottom: 15px; left: 15px; right: 15px;
+                padding: 10px 15px;
+            }
         }
         .nav-item { 
             color: rgba(255,255,255,0.4); cursor: pointer; transition: 0.3s; 
             display: flex; flex-direction: column; align-items: center; justify-content: center;
+            width: 60px;
         }
-        .nav-item i { font-size: 20px; margin-bottom: 2px; }
+        .nav-item i { font-size: 18px; margin-bottom: 2px; }
         .nav-item span { font-size: 9px; font-weight: bold; }
         .nav-item.active { color: var(--primary); transform: scale(1.1); text-shadow: 0 0 10px var(--primary); }
         .nav-item.active span { color: white; }
 
-        /* لوحة التحكم */
-        #admin-panel { display: none; position: fixed; inset: 0; background: #000; z-index: 10000; padding: 25px; overflow-y: auto; }
-        .admin-input { width: 100%; background: #111; border: 1px solid #333; color: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; }
-        .save-float { position: fixed; bottom: 20px; left: 20px; right: 20px; background: var(--primary); color: black; font-weight: bold; border: none; padding: 15px; border-radius: 50px; cursor: pointer; box-shadow: 0 0 20px rgba(0,242,255,0.5); }
+        /* --- لوحة التحكم (تصحيح التمرير) --- */
+        #admin-panel { 
+            display: none; position: fixed; inset: 0; 
+            background: #050505; z-index: 10000; 
+            padding: 20px; 
+            padding-bottom: 100px; /* مساحة لزر الحفظ حتى لا يغطي المحتوى */
+            overflow-y: auto; 
+            -webkit-overflow-scrolling: touch;
+        }
+        .admin-input { width: 100%; background: #111; border: 1px solid #333; color: white; padding: 12px; border-radius: 10px; margin-bottom: 10px; }
+        
+        .save-float { 
+            position: fixed; bottom: 20px; left: 20px; right: 20px; 
+            background: var(--primary); color: black; font-weight: bold; 
+            border: none; padding: 15px; border-radius: 50px; 
+            cursor: pointer; box-shadow: 0 0 20px rgba(0,242,255,0.5); 
+            z-index: 10001; /* فوق كل شيء */
+        }
+        
+        /* تنسيق قائمة الرسائل في الأدمن */
+        .msg-list-container { margin-top: 20px; margin-bottom: 50px; }
+        .adm-msg-card {
+            background: #1a1a1a; padding: 10px; margin-bottom: 8px; 
+            border-radius: 8px; border-right: 3px solid var(--primary);
+            position: relative; font-size: 12px;
+        }
     </style>
 </head>
 <body>
@@ -160,8 +205,7 @@
 
     <div class="app-frame">
         <div class="header-area">
-            <div class="live-bg-container" id="live-slider">
-                </div>
+            <div class="live-bg-container" id="live-slider"></div>
             <div class="header-content">
                 <div class="pfp-wrapper" id="secret-trigger">
                     <img id="ui-pfp" src="https://via.placeholder.com/150" class="pfp-img">
@@ -239,13 +283,12 @@
         <input type="text" id="adm-ig" class="admin-input" placeholder="Instagram">
         <input type="text" id="adm-fb" class="admin-input" placeholder="Facebook">
 
-        <div style="height:60px;"></div>
-        <button onclick="saveMaster()" class="save-float">حفظ ونشر</button>
-        
-        <div style="margin-top:20px;">
+        <div class="msg-list-container">
             <h4>الرسائل (<span id="adm-msg-count">0</span>)</h4>
             <div id="admin-msgs"></div>
         </div>
+
+        <button onclick="saveMaster()" class="save-float">حفظ ونشر التعديلات</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -264,7 +307,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // 1. تشغيل الخلفية الحية (صور تتبدل تلقائياً في الهيدر)
+        // 1. الخلفية الحية
         const liveImages = [
             "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=800&auto=format&fit=crop",
             "https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=800&auto=format&fit=crop",
@@ -273,7 +316,6 @@
         const sliderContainer = document.getElementById('live-slider');
         
         function initLiveHeader() {
-            // تنظيف الحاوية أولاً
             sliderContainer.innerHTML = '';
             liveImages.forEach((url, i) => {
                 const img = document.createElement('img');
@@ -292,14 +334,14 @@
         }
         initLiveHeader();
 
-        // 2. الشفق يتبع الماوس
+        // 2. الشفق
         const aurora = document.getElementById('aurora');
         document.addEventListener('mousemove', (e) => {
             aurora.style.left = e.clientX + 'px';
             aurora.style.top = e.clientY + 'px';
         });
 
-        // 3. التبديل بين التبويبات
+        // 3. التبويبات
         function switchTab(tabName) {
             document.querySelectorAll('.tab-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -417,7 +459,7 @@
                 document.getElementById('adm-msg-count').innerText = s.numChildren();
                 list.innerHTML = "";
                 s.forEach(c => {
-                    list.innerHTML += `<div style="background:#222; padding:8px; margin-bottom:5px; border-radius:8px; font-size:12px;">${c.val().text} <i class="fas fa-trash" style="color:red; float:left; cursor:pointer;" onclick="delMsg('${c.key}')"></i></div>`;
+                    list.innerHTML += `<div class="adm-msg-card">${c.val().text} <i class="fas fa-trash" style="color:red; float:left; cursor:pointer;" onclick="delMsg('${c.key}')"></i></div>`;
                 });
             });
         }
