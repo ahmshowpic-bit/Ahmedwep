@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AHMED | LIVING HUB</title>
+    <title>AHMED | PRO HUB</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
     
@@ -12,12 +12,12 @@
             --primary: #00f2ff;
             --secondary: #bd00ff;
             --bg: #020205;
-            --glass: rgba(255, 255, 255, 0.06);
-            --border: rgba(255, 255, 255, 0.15);
-            --nav-glass: rgba(0, 0, 0, 0.85); /* خلفية داكنة أكثر للقائمة */
+            --glass: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --nav-glass: rgba(0, 0, 0, 0.8);
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
 
         body {
             margin: 0; font-family: 'Tajawal', sans-serif;
@@ -26,181 +26,174 @@
             overflow: hidden; user-select: none;
         }
 
-        /* --- الخلفيات الحية --- */
+        /* --- الخلفيات المتحركة --- */
         .cursor-aurora {
             position: fixed; width: 600px; height: 600px;
-            background: radial-gradient(circle, rgba(0,242,255,0.2) 0%, rgba(189,0,255,0.15) 40%, transparent 70%);
+            background: radial-gradient(circle, rgba(0,242,255,0.15) 0%, rgba(189,0,255,0.1) 40%, transparent 70%);
             border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%);
-            z-index: -1; filter: blur(60px); mix-blend-mode: screen;
+            z-index: -1; filter: blur(80px); mix-blend-mode: screen;
         }
-        
-        .floating-orb {
-            position: fixed; border-radius: 50%; filter: blur(40px); z-index: -2;
-            animation: orbFloat 10s infinite alternate;
+        .orb {
+            position: fixed; border-radius: 50%; filter: blur(50px); z-index: -2;
+            animation: orbFloat 15s infinite alternate ease-in-out;
         }
-        .orb1 { width: 300px; height: 300px; background: #7000ff; top: -50px; left: -50px; opacity: 0.2; }
-        .orb2 { width: 400px; height: 400px; background: #00f2ff; bottom: -100px; right: -100px; opacity: 0.15; animation-delay: -5s; }
-        @keyframes orbFloat { from { transform: translate(0,0); } to { transform: translate(30px, 30px); } }
+        .orb1 { width: 350px; height: 350px; background: #5500ff; top: -10%; left: -10%; opacity: 0.15; }
+        .orb2 { width: 400px; height: 400px; background: #00c3ff; bottom: -10%; right: -10%; opacity: 0.1; animation-delay: -5s; }
+        @keyframes orbFloat { from { transform: translate(0,0); } to { transform: translate(40px, 40px); } }
 
-        /* --- إطار التطبيق (التجاوب الذكي) --- */
+        /* --- إطار التطبيق الرئيسي --- */
         .app-frame {
-            width: 100%; max-width: 400px; 
-            height: 95vh; max-height: 850px;
-            background: var(--glass); backdrop-filter: blur(30px);
-            border: 1px solid var(--border); border-radius: 35px;
+            width: 100%; max-width: 420px; height: 100%; /* ملء الشاشة للهاتف */
+            background: rgba(255,255,255,0.03); backdrop-filter: blur(40px);
             position: relative; overflow: hidden;
             display: flex; flex-direction: column;
-            box-shadow: 0 30px 80px rgba(0,0,0,0.8);
-            animation: floatApp 5s ease-in-out infinite;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+        }
+        /* تعديل الحواف للشاشات الأكبر */
+        @media (min-width: 450px) {
+            .app-frame { height: 92vh; border-radius: 40px; border: 1px solid var(--glass-border); }
         }
 
-        /* تعديلات خاصة للموبايل (ليملأ الشاشة ويمنع المشاكل) */
-        @media (max-width: 480px) {
-            .app-frame {
-                width: 100%; height: 100dvh; /* dvh لضمان عدم تغطية المتصفح */
-                max-height: none; border-radius: 0; border: none;
-                animation: none; /* إيقاف العوم في الموبايل للثبات */
-            }
-            .cursor-aurora { width: 300px; height: 300px; } /* تصغير الشفق للموبايل */
+        /* --- الهيدر (ثابت) --- */
+        .header-area { 
+            flex-shrink: 0; position: relative; height: 35%; 
+            display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-
-        @keyframes floatApp { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-
-        /* --- الهيدر --- */
-        .header-area { flex-shrink: 0; position: relative; height: 260px; overflow: hidden; }
-        .live-bg-container { position: absolute; inset: 0; }
+        .live-bg-container { position: absolute; inset: 0; z-index: 0; }
         .live-img { 
             position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; 
-            opacity: 0; transition: opacity 1.5s ease; mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+            opacity: 0; transition: opacity 2s ease; mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
         }
-        .live-img.active { opacity: 0.8; transform: scale(1.05); transition: opacity 1.5s ease, transform 6s linear; }
+        .live-img.active { opacity: 0.6; transform: scale(1.1); transition: opacity 2s ease, transform 10s linear; }
 
-        .header-content { position: absolute; bottom: 15px; width: 100%; text-align: center; z-index: 5; }
+        .header-content { z-index: 2; text-align: center; padding-bottom: 15px; width: 100%; }
         
-        .pfp-wrapper { width: 100px; height: 100px; margin: 0 auto; position: relative; }
+        .pfp-wrapper {
+            width: 90px; height: 90px; margin: 0 auto; position: relative;
+        }
         .pfp-img {
-            width: 100%; height: 100%; border-radius: 50%; border: 3px solid rgba(255,255,255,0.2);
-            object-fit: cover; box-shadow: 0 0 30px rgba(0,242,255,0.3); cursor: pointer; transition: 0.3s;
+            width: 100%; height: 100%; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3);
+            object-fit: cover; box-shadow: 0 0 25px rgba(0,242,255,0.2);
         }
-        .pfp-img:active { transform: scale(0.95); }
-        .status-dot {
-            width: 15px; height: 15px; background: #00ff88; border: 2px solid #000;
-            border-radius: 50%; position: absolute; bottom: 5px; right: 5px;
-            box-shadow: 0 0 10px #00ff88; animation: pulseDot 2s infinite;
-        }
-        @keyframes pulseDot { 0% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.4); } 100% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0); } }
+        .user-name { font-size: 24px; font-weight: 900; margin: 8px 0 2px; text-shadow: 0 2px 10px rgba(0,0,0,0.8); letter-spacing: 1px; }
+        .user-bio { font-size: 12px; color: rgba(255,255,255,0.7); background: rgba(0,0,0,0.4); padding: 4px 12px; border-radius: 15px; display: inline-block; backdrop-filter: blur(5px); }
 
-        .user-name { font-size: 26px; font-weight: 900; margin: 8px 0 4px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
-        .user-bio { font-size: 13px; color: rgba(255,255,255,0.9); background: rgba(0,0,0,0.4); padding: 4px 12px; border-radius: 15px; display: inline-block; backdrop-filter: blur(5px); }
-
-        /* --- منطقة المحتوى (تصحيح التمرير) --- */
+        /* --- منطقة المحتوى (مرنة وبدون سكرول) --- */
         .content-area { 
-            flex-grow: 1; 
-            overflow-y: auto; 
-            padding: 20px; 
-            padding-bottom: 100px; /* مساحة كافية أسفل المحتوى لعدم تغطية القائمة */
-            scrollbar-width: none; 
-            -webkit-overflow-scrolling: touch; /* تمرير ناعم للموبايل */
+            flex-grow: 1; position: relative; overflow: hidden; 
+            padding: 15px; padding-bottom: 80px; /* مساحة للنافبار */
+            display: flex; flex-direction: column; justify-content: center;
         }
-        .content-area::-webkit-scrollbar { display: none; }
         
-        .tab-section { display: none; animation: slideUp 0.4s ease; }
-        .tab-section.active { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .tab-section { 
+            display: none; width: 100%; height: 100%; 
+            animation: fadeIn 0.5s ease;
+        }
+        .tab-section.active { display: flex; flex-direction: column; justify-content: center; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
 
-        /* الموسيقى */
+        /* --- تبويب الرئيسية (الموسيقى فقط) --- */
         .music-card {
-            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
-            border: 1px solid rgba(255,255,255,0.2); border-radius: 18px; padding: 12px;
-            display: flex; align-items: center; gap: 12px; margin-bottom: 20px; cursor: pointer;
-            position: relative; overflow: hidden; transition: 0.3s;
+            width: 100%; height: 100%; max-height: 200px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+            border: 1px solid var(--glass-border); border-radius: 25px;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            position: relative; overflow: hidden; cursor: pointer; transition: 0.3s;
         }
-        .music-card:active { transform: scale(0.98); }
-        .play-icon {
-            width: 35px; height: 35px; background: var(--primary); border-radius: 50%; color: #000;
-            display: flex; justify-content: center; align-items: center; font-size: 12px; box-shadow: 0 0 10px var(--primary);
+        .music-card:active { transform: scale(0.97); background: rgba(255,255,255,0.1); }
+        .play-icon-large {
+            font-size: 40px; color: var(--primary); margin-bottom: 15px;
+            text-shadow: 0 0 20px var(--primary); transition: 0.3s;
         }
-        .music-info { flex-grow: 1; text-align: right; }
-        .music-title { font-size: 12px; font-weight: bold; color: white; margin-bottom: 4px; }
-        .music-wave { display: flex; gap: 3px; align-items: flex-end; height: 12px; }
-        .bar { width: 3px; background: rgba(255,255,255,0.5); border-radius: 2px; height: 3px; transition: 0.2s; }
-        .music-card.playing .bar { background: var(--primary); animation: wave 0.6s infinite alternate; }
-        @keyframes wave { 0% { height: 3px; } 100% { height: 15px; } }
+        .music-card.playing .play-icon-large { animation: pulseBeat 1s infinite; }
+        @keyframes pulseBeat { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.2); opacity: 0.7; } 100% { transform: scale(1); opacity: 1; } }
+        
+        .equalizer { display: flex; gap: 5px; height: 30px; align-items: flex-end; }
+        .bar { width: 6px; background: rgba(255,255,255,0.3); border-radius: 3px; height: 5px; transition: 0.2s; }
+        .music-card.playing .bar { background: var(--secondary); animation: eqWave 0.6s infinite alternate; }
+        .music-card.playing .bar:nth-child(2) { animation-delay: 0.1s; }
+        .music-card.playing .bar:nth-child(3) { animation-delay: 0.2s; }
+        .music-card.playing .bar:nth-child(4) { animation-delay: 0.3s; }
+        .music-card.playing .bar:nth-child(5) { animation-delay: 0.4s; }
+        @keyframes eqWave { 0% { height: 5px; } 100% { height: 30px; } }
 
-        /* الروابط */
-        .links-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .link-box {
-            background: rgba(255,255,255,0.05); border: 1px solid var(--border);
-            padding: 15px; border-radius: 18px; text-align: center; text-decoration: none;
-            color: white; transition: 0.3s; position: relative; overflow: hidden;
+        /* --- تبويب اليوميات (Slider) --- */
+        .feed-slider {
+            width: 100%; height: 100%; border-radius: 25px;
+            position: relative; overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            background: rgba(0,0,0,0.2);
         }
-        .link-box:hover { background: rgba(255,255,255,0.15); border-color: var(--primary); transform: translateY(-3px); }
-        .link-box i { font-size: 22px; margin-bottom: 8px; color: var(--primary); text-shadow: 0 0 10px var(--primary); }
-        .link-box span { display: block; font-size: 11px; font-weight: bold; }
+        .slide-item {
+            position: absolute; inset: 0; width: 100%; height: 100%;
+            opacity: 0; transition: opacity 1s ease-in-out, transform 1s ease;
+            transform: scale(1.05); display: flex; align-items: flex-end;
+        }
+        .slide-item.active { opacity: 1; transform: scale(1); z-index: 1; }
+        
+        .slide-bg { 
+            position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; 
+            z-index: 0; filter: brightness(0.8);
+        }
+        .slide-content {
+            position: relative; z-index: 2; padding: 25px; width: 100%;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
+            text-align: right;
+        }
+        .slide-text { font-size: 16px; line-height: 1.6; text-shadow: 0 2px 4px black; font-weight: bold; }
+        .slider-indicators {
+            position: absolute; top: 15px; left: 0; right: 0; z-index: 5;
+            display: flex; justify-content: center; gap: 5px; padding: 0 20px;
+        }
+        .indicator { flex: 1; height: 3px; background: rgba(255,255,255,0.3); border-radius: 2px; overflow: hidden; }
+        .indicator-fill { height: 100%; background: white; width: 0%; }
+        .slide-item.active ~ .slider-indicators .indicator.active .indicator-fill {
+            width: 100%; transition: width 4s linear; /* مدة العرض */
+        }
 
-        /* المنشورات */
-        .post-item { margin-bottom: 15px; background: rgba(255,255,255,0.03); padding: 8px; border-radius: 18px; border: 1px solid var(--border); }
-        .post-img { width: 100%; border-radius: 12px; display: block; }
-        .post-caption { padding: 10px 5px 5px; font-size: 12px; opacity: 0.9; line-height: 1.4; text-align: right; }
+        /* --- تبويب الرسائل --- */
+        .msg-container {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+            padding: 25px; border-radius: 25px; text-align: center;
+        }
+        .msg-input {
+            width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border);
+            padding: 15px; border-radius: 12px; color: white; text-align: center; margin: 15px 0;
+            font-family: inherit;
+        }
+        .send-btn {
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            border: none; padding: 12px 40px; border-radius: 50px; color: white; font-weight: bold;
+            cursor: pointer; box-shadow: 0 5px 20px rgba(189,0,255,0.4);
+        }
 
-        /* شريط التنقل السفلي */
+        /* --- النافبار --- */
         .bottom-nav {
             position: absolute; bottom: 20px; left: 20px; right: 20px;
-            background: var(--nav-glass); backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 10px 20px; border-radius: 50px;
-            display: flex; justify-content: space-between; z-index: 100;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        /* تعديل للموبايل لتثبيت القائمة بالأسفل تماماً */
-        @media (max-width: 480px) {
-            .bottom-nav {
-                bottom: 15px; left: 15px; right: 15px;
-                padding: 10px 15px;
-            }
+            height: 65px; background: var(--nav-glass); backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 50px;
+            display: flex; justify-content: space-around; align-items: center; z-index: 100;
         }
         .nav-item { 
             color: rgba(255,255,255,0.4); cursor: pointer; transition: 0.3s; 
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            width: 60px;
         }
-        .nav-item i { font-size: 18px; margin-bottom: 2px; }
-        .nav-item span { font-size: 9px; font-weight: bold; }
-        .nav-item.active { color: var(--primary); transform: scale(1.1); text-shadow: 0 0 10px var(--primary); }
-        .nav-item.active span { color: white; }
+        .nav-item i { font-size: 20px; margin-bottom: 4px; }
+        .nav-item span { font-size: 10px; font-weight: bold; }
+        .nav-item.active { color: var(--primary); transform: translateY(-5px); text-shadow: 0 0 15px var(--primary); }
 
-        /* --- لوحة التحكم (تصحيح التمرير) --- */
-        #admin-panel { 
-            display: none; position: fixed; inset: 0; 
-            background: #050505; z-index: 10000; 
-            padding: 20px; 
-            padding-bottom: 100px; /* مساحة لزر الحفظ حتى لا يغطي المحتوى */
-            overflow-y: auto; 
-            -webkit-overflow-scrolling: touch;
-        }
-        .admin-input { width: 100%; background: #111; border: 1px solid #333; color: white; padding: 12px; border-radius: 10px; margin-bottom: 10px; }
-        
-        .save-float { 
-            position: fixed; bottom: 20px; left: 20px; right: 20px; 
-            background: var(--primary); color: black; font-weight: bold; 
-            border: none; padding: 15px; border-radius: 50px; 
-            cursor: pointer; box-shadow: 0 0 20px rgba(0,242,255,0.5); 
-            z-index: 10001; /* فوق كل شيء */
-        }
-        
-        /* تنسيق قائمة الرسائل في الأدمن */
-        .msg-list-container { margin-top: 20px; margin-bottom: 50px; }
-        .adm-msg-card {
-            background: #1a1a1a; padding: 10px; margin-bottom: 8px; 
-            border-radius: 8px; border-right: 3px solid var(--primary);
-            position: relative; font-size: 12px;
-        }
+        /* --- لوحة التحكم --- */
+        #admin-panel { display: none; position: fixed; inset: 0; background: #080808; z-index: 10000; padding: 25px; overflow-y: auto; }
+        .admin-input { width: 100%; background: #1a1a1a; border: 1px solid #333; color: white; padding: 12px; border-radius: 8px; margin-bottom: 10px; font-family: monospace; direction: ltr; text-align: left; }
+        .admin-section { border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 15px; }
+        .save-float { position: fixed; bottom: 20px; right: 20px; background: var(--primary); color: black; border: none; padding: 15px 30px; border-radius: 50px; font-weight: bold; box-shadow: 0 0 20px var(--primary); }
     </style>
 </head>
 <body>
 
-    <div class="floating-orb orb1"></div>
-    <div class="floating-orb orb2"></div>
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
     <div class="cursor-aurora" id="aurora"></div>
 
     <div class="app-frame">
@@ -209,10 +202,9 @@
             <div class="header-content">
                 <div class="pfp-wrapper" id="secret-trigger">
                     <img id="ui-pfp" src="https://via.placeholder.com/150" class="pfp-img">
-                    <div class="status-dot"></div>
                 </div>
-                <h1 class="user-name" id="ui-name">أحمد سيد</h1>
-                <div class="user-bio" id="ui-bio">Living The Dream</div>
+                <h1 class="user-name" id="ui-name">...</h1>
+                <div class="user-bio" id="ui-bio">...</div>
             </div>
         </div>
 
@@ -220,81 +212,91 @@
             
             <div id="tab-home" class="tab-section active">
                 <div class="music-card" id="music-btn" onclick="toggleMusic()">
-                    <div class="play-icon"><i class="fas fa-play" id="play-icon"></i></div>
-                    <div class="music-info">
-                        <div class="music-title" id="music-status">اضغط لتشغيل الموسيقى 🎵</div>
-                        <div class="music-wave">
-                            <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                        </div>
+                    <i class="fas fa-play play-icon-large" id="play-icon"></i>
+                    <div style="font-size:14px; opacity:0.8; margin-bottom:10px;" id="music-status">اضغط لتشغيل الموسيقى</div>
+                    <div class="equalizer">
+                        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
                     </div>
                 </div>
                 <audio id="bg-music" loop></audio>
-
-                <div class="links-grid" id="ui-links"></div>
             </div>
 
             <div id="tab-feed" class="tab-section">
-                <div id="posts-wrapper"></div>
+                <div class="feed-slider" id="feed-slider-container">
+                    <div style="display:flex; justify-content:center; align-items:center; height:100%; opacity:0.5;">جاري التحميل...</div>
+                </div>
             </div>
 
             <div id="tab-msg" class="tab-section">
-                <div style="text-align:center; margin-top:30px;">
-                    <i class="fas fa-paper-plane" style="font-size:50px; color:var(--primary); margin-bottom:20px; filter: drop-shadow(0 0 10px var(--primary));"></i>
+                <div class="msg-container">
+                    <i class="fas fa-paper-plane" style="font-size:40px; color:var(--primary); margin-bottom:15px;"></i>
                     <h3>تواصل معي</h3>
-                    <input type="text" id="v-msg" style="width:100%; background:rgba(255,255,255,0.1); border:none; padding:15px; border-radius:15px; color:white; text-align:center; margin-bottom:15px;" placeholder="اكتب رسالتك...">
-                    <button onclick="sendMsg()" style="background:var(--secondary); border:none; padding:15px 30px; border-radius:50px; color:white; font-weight:bold; cursor:pointer;">إرسال</button>
+                    <input type="text" id="v-msg" class="msg-input" placeholder="اكتب رسالتك هنا...">
+                    <button onclick="sendMsg()" class="send-btn">إرسال</button>
                 </div>
             </div>
+
         </div>
 
         <div class="bottom-nav">
             <div class="nav-item active" onclick="switchTab('home')">
-                <i class="fas fa-home"></i>
+                <i class="fas fa-music"></i>
                 <span>الرئيسية</span>
             </div>
             <div class="nav-item" onclick="switchTab('feed')">
-                <i class="fas fa-layer-group"></i>
+                <i class="fas fa-images"></i>
                 <span>يومياتي</span>
             </div>
             <div class="nav-item" onclick="switchTab('msg')">
-                <i class="fas fa-comment-alt"></i>
+                <i class="fas fa-comment-dots"></i>
                 <span>راسلني</span>
             </div>
         </div>
     </div>
 
     <div id="admin-panel">
-        <h3 style="color:var(--primary);">Control Panel ⚙️</h3>
-        <button onclick="closeAdmin()" style="float:left; background:none; border:none; color:white; font-size:20px;">✖</button>
-        <br><br>
+        <h2 style="color:var(--primary);">Control Panel ⚙️</h2>
+        <button onclick="closeAdmin()" style="position:absolute; top:25px; left:25px; background:none; border:none; color:white; font-size:24px;">✖</button>
+        <br>
         
-        <input type="text" id="adm-name" class="admin-input" placeholder="الاسم">
-        <input type="text" id="adm-bio" class="admin-input" placeholder="الوصف">
-        <input type="text" id="adm-pfp" class="admin-input" placeholder="رابط الصورة الشخصية">
-        <input type="text" id="adm-music" class="admin-input" placeholder="رابط الموسيقى (MP3)">
-        
-        <h4 style="color:#888;">المنشورات (Feed)</h4>
-        <input type="text" id="adm-img-1" class="admin-input" placeholder="صورة 1"><input type="text" id="adm-txt-1" class="admin-input" placeholder="نص 1">
-        <input type="text" id="adm-img-2" class="admin-input" placeholder="صورة 2"><input type="text" id="adm-txt-2" class="admin-input" placeholder="نص 2">
-        <input type="text" id="adm-img-3" class="admin-input" placeholder="صورة 3"><input type="text" id="adm-txt-3" class="admin-input" placeholder="نص 3">
-
-        <h4 style="color:#888;">الروابط</h4>
-        <input type="text" id="adm-wa" class="admin-input" placeholder="WhatsApp">
-        <input type="text" id="adm-ig" class="admin-input" placeholder="Instagram">
-        <input type="text" id="adm-fb" class="admin-input" placeholder="Facebook">
-
-        <div class="msg-list-container">
-            <h4>الرسائل (<span id="adm-msg-count">0</span>)</h4>
-            <div id="admin-msgs"></div>
+        <div class="admin-section">
+            <h4 style="color:#888;">البيانات الأساسية</h4>
+            <input type="text" id="adm-name" class="admin-input" placeholder="الاسم">
+            <input type="text" id="adm-bio" class="admin-input" placeholder="الوصف المختصر">
+            <input type="text" id="adm-pfp" class="admin-input" placeholder="رابط الصورة الشخصية">
+            <input type="text" id="adm-music" class="admin-input" placeholder="رابط ملف الموسيقى (MP3)">
         </div>
 
-        <button onclick="saveMaster()" class="save-float">حفظ ونشر التعديلات</button>
+        <div class="admin-section">
+            <h4 style="color:#888;">اليوميات (Slider Feed)</h4>
+            <small style="color:#666; display:block; margin-bottom:10px;">أدخل الصور والنصوص (اترك الحقل فارغاً إذا لم ترد عرضه)</small>
+            
+            <label style="color:var(--secondary)">شريحة 1</label>
+            <input type="text" id="adm-img-1" class="admin-input" placeholder="رابط الصورة 1">
+            <input type="text" id="adm-txt-1" class="admin-input" placeholder="نص الشريحة 1">
+            
+            <label style="color:var(--secondary)">شريحة 2</label>
+            <input type="text" id="adm-img-2" class="admin-input" placeholder="رابط الصورة 2">
+            <input type="text" id="adm-txt-2" class="admin-input" placeholder="نص الشريحة 2">
+            
+            <label style="color:var(--secondary)">شريحة 3</label>
+            <input type="text" id="adm-img-3" class="admin-input" placeholder="رابط الصورة 3">
+            <input type="text" id="adm-txt-3" class="admin-input" placeholder="نص الشريحة 3">
+        </div>
+
+        <button onclick="saveMaster()" class="save-float">حفظ التغييرات</button>
+        
+        <div style="margin-top:20px; padding-bottom:50px;">
+            <h4>الرسائل الواردة (<span id="adm-msg-count">0</span>)</h4>
+            <div id="admin-msgs"></div>
+        </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
     <script>
+        // إعدادات Firebase (نفس إعداداتك السابقة)
         const firebaseConfig = {
             apiKey: "AIza...",
             authDomain: "mypersonalapp-2f2cc.firebaseapp.com",
@@ -307,41 +309,37 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // 1. الخلفية الحية
+        // 1. خلفية الهيدر الحية
         const liveImages = [
-            "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=800&auto=format&fit=crop",
-            "https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=800&auto=format&fit=crop",
-            "https://images.unsplash.com/photo-1534972195531-d756b9bfa9f2?q=80&w=800&auto=format&fit=crop"
+            "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=600&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=600&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1534972195531-d756b9bfa9f2?q=80&w=600&auto=format&fit=crop"
         ];
         const sliderContainer = document.getElementById('live-slider');
-        
         function initLiveHeader() {
             sliderContainer.innerHTML = '';
             liveImages.forEach((url, i) => {
                 const img = document.createElement('img');
-                img.src = url;
-                img.className = i === 0 ? 'live-img active' : 'live-img';
+                img.src = url; img.className = i === 0 ? 'live-img active' : 'live-img';
                 sliderContainer.appendChild(img);
             });
-
             let idx = 0;
             setInterval(() => {
                 const imgs = document.querySelectorAll('.live-img');
                 imgs[idx].classList.remove('active');
                 idx = (idx + 1) % imgs.length;
                 imgs[idx].classList.add('active');
-            }, 4000);
+            }, 5000);
         }
         initLiveHeader();
 
-        // 2. الشفق
+        // 2. حركة الماوس
         const aurora = document.getElementById('aurora');
         document.addEventListener('mousemove', (e) => {
-            aurora.style.left = e.clientX + 'px';
-            aurora.style.top = e.clientY + 'px';
+            aurora.style.left = e.clientX + 'px'; aurora.style.top = e.clientY + 'px';
         });
 
-        // 3. التبويبات
+        // 3. التبديل بين التبويبات
         function switchTab(tabName) {
             document.querySelectorAll('.tab-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -351,7 +349,7 @@
             document.querySelectorAll('.nav-item')[icons[tabName]].classList.add('active');
         }
 
-        // 4. الموسيقى
+        // 4. مشغل الموسيقى
         const audio = document.getElementById('bg-music');
         const musicCard = document.getElementById('music-btn');
         const playIcon = document.getElementById('play-icon');
@@ -359,24 +357,94 @@
 
         function toggleMusic() {
             if(audio.paused) {
-                audio.play();
-                musicCard.classList.add('playing');
-                playIcon.classList.remove('fa-play'); playIcon.classList.add('fa-pause');
-                musicStatus.innerText = "جاري الاستماع... 🎶";
+                audio.play().then(() => {
+                    musicCard.classList.add('playing');
+                    playIcon.classList.replace('fa-play', 'fa-pause');
+                    musicStatus.innerText = "يعمل الآن... 🎶";
+                }).catch(e => alert("اضغط مرة أخرى للتفاعل مع الصفحة"));
             } else {
                 audio.pause();
                 musicCard.classList.remove('playing');
-                playIcon.classList.remove('fa-pause'); playIcon.classList.add('fa-play');
-                musicStatus.innerText = "اضغط للتشغيل 🎵";
+                playIcon.classList.replace('fa-pause', 'fa-play');
+                musicStatus.innerText = "اضغط للتشغيل";
             }
         }
 
-        // 5. الإدارة
+        // 5. إدارة اليوميات (Auto Feed Slider)
+        let feedInterval;
+        function initFeedSlider(data) {
+            const container = document.getElementById('feed-slider-container');
+            container.innerHTML = "";
+            
+            // تجميع الشرائح
+            let slidesHTML = "";
+            let indicatorsHTML = `<div class="slider-indicators">`;
+            let count = 0;
+
+            [1, 2, 3].forEach(i => {
+                if (data['img'+i] || data['txt'+i]) {
+                    const activeClass = count === 0 ? 'active' : '';
+                    const imgSrc = data['img'+i] || 'https://via.placeholder.com/400x600/000/fff?text=No+Image';
+                    const txt = data['txt'+i] || '';
+                    
+                    slidesHTML += `
+                        <div class="slide-item ${activeClass}" id="slide-${count}">
+                            <img src="${imgSrc}" class="slide-bg">
+                            <div class="slide-content">
+                                <div class="slide-text">${txt}</div>
+                            </div>
+                        </div>
+                    `;
+                    indicatorsHTML += `<div class="indicator ${activeClass}" id="ind-${count}"><div class="indicator-fill"></div></div>`;
+                    count++;
+                }
+            });
+            indicatorsHTML += `</div>`;
+
+            if(count === 0) {
+                container.innerHTML = "<div style='display:flex;justify-content:center;align-items:center;height:100%;'>لا توجد يوميات 📭</div>";
+                return;
+            }
+
+            container.innerHTML = slidesHTML + indicatorsHTML;
+
+            // منطق التبديل التلقائي
+            if (feedInterval) clearInterval(feedInterval);
+            let currentSlide = 0;
+            
+            feedInterval = setInterval(() => {
+                // إزالة Active
+                document.getElementById(`slide-${currentSlide}`).classList.remove('active');
+                document.getElementById(`ind-${currentSlide}`).classList.remove('active');
+                
+                // الانتقال للتالي
+                currentSlide = (currentSlide + 1) % count;
+                
+                // إضافة Active
+                document.getElementById(`slide-${currentSlide}`).classList.add('active');
+                document.getElementById(`ind-${currentSlide}`).classList.add('active');
+            }, 4000); // كل 4 ثواني
+        }
+
+        // 6. الاتصال بقاعدة البيانات
+        db.ref('appData').on('value', snap => {
+            const d = snap.val() || {};
+            
+            document.getElementById('ui-name').innerText = d.name || "أحمد";
+            document.getElementById('ui-bio').innerText = d.bio || "Welcome to my world";
+            document.getElementById('ui-pfp').src = d.pfp || "https://via.placeholder.com/150";
+            if(d.musicUrl && audio.src !== d.musicUrl) audio.src = d.musicUrl;
+
+            // تشغيل سلايدر اليوميات
+            initFeedSlider(d);
+        });
+
+        // 7. لوحة التحكم
         let taps = 0;
         document.getElementById('secret-trigger').onclick = () => {
             taps++;
             if(taps === 3) {
-                if(prompt("كلمة السر:") === "1234") {
+                if(prompt("Password:") === "1234") {
                     document.getElementById('admin-panel').style.display = 'block';
                     loadAdmin();
                 }
@@ -385,38 +453,33 @@
         };
         function closeAdmin() { document.getElementById('admin-panel').style.display = 'none'; }
 
-        // 6. المزامنة
-        db.ref('appData').on('value', snap => {
-            const d = snap.val();
-            if(!d) return;
-
-            document.getElementById('ui-name').innerText = d.name || "الاسم";
-            document.getElementById('ui-bio').innerText = d.bio || "Bio";
-            document.getElementById('ui-pfp').src = d.pfp || "https://via.placeholder.com/150";
-            
-            if(d.musicUrl && audio.src !== d.musicUrl) audio.src = d.musicUrl;
-
-            const linksGrid = document.getElementById('ui-links');
-            linksGrid.innerHTML = "";
-            if(d.wa) linksGrid.innerHTML += `<a href="${d.wa}" target="_blank" class="link-box"><i class="fab fa-whatsapp"></i><span>واتساب</span></a>`;
-            if(d.ig) linksGrid.innerHTML += `<a href="${d.ig}" target="_blank" class="link-box"><i class="fab fa-instagram"></i><span>إنستجرام</span></a>`;
-            if(d.fb) linksGrid.innerHTML += `<a href="${d.fb}" target="_blank" class="link-box"><i class="fab fa-facebook"></i><span>فيسبوك</span></a>`;
-
-            const postsWrap = document.getElementById('posts-wrapper');
-            postsWrap.innerHTML = "";
-            let hasPosts = false;
-            [1,2,3].forEach(n => {
-                if(d['img'+n] || d['txt'+n]) {
-                    hasPosts = true;
-                    let html = `<div class="post-item">`;
-                    if(d['img'+n]) html += `<img src="${d['img'+n]}" class="post-img">`;
-                    if(d['txt'+n]) html += `<div class="post-caption">${d['txt'+n]}</div>`;
-                    html += `</div>`;
-                    postsWrap.innerHTML += html;
-                }
+        function loadAdmin() {
+            db.ref('appData').once('value', s => {
+                const d = s.val() || {};
+                document.getElementById('adm-name').value = d.name || "";
+                document.getElementById('adm-bio').value = d.bio || "";
+                document.getElementById('adm-pfp').value = d.pfp || "";
+                document.getElementById('adm-music').value = d.musicUrl || "";
+                
+                document.getElementById('adm-img-1').value = d.img1 || ""; document.getElementById('adm-txt-1').value = d.txt1 || "";
+                document.getElementById('adm-img-2').value = d.img2 || ""; document.getElementById('adm-txt-2').value = d.txt2 || "";
+                document.getElementById('adm-img-3').value = d.img3 || ""; document.getElementById('adm-txt-3').value = d.txt3 || "";
             });
-            if(!hasPosts) postsWrap.innerHTML = "<div style='text-align:center; opacity:0.5; font-size:12px; margin-top:30px;'>لا توجد منشورات حالياً 📭</div>";
-        });
+            // جلب الرسائل
+            db.ref('messages').on('value', s => {
+                const list = document.getElementById('admin-msgs');
+                document.getElementById('adm-msg-count').innerText = s.numChildren();
+                list.innerHTML = "";
+                s.forEach(c => {
+                    list.innerHTML += `
+                        <div style="background:#222; padding:10px; margin-bottom:5px; border-radius:5px; border-right:3px solid var(--primary);">
+                            ${c.val().text} 
+                            <i class="fas fa-trash" style="color:#ff4444; float:left; cursor:pointer;" onclick="delMsg('${c.key}')"></i>
+                            <div style="font-size:9px; color:#666; margin-top:5px;">${c.val().time}</div>
+                        </div>`;
+                });
+            });
+        }
 
         function saveMaster() {
             db.ref('appData').update({
@@ -426,44 +489,15 @@
                 musicUrl: document.getElementById('adm-music').value,
                 img1: document.getElementById('adm-img-1').value, txt1: document.getElementById('adm-txt-1').value,
                 img2: document.getElementById('adm-img-2').value, txt2: document.getElementById('adm-txt-2').value,
-                img3: document.getElementById('adm-img-3').value, txt3: document.getElementById('adm-txt-3').value,
-                wa: document.getElementById('adm-wa').value,
-                ig: document.getElementById('adm-ig').value,
-                fb: document.getElementById('adm-fb').value
-            }).then(() => { alert("تم الحفظ!"); closeAdmin(); });
+                img3: document.getElementById('adm-img-3').value, txt3: document.getElementById('adm-txt-3').value
+            }).then(() => { alert("تم الحفظ بنجاح!"); closeAdmin(); });
         }
 
         function sendMsg() {
             const m = document.getElementById('v-msg').value;
-            if(m) { db.ref('messages').push({text:m, time:new Date().toLocaleString()}); alert("تم الإرسال!"); document.getElementById('v-msg').value = ""; }
+            if(m) { db.ref('messages').push({text:m, time:new Date().toLocaleString()}); alert("وصلتني رسالتك!"); document.getElementById('v-msg').value = ""; }
         }
-
-        function loadAdmin() {
-            db.ref('appData').once('value', s => {
-                const d = s.val();
-                if(d) {
-                    document.getElementById('adm-name').value = d.name || "";
-                    document.getElementById('adm-bio').value = d.bio || "";
-                    document.getElementById('adm-pfp').value = d.pfp || "";
-                    document.getElementById('adm-music').value = d.musicUrl || "";
-                    document.getElementById('adm-img-1').value = d.img1 || ""; document.getElementById('adm-txt-1').value = d.txt1 || "";
-                    document.getElementById('adm-img-2').value = d.img2 || ""; document.getElementById('adm-txt-2').value = d.txt2 || "";
-                    document.getElementById('adm-img-3').value = d.img3 || ""; document.getElementById('adm-txt-3').value = d.txt3 || "";
-                    document.getElementById('adm-wa').value = d.wa || "";
-                    document.getElementById('adm-ig').value = d.ig || "";
-                    document.getElementById('adm-fb').value = d.fb || "";
-                }
-            });
-            db.ref('messages').on('value', s => {
-                const list = document.getElementById('admin-msgs');
-                document.getElementById('adm-msg-count').innerText = s.numChildren();
-                list.innerHTML = "";
-                s.forEach(c => {
-                    list.innerHTML += `<div class="adm-msg-card">${c.val().text} <i class="fas fa-trash" style="color:red; float:left; cursor:pointer;" onclick="delMsg('${c.key}')"></i></div>`;
-                });
-            });
-        }
-        function delMsg(k) { if(confirm("حذف؟")) db.ref('messages').child(k).remove(); }
+        function delMsg(k) { if(confirm("حذف الرسالة؟")) db.ref('messages').child(k).remove(); }
     </script>
 </body>
 </html>
