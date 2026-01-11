@@ -22,7 +22,10 @@
         body {
             margin: 0; font-family: 'Tajawal', sans-serif;
             background-color: var(--bg-deep);
-            color: white; height: 100vh; overflow: hidden;
+            color: white; 
+            /* تغيير: استخدام 100dvh لحساب حساب شريط المتصفح */
+            height: 100dvh; 
+            overflow: hidden;
             display: flex; justify-content: center; align-items: center;
         }
 
@@ -40,33 +43,40 @@
         /* --- إطار التطبيق --- */
         .app-frame {
             width: 100%; max-width: 500px; height: 100%;
-            display: flex; flex-direction: column; padding: 20px;
+            display: flex; flex-direction: column; 
+            /* تقليل الحواف الخارجية */
+            padding: 10px; 
+            /* السماح بالسكرول البسيط عند الحاجة */
+            overflow-y: auto; 
         }
 
         /* --- الهيدر العلوي --- */
         .top-bar {
             display: flex; align-items: center; justify-content: space-between;
             background: var(--glass-strong); backdrop-filter: blur(15px);
-            padding: 8px 15px; border-radius: 50px;
+            padding: 5px 15px; border-radius: 50px;
             border: 1px solid var(--border);
-            margin-bottom: 25px; height: 75px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 50;
+            /* تقليل المسافة أسفل الهيدر لرفع الكارت */
+            margin-bottom: 10px; 
+            /* تقليل ارتفاع الهيدر قليلاً */
+            height: 65px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 50; flex-shrink: 0;
         }
-        .profile-mini { position: relative; width: 50px; height: 50px; flex-shrink: 0; }
+        .profile-mini { position: relative; width: 45px; height: 45px; flex-shrink: 0; }
         .pfp-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid white; }
         
         .user-text { flex: 1; margin-right: 12px; display: flex; flex-direction: column; justify-content: center; }
-        .u-name { font-size: 16px; font-weight: 800; margin: 0; line-height: 1.2; }
-        .u-bio { font-size: 11px; opacity: 0.6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
+        .u-name { font-size: 15px; font-weight: 800; margin: 0; line-height: 1.2; }
+        .u-bio { font-size: 10px; opacity: 0.6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
 
         /* شريط الحالة */
         .status-badge {
             background: rgba(0, 240, 255, 0.08);
             border: 1px solid var(--primary);
-            padding: 6px 14px; border-radius: 20px;
+            padding: 4px 10px; border-radius: 20px;
             display: flex; align-items: center; gap: 8px;
             box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
-            max-width: 140px;
+            max-width: 120px;
         }
         .mini-wave { display: flex; gap: 2px; align-items: flex-end; height: 12px; }
         .bar-s { width: 2px; background: var(--secondary); height: 5px; animation: tinyWave 0.8s infinite alternate; }
@@ -75,21 +85,23 @@
         @keyframes tinyWave { 0% {height: 4px;} 100% {height: 12px;} }
 
         .status-content {
-            font-size: 11px; font-weight: bold; color: var(--primary);
+            font-size: 10px; font-weight: bold; color: var(--primary);
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
 
         /* --- الكارت المضيء --- */
-        .main-stage { flex: 1; position: relative; display: flex; flex-direction: column; }
+        .main-stage { 
+            flex: 1; position: relative; display: flex; flex-direction: column; 
+            min-height: 0; /* مهم جداً للسماح بتقليص الحجم */
+        }
 
         .immersive-card {
-            flex: 1; position: relative; border-radius: 35px;
+            flex: 1; position: relative; border-radius: 30px;
             display: flex; flex-direction: column;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-            background: #000; overflow: hidden; padding: 4px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            background: #000; overflow: hidden; padding: 3px;
         }
         
-        /* التعديل الأول: سرعة دوران الإطار (12s بدل 4s) */
         .immersive-card::before {
             content: ''; position: absolute; inset: -50%;
             background: conic-gradient(from 0deg, transparent 0deg, var(--primary) 60deg, transparent 120deg, var(--secondary) 180deg, transparent 240deg, var(--primary) 300deg, transparent 360deg);
@@ -99,7 +111,7 @@
 
         .card-inner {
             position: relative; width: 100%; height: 100%;
-            background: #111; border-radius: 32px;
+            background: #111; border-radius: 28px;
             overflow: hidden; z-index: 1;
         }
 
@@ -107,7 +119,7 @@
         .slide-layer { position: absolute; inset: 0; z-index: 0; }
         .bg-slide {
             position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
-            opacity: 0; transition: opacity 2s ease-in-out, transform 12s linear; /* جعلت الانتقال أيضاً أنعم */
+            opacity: 0; transition: opacity 2s ease-in-out, transform 12s linear;
             transform: scale(1); filter: brightness(0.6);
         }
         .bg-slide.active { opacity: 1; transform: scale(1.1); }
@@ -118,17 +130,17 @@
             position: relative; z-index: 10; height: 100%; width: 100%;
             display: flex; flex-direction: column;
             justify-content: space-between; align-items: center;
-            padding: 20px;
+            padding: 15px;
         }
         .spacer { flex: 1; }
 
         .play-wrapper { flex: 1; display: flex; align-items: center; justify-content: center; }
         .play-btn-big {
-            width: 90px; height: 90px; border-radius: 50%;
+            width: 80px; height: 80px; border-radius: 50%;
             background: rgba(255,255,255,0.15); backdrop-filter: blur(5px);
             border: 1px solid rgba(255,255,255,0.5);
             display: flex; justify-content: center; align-items: center;
-            font-size: 35px; color: white; cursor: pointer;
+            font-size: 30px; color: white; cursor: pointer;
             transition: 0.3s; box-shadow: 0 0 30px rgba(0,240,255,0.3);
         }
         .play-btn-big:active { transform: scale(0.9); }
@@ -140,7 +152,7 @@
 
         .bottom-info {
             flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
-            width: 100%; padding-bottom: 10px;
+            width: 100%; padding-bottom: 5px;
         }
         .visualizer {
             display: flex; gap: 5px; height: 30px; align-items: flex-end; margin-bottom: 10px; opacity: 0; transition: 0.5s;
@@ -152,7 +164,7 @@
         @keyframes wave { 0% {height: 5px;} 100% {height: 30px;} }
 
         .slide-caption {
-            font-size: 16px; font-weight: bold; text-align: center;
+            font-size: 15px; font-weight: bold; text-align: center;
             text-shadow: 0 2px 5px rgba(0,0,0,0.9);
             background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
             padding: 8px 20px; border-radius: 20px; width: 100%;
@@ -174,13 +186,16 @@
 
         /* --- Dock --- */
         .dock {
-            margin-top: 25px; height: 75px;
+            /* تقليل المسافة العلوية لرفع الأزرار */
+            margin-top: 10px; 
+            /* تقليل الارتفاع قليلاً */
+            height: 65px;
             background: var(--glass-light); border: 1px solid var(--border);
             border-radius: 40px; display: flex; justify-content: space-around; align-items: center;
-            backdrop-filter: blur(15px);
+            backdrop-filter: blur(15px); flex-shrink: 0;
         }
         .dock-btn { display: flex; flex-direction: column; align-items: center; color: rgba(255,255,255,0.4); cursor: pointer; transition: 0.3s; }
-        .dock-btn.active { color: white; transform: translateY(-5px); text-shadow: 0 0 10px var(--primary); }
+        .dock-btn.active { color: white; transform: translateY(-3px); text-shadow: 0 0 10px var(--primary); }
 
         /* --- Admin --- */
         #admin-panel { display: none; position: fixed; inset: 0; background: #000; z-index: 9999; padding: 30px; overflow-y: auto; }
@@ -346,7 +361,6 @@
         function runSlides() {
             if(slideTimer) clearInterval(slideTimer);
             showS(0);
-            // التعديل الثاني: سرعة تبديل الشرائح (8 ثواني بدل 4)
             slideTimer = setInterval(() => {
                 currSlide = (currSlide + 1) % slides.length;
                 showS(currSlide);
