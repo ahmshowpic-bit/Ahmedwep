@@ -3,291 +3,282 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AHMED | PRO HUB</title>
+    <title>AHMED | PERFECT VIBES</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;500;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --primary: #00f2ff;
-            --secondary: #bd00ff;
-            --bg: #020205;
-            --glass: rgba(255, 255, 255, 0.08);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --nav-glass: rgba(0, 0, 0, 0.8);
+            --primary: #00F0FF;
+            --secondary: #FF0055;
+            --bg-deep: #050510;
+            --glass-strong: rgba(25, 25, 40, 0.85);
+            --glass-light: rgba(255, 255, 255, 0.1);
+            --border: rgba(255, 255, 255, 0.15);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
 
         body {
             margin: 0; font-family: 'Tajawal', sans-serif;
-            background: var(--bg); color: white; height: 100vh;
+            background-color: var(--bg-deep);
+            color: white; height: 100vh; overflow: hidden;
             display: flex; justify-content: center; align-items: center;
-            overflow: hidden; user-select: none;
         }
 
-        /* --- الخلفيات المتحركة --- */
-        .cursor-aurora {
-            position: fixed; width: 600px; height: 600px;
-            background: radial-gradient(circle, rgba(0,242,255,0.15) 0%, rgba(189,0,255,0.1) 40%, transparent 70%);
-            border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%);
-            z-index: -1; filter: blur(80px); mix-blend-mode: screen;
+        /* --- الخلفية --- */
+        .nebula-bg {
+            position: fixed; inset: 0; z-index: -1;
+            background: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #000 100%);
         }
-        .orb {
-            position: fixed; border-radius: 50%; filter: blur(50px); z-index: -2;
-            animation: orbFloat 15s infinite alternate ease-in-out;
+        .stars {
+            position: fixed; inset: 0; background: url('https://www.transparenttextures.com/patterns/stardust.png');
+            opacity: 0.3; animation: twinkling 5s infinite alternate;
         }
-        .orb1 { width: 350px; height: 350px; background: #5500ff; top: -10%; left: -10%; opacity: 0.15; }
-        .orb2 { width: 400px; height: 400px; background: #00c3ff; bottom: -10%; right: -10%; opacity: 0.1; animation-delay: -5s; }
-        @keyframes orbFloat { from { transform: translate(0,0); } to { transform: translate(40px, 40px); } }
+        @keyframes twinkling { 0% {opacity:0.2;} 100% {opacity:0.4;} }
 
-        /* --- إطار التطبيق الرئيسي --- */
+        /* --- إطار التطبيق --- */
         .app-frame {
-            width: 100%; max-width: 420px; height: 100%; /* ملء الشاشة للهاتف */
-            background: rgba(255,255,255,0.03); backdrop-filter: blur(40px);
-            position: relative; overflow: hidden;
+            width: 100%; max-width: 500px; height: 100%;
+            display: flex; flex-direction: column; padding: 20px;
+        }
+
+        /* --- الهيدر العلوي --- */
+        .top-bar {
+            display: flex; align-items: center; justify-content: space-between;
+            background: var(--glass-strong); backdrop-filter: blur(15px);
+            padding: 8px 15px; border-radius: 50px;
+            border: 1px solid var(--border);
+            margin-bottom: 25px; height: 75px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 50;
+        }
+        .profile-mini { position: relative; width: 50px; height: 50px; flex-shrink: 0; }
+        .pfp-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid white; }
+        
+        .user-text { flex: 1; margin-right: 12px; display: flex; flex-direction: column; justify-content: center; }
+        .u-name { font-size: 16px; font-weight: 800; margin: 0; line-height: 1.2; }
+        .u-bio { font-size: 11px; opacity: 0.6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
+
+        /* شريط الحالة */
+        .status-badge {
+            background: rgba(0, 240, 255, 0.08);
+            border: 1px solid var(--primary);
+            padding: 6px 14px; border-radius: 20px;
+            display: flex; align-items: center; gap: 8px;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
+            max-width: 140px;
+        }
+        .mini-wave { display: flex; gap: 2px; align-items: flex-end; height: 12px; }
+        .bar-s { width: 2px; background: var(--secondary); height: 5px; animation: tinyWave 0.8s infinite alternate; }
+        .bar-s:nth-child(2) { animation-delay: 0.2s; }
+        .bar-s:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes tinyWave { 0% {height: 4px;} 100% {height: 12px;} }
+
+        .status-content {
+            font-size: 11px; font-weight: bold; color: var(--primary);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+
+        /* --- الكارت المضيء --- */
+        .main-stage { flex: 1; position: relative; display: flex; flex-direction: column; }
+
+        .immersive-card {
+            flex: 1; position: relative; border-radius: 35px;
             display: flex; flex-direction: column;
-            box-shadow: 0 0 50px rgba(0,0,0,0.5);
-        }
-        /* تعديل الحواف للشاشات الأكبر */
-        @media (min-width: 450px) {
-            .app-frame { height: 92vh; border-radius: 40px; border: 1px solid var(--glass-border); }
-        }
-
-        /* --- الهيدر (ثابت) --- */
-        .header-area { 
-            flex-shrink: 0; position: relative; height: 35%; 
-            display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        .live-bg-container { position: absolute; inset: 0; z-index: 0; }
-        .live-img { 
-            position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; 
-            opacity: 0; transition: opacity 2s ease; mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
-        }
-        .live-img.active { opacity: 0.6; transform: scale(1.1); transition: opacity 2s ease, transform 10s linear; }
-
-        .header-content { z-index: 2; text-align: center; padding-bottom: 15px; width: 100%; }
-        
-        .pfp-wrapper {
-            width: 90px; height: 90px; margin: 0 auto; position: relative;
-        }
-        .pfp-img {
-            width: 100%; height: 100%; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3);
-            object-fit: cover; box-shadow: 0 0 25px rgba(0,242,255,0.2);
-        }
-        .user-name { font-size: 24px; font-weight: 900; margin: 8px 0 2px; text-shadow: 0 2px 10px rgba(0,0,0,0.8); letter-spacing: 1px; }
-        .user-bio { font-size: 12px; color: rgba(255,255,255,0.7); background: rgba(0,0,0,0.4); padding: 4px 12px; border-radius: 15px; display: inline-block; backdrop-filter: blur(5px); }
-
-        /* --- منطقة المحتوى (مرنة وبدون سكرول) --- */
-        .content-area { 
-            flex-grow: 1; position: relative; overflow: hidden; 
-            padding: 15px; padding-bottom: 80px; /* مساحة للنافبار */
-            display: flex; flex-direction: column; justify-content: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            background: #000; overflow: hidden; padding: 4px;
         }
         
-        .tab-section { 
-            display: none; width: 100%; height: 100%; 
-            animation: fadeIn 0.5s ease;
+        /* التعديل الأول: سرعة دوران الإطار (12s بدل 4s) */
+        .immersive-card::before {
+            content: ''; position: absolute; inset: -50%;
+            background: conic-gradient(from 0deg, transparent 0deg, var(--primary) 60deg, transparent 120deg, var(--secondary) 180deg, transparent 240deg, var(--primary) 300deg, transparent 360deg);
+            animation: rotateBorder 12s linear infinite; z-index: 0;
         }
-        .tab-section.active { display: flex; flex-direction: column; justify-content: center; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+        @keyframes rotateBorder { 100% { transform: rotate(360deg); } }
 
-        /* --- تبويب الرئيسية (الموسيقى فقط) --- */
-        .music-card {
-            width: 100%; height: 100%; max-height: 200px;
-            background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
-            border: 1px solid var(--glass-border); border-radius: 25px;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            position: relative; overflow: hidden; cursor: pointer; transition: 0.3s;
+        .card-inner {
+            position: relative; width: 100%; height: 100%;
+            background: #111; border-radius: 32px;
+            overflow: hidden; z-index: 1;
         }
-        .music-card:active { transform: scale(0.97); background: rgba(255,255,255,0.1); }
-        .play-icon-large {
-            font-size: 40px; color: var(--primary); margin-bottom: 15px;
-            text-shadow: 0 0 20px var(--primary); transition: 0.3s;
+
+        /* --- Slideshow --- */
+        .slide-layer { position: absolute; inset: 0; z-index: 0; }
+        .bg-slide {
+            position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+            opacity: 0; transition: opacity 2s ease-in-out, transform 12s linear; /* جعلت الانتقال أيضاً أنعم */
+            transform: scale(1); filter: brightness(0.6);
         }
-        .music-card.playing .play-icon-large { animation: pulseBeat 1s infinite; }
-        @keyframes pulseBeat { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.2); opacity: 0.7; } 100% { transform: scale(1); opacity: 1; } }
+        .bg-slide.active { opacity: 1; transform: scale(1.1); }
+        .bg-slide.fallback { background: linear-gradient(45deg, #222, #000); opacity: 1; }
+
+        /* --- Controls --- */
+        .controls-layer {
+            position: relative; z-index: 10; height: 100%; width: 100%;
+            display: flex; flex-direction: column;
+            justify-content: space-between; align-items: center;
+            padding: 20px;
+        }
+        .spacer { flex: 1; }
+
+        .play-wrapper { flex: 1; display: flex; align-items: center; justify-content: center; }
+        .play-btn-big {
+            width: 90px; height: 90px; border-radius: 50%;
+            background: rgba(255,255,255,0.15); backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.5);
+            display: flex; justify-content: center; align-items: center;
+            font-size: 35px; color: white; cursor: pointer;
+            transition: 0.3s; box-shadow: 0 0 30px rgba(0,240,255,0.3);
+        }
+        .play-btn-big:active { transform: scale(0.9); }
+        .immersive-card.playing .play-btn-big {
+            border-color: var(--secondary); background: rgba(255, 0, 85, 0.2);
+            box-shadow: 0 0 60px var(--secondary); animation: pulseBtn 2s infinite;
+        }
+        @keyframes pulseBtn { 0% {transform:scale(1);} 50% {transform:scale(1.1);} 100% {transform:scale(1);} }
+
+        .bottom-info {
+            flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
+            width: 100%; padding-bottom: 10px;
+        }
+        .visualizer {
+            display: flex; gap: 5px; height: 30px; align-items: flex-end; margin-bottom: 10px; opacity: 0; transition: 0.5s;
+        }
+        .immersive-card.playing .visualizer { opacity: 1; }
+        .v-bar { width: 5px; background: var(--primary); border-radius: 10px; height: 5px; }
+        .immersive-card.playing .v-bar { animation: wave 0.6s infinite alternate; }
+        .immersive-card.playing .v-bar:nth-child(even) { background: var(--secondary); animation-delay: 0.1s; }
+        @keyframes wave { 0% {height: 5px;} 100% {height: 30px;} }
+
+        .slide-caption {
+            font-size: 16px; font-weight: bold; text-align: center;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.9);
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            padding: 8px 20px; border-radius: 20px; width: 100%;
+        }
+
+        /* --- Messages --- */
+        .message-section {
+            position: absolute; inset: 0; z-index: 20;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(20px);
+            border-radius: 35px; display: none;
+            flex-direction: column; justify-content: center; align-items: center; padding: 30px;
+            animation: zoomIn 0.3s ease; border: 1px solid var(--border);
+        }
+        .message-section.active { display: flex; }
+        @keyframes zoomIn { from {opacity:0; transform: scale(0.95);} to {opacity:1; transform: scale(1);} }
         
-        .equalizer { display: flex; gap: 5px; height: 30px; align-items: flex-end; }
-        .bar { width: 6px; background: rgba(255,255,255,0.3); border-radius: 3px; height: 5px; transition: 0.2s; }
-        .music-card.playing .bar { background: var(--secondary); animation: eqWave 0.6s infinite alternate; }
-        .music-card.playing .bar:nth-child(2) { animation-delay: 0.1s; }
-        .music-card.playing .bar:nth-child(3) { animation-delay: 0.2s; }
-        .music-card.playing .bar:nth-child(4) { animation-delay: 0.3s; }
-        .music-card.playing .bar:nth-child(5) { animation-delay: 0.4s; }
-        @keyframes eqWave { 0% { height: 5px; } 100% { height: 30px; } }
+        .msg-input { width: 100%; padding: 15px; background: rgba(255,255,255,0.1); border: 1px solid #555; border-radius: 15px; color: white; text-align: center; margin-bottom: 20px; font-family: inherit; }
+        .send-btn { padding: 12px 40px; background: linear-gradient(90deg, var(--primary), var(--secondary)); border: none; border-radius: 50px; color: white; font-weight: bold; cursor: pointer; }
 
-        /* --- تبويب اليوميات (Slider) --- */
-        .feed-slider {
-            width: 100%; height: 100%; border-radius: 25px;
-            position: relative; overflow: hidden;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            background: rgba(0,0,0,0.2);
+        /* --- Dock --- */
+        .dock {
+            margin-top: 25px; height: 75px;
+            background: var(--glass-light); border: 1px solid var(--border);
+            border-radius: 40px; display: flex; justify-content: space-around; align-items: center;
+            backdrop-filter: blur(15px);
         }
-        .slide-item {
-            position: absolute; inset: 0; width: 100%; height: 100%;
-            opacity: 0; transition: opacity 1s ease-in-out, transform 1s ease;
-            transform: scale(1.05); display: flex; align-items: flex-end;
-        }
-        .slide-item.active { opacity: 1; transform: scale(1); z-index: 1; }
-        
-        .slide-bg { 
-            position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; 
-            z-index: 0; filter: brightness(0.8);
-        }
-        .slide-content {
-            position: relative; z-index: 2; padding: 25px; width: 100%;
-            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
-            text-align: right;
-        }
-        .slide-text { font-size: 16px; line-height: 1.6; text-shadow: 0 2px 4px black; font-weight: bold; }
-        .slider-indicators {
-            position: absolute; top: 15px; left: 0; right: 0; z-index: 5;
-            display: flex; justify-content: center; gap: 5px; padding: 0 20px;
-        }
-        .indicator { flex: 1; height: 3px; background: rgba(255,255,255,0.3); border-radius: 2px; overflow: hidden; }
-        .indicator-fill { height: 100%; background: white; width: 0%; }
-        .slide-item.active ~ .slider-indicators .indicator.active .indicator-fill {
-            width: 100%; transition: width 4s linear; /* مدة العرض */
-        }
+        .dock-btn { display: flex; flex-direction: column; align-items: center; color: rgba(255,255,255,0.4); cursor: pointer; transition: 0.3s; }
+        .dock-btn.active { color: white; transform: translateY(-5px); text-shadow: 0 0 10px var(--primary); }
 
-        /* --- تبويب الرسائل --- */
-        .msg-container {
-            background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
-            padding: 25px; border-radius: 25px; text-align: center;
-        }
-        .msg-input {
-            width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border);
-            padding: 15px; border-radius: 12px; color: white; text-align: center; margin: 15px 0;
-            font-family: inherit;
-        }
-        .send-btn {
-            background: linear-gradient(90deg, var(--secondary), var(--primary));
-            border: none; padding: 12px 40px; border-radius: 50px; color: white; font-weight: bold;
-            cursor: pointer; box-shadow: 0 5px 20px rgba(189,0,255,0.4);
-        }
+        /* --- Admin --- */
+        #admin-panel { display: none; position: fixed; inset: 0; background: #000; z-index: 9999; padding: 30px; overflow-y: auto; }
+        .adm-inp { width: 100%; background: #222; border: 1px solid #444; color: white; padding: 12px; margin-bottom: 10px; border-radius: 8px; }
 
-        /* --- النافبار --- */
-        .bottom-nav {
-            position: absolute; bottom: 20px; left: 20px; right: 20px;
-            height: 65px; background: var(--nav-glass); backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.1); border-radius: 50px;
-            display: flex; justify-content: space-around; align-items: center; z-index: 100;
-        }
-        .nav-item { 
-            color: rgba(255,255,255,0.4); cursor: pointer; transition: 0.3s; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
-        .nav-item i { font-size: 20px; margin-bottom: 4px; }
-        .nav-item span { font-size: 10px; font-weight: bold; }
-        .nav-item.active { color: var(--primary); transform: translateY(-5px); text-shadow: 0 0 15px var(--primary); }
-
-        /* --- لوحة التحكم --- */
-        #admin-panel { display: none; position: fixed; inset: 0; background: #080808; z-index: 10000; padding: 25px; overflow-y: auto; }
-        .admin-input { width: 100%; background: #1a1a1a; border: 1px solid #333; color: white; padding: 12px; border-radius: 8px; margin-bottom: 10px; font-family: monospace; direction: ltr; text-align: left; }
-        .admin-section { border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 15px; }
-        .save-float { position: fixed; bottom: 20px; right: 20px; background: var(--primary); color: black; border: none; padding: 15px 30px; border-radius: 50px; font-weight: bold; box-shadow: 0 0 20px var(--primary); }
     </style>
 </head>
 <body>
 
-    <div class="orb orb1"></div>
-    <div class="orb orb2"></div>
-    <div class="cursor-aurora" id="aurora"></div>
+    <div class="nebula-bg">
+        <div class="stars"></div>
+    </div>
 
     <div class="app-frame">
-        <div class="header-area">
-            <div class="live-bg-container" id="live-slider"></div>
-            <div class="header-content">
-                <div class="pfp-wrapper" id="secret-trigger">
-                    <img id="ui-pfp" src="https://via.placeholder.com/150" class="pfp-img">
+        <div class="top-bar">
+            <div class="profile-mini" id="secret-trigger">
+                <img id="ui-pfp" src="https://via.placeholder.com/100" class="pfp-img">
+            </div>
+            <div class="user-text">
+                <h2 class="u-name" id="ui-name">...</h2>
+                <div class="u-bio" id="ui-bio">...</div>
+            </div>
+            <div class="status-badge">
+                <div class="mini-wave">
+                    <div class="bar-s"></div><div class="bar-s"></div><div class="bar-s"></div>
                 </div>
-                <h1 class="user-name" id="ui-name">...</h1>
-                <div class="user-bio" id="ui-bio">...</div>
+                <div class="status-content" id="ui-status">Vibing...</div>
             </div>
         </div>
 
-        <div class="content-area">
-            
-            <div id="tab-home" class="tab-section active">
-                <div class="music-card" id="music-btn" onclick="toggleMusic()">
-                    <i class="fas fa-play play-icon-large" id="play-icon"></i>
-                    <div style="font-size:14px; opacity:0.8; margin-bottom:10px;" id="music-status">اضغط لتشغيل الموسيقى</div>
-                    <div class="equalizer">
-                        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        <div class="main-stage">
+            <div id="view-home" class="immersive-card">
+                <div class="card-inner">
+                    <div class="slide-layer" id="bg-slideshow">
+                        <div class="bg-slide fallback active"></div>
+                    </div>
+                    <div class="controls-layer">
+                        <div class="spacer"></div>
+                        <div class="play-wrapper">
+                            <div class="play-btn-big" onclick="togglePlay()">
+                                <i class="fas fa-play" id="main-icon"></i>
+                            </div>
+                        </div>
+                        <div class="bottom-info">
+                            <div class="visualizer">
+                                <div class="v-bar"></div><div class="v-bar"></div><div class="v-bar"></div><div class="v-bar"></div><div class="v-bar"></div>
+                            </div>
+                            <div class="slide-caption" id="slide-text">Welcome</div>
+                        </div>
                     </div>
                 </div>
-                <audio id="bg-music" loop></audio>
+                <audio id="audio-player" loop></audio>
             </div>
 
-            <div id="tab-feed" class="tab-section">
-                <div class="feed-slider" id="feed-slider-container">
-                    <div style="display:flex; justify-content:center; align-items:center; height:100%; opacity:0.5;">جاري التحميل...</div>
-                </div>
+            <div id="view-msg" class="message-section">
+                <i class="fas fa-paper-plane" style="font-size:40px; color:var(--primary); margin-bottom:20px;"></i>
+                <h3 style="margin-top:0;">Send Message</h3>
+                <input id="v-msg" class="msg-input" placeholder="اكتب هنا...">
+                <button onclick="sendMsg()" class="send-btn">إرسال</button>
             </div>
-
-            <div id="tab-msg" class="tab-section">
-                <div class="msg-container">
-                    <i class="fas fa-paper-plane" style="font-size:40px; color:var(--primary); margin-bottom:15px;"></i>
-                    <h3>تواصل معي</h3>
-                    <input type="text" id="v-msg" class="msg-input" placeholder="اكتب رسالتك هنا...">
-                    <button onclick="sendMsg()" class="send-btn">إرسال</button>
-                </div>
-            </div>
-
         </div>
 
-        <div class="bottom-nav">
-            <div class="nav-item active" onclick="switchTab('home')">
-                <i class="fas fa-music"></i>
-                <span>الرئيسية</span>
+        <div class="dock">
+            <div class="dock-btn active" onclick="switchView('home')">
+                <i class="fas fa-compact-disc" style="font-size:24px; margin-bottom:5px;"></i>
+                <span>Vibes</span>
             </div>
-            <div class="nav-item" onclick="switchTab('feed')">
-                <i class="fas fa-images"></i>
-                <span>يومياتي</span>
-            </div>
-            <div class="nav-item" onclick="switchTab('msg')">
-                <i class="fas fa-comment-dots"></i>
-                <span>راسلني</span>
+            <div class="dock-btn" onclick="switchView('msg')">
+                <i class="fas fa-comment-dots" style="font-size:24px; margin-bottom:5px;"></i>
+                <span>Chat</span>
             </div>
         </div>
     </div>
 
     <div id="admin-panel">
-        <h2 style="color:var(--primary);">Control Panel ⚙️</h2>
-        <button onclick="closeAdmin()" style="position:absolute; top:25px; left:25px; background:none; border:none; color:white; font-size:24px;">✖</button>
-        <br>
+        <h2 style="color:var(--primary)">Settings ⚙️</h2>
+        <button onclick="document.getElementById('admin-panel').style.display='none'" style="float:right; background:none; border:none; color:white; font-size:20px;">✕</button>
+        <br><br>
         
-        <div class="admin-section">
-            <h4 style="color:#888;">البيانات الأساسية</h4>
-            <input type="text" id="adm-name" class="admin-input" placeholder="الاسم">
-            <input type="text" id="adm-bio" class="admin-input" placeholder="الوصف المختصر">
-            <input type="text" id="adm-pfp" class="admin-input" placeholder="رابط الصورة الشخصية">
-            <input type="text" id="adm-music" class="admin-input" placeholder="رابط ملف الموسيقى (MP3)">
-        </div>
-
-        <div class="admin-section">
-            <h4 style="color:#888;">اليوميات (Slider Feed)</h4>
-            <small style="color:#666; display:block; margin-bottom:10px;">أدخل الصور والنصوص (اترك الحقل فارغاً إذا لم ترد عرضه)</small>
-            
-            <label style="color:var(--secondary)">شريحة 1</label>
-            <input type="text" id="adm-img-1" class="admin-input" placeholder="رابط الصورة 1">
-            <input type="text" id="adm-txt-1" class="admin-input" placeholder="نص الشريحة 1">
-            
-            <label style="color:var(--secondary)">شريحة 2</label>
-            <input type="text" id="adm-img-2" class="admin-input" placeholder="رابط الصورة 2">
-            <input type="text" id="adm-txt-2" class="admin-input" placeholder="نص الشريحة 2">
-            
-            <label style="color:var(--secondary)">شريحة 3</label>
-            <input type="text" id="adm-img-3" class="admin-input" placeholder="رابط الصورة 3">
-            <input type="text" id="adm-txt-3" class="admin-input" placeholder="نص الشريحة 3">
-        </div>
-
-        <button onclick="saveMaster()" class="save-float">حفظ التغييرات</button>
+        <label style="color:#888;">Profile & Status</label>
+        <input id="adm-name" class="adm-inp" placeholder="Name">
+        <input id="adm-bio" class="adm-inp" placeholder="Bio">
+        <input id="adm-status" class="adm-inp" placeholder="Status (Song/Mood)" style="border-color:var(--primary);">
+        <input id="adm-pfp" class="adm-inp" placeholder="PFP URL">
+        <input id="adm-music" class="adm-inp" placeholder="Music URL">
         
-        <div style="margin-top:20px; padding-bottom:50px;">
-            <h4>الرسائل الواردة (<span id="adm-msg-count">0</span>)</h4>
+        <label style="color:#888; margin-top:10px; display:block;">Slideshow</label>
+        <input id="adm-img-1" class="adm-inp" placeholder="Img 1 URL">
+        <input id="adm-txt-1" class="adm-inp" placeholder="Txt 1">
+        <input id="adm-img-2" class="adm-inp" placeholder="Img 2 URL">
+        <input id="adm-txt-2" class="adm-inp" placeholder="Txt 2">
+        <input id="adm-img-3" class="adm-inp" placeholder="Img 3 URL">
+        <input id="adm-txt-3" class="adm-inp" placeholder="Txt 3">
+
+        <button onclick="saveData()" class="send-btn" style="width:100%; margin-top:20px;">Save</button>
+        
+        <div style="margin-top:30px;">
+            <h4>Messages</h4>
             <div id="admin-msgs"></div>
         </div>
     </div>
@@ -296,7 +287,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
     <script>
-        // إعدادات Firebase (نفس إعداداتك السابقة)
         const firebaseConfig = {
             apiKey: "AIza...",
             authDomain: "mypersonalapp-2f2cc.firebaseapp.com",
@@ -309,195 +299,146 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // 1. خلفية الهيدر الحية
-        const liveImages = [
-            "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=600&auto=format&fit=crop",
-            "https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=600&auto=format&fit=crop",
-            "https://images.unsplash.com/photo-1534972195531-d756b9bfa9f2?q=80&w=600&auto=format&fit=crop"
-        ];
-        const sliderContainer = document.getElementById('live-slider');
-        function initLiveHeader() {
-            sliderContainer.innerHTML = '';
-            liveImages.forEach((url, i) => {
-                const img = document.createElement('img');
-                img.src = url; img.className = i === 0 ? 'live-img active' : 'live-img';
-                sliderContainer.appendChild(img);
-            });
-            let idx = 0;
-            setInterval(() => {
-                const imgs = document.querySelectorAll('.live-img');
-                imgs[idx].classList.remove('active');
-                idx = (idx + 1) % imgs.length;
-                imgs[idx].classList.add('active');
-            }, 5000);
-        }
-        initLiveHeader();
+        const audio = document.getElementById('audio-player');
+        const card = document.getElementById('view-home');
+        const icon = document.getElementById('main-icon');
+        const slideBox = document.getElementById('bg-slideshow');
+        const slideTxt = document.getElementById('slide-text');
+        
+        let slides = [];
+        let slideTimer;
+        let currSlide = 0;
 
-        // 2. حركة الماوس
-        const aurora = document.getElementById('aurora');
-        document.addEventListener('mousemove', (e) => {
-            aurora.style.left = e.clientX + 'px'; aurora.style.top = e.clientY + 'px';
-        });
-
-        // 3. التبديل بين التبويبات
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-section').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            document.getElementById('tab-' + tabName).classList.add('active');
-            
-            const icons = { 'home': 0, 'feed': 1, 'msg': 2 };
-            document.querySelectorAll('.nav-item')[icons[tabName]].classList.add('active');
-        }
-
-        // 4. مشغل الموسيقى
-        const audio = document.getElementById('bg-music');
-        const musicCard = document.getElementById('music-btn');
-        const playIcon = document.getElementById('play-icon');
-        const musicStatus = document.getElementById('music-status');
-
-        function toggleMusic() {
+        function togglePlay() {
             if(audio.paused) {
                 audio.play().then(() => {
-                    musicCard.classList.add('playing');
-                    playIcon.classList.replace('fa-play', 'fa-pause');
-                    musicStatus.innerText = "يعمل الآن... 🎶";
-                }).catch(e => alert("اضغط مرة أخرى للتفاعل مع الصفحة"));
+                    card.classList.add('playing');
+                    icon.classList.replace('fa-play', 'fa-pause');
+                });
             } else {
                 audio.pause();
-                musicCard.classList.remove('playing');
-                playIcon.classList.replace('fa-pause', 'fa-play');
-                musicStatus.innerText = "اضغط للتشغيل";
+                card.classList.remove('playing');
+                icon.classList.replace('fa-pause', 'fa-play');
             }
         }
 
-        // 5. إدارة اليوميات (Auto Feed Slider)
-        let feedInterval;
-        function initFeedSlider(data) {
-            const container = document.getElementById('feed-slider-container');
-            container.innerHTML = "";
-            
-            // تجميع الشرائح
-            let slidesHTML = "";
-            let indicatorsHTML = `<div class="slider-indicators">`;
-            let count = 0;
-
-            [1, 2, 3].forEach(i => {
-                if (data['img'+i] || data['txt'+i]) {
-                    const activeClass = count === 0 ? 'active' : '';
-                    const imgSrc = data['img'+i] || 'https://via.placeholder.com/400x600/000/fff?text=No+Image';
-                    const txt = data['txt'+i] || '';
-                    
-                    slidesHTML += `
-                        <div class="slide-item ${activeClass}" id="slide-${count}">
-                            <img src="${imgSrc}" class="slide-bg">
-                            <div class="slide-content">
-                                <div class="slide-text">${txt}</div>
-                            </div>
-                        </div>
-                    `;
-                    indicatorsHTML += `<div class="indicator ${activeClass}" id="ind-${count}"><div class="indicator-fill"></div></div>`;
-                    count++;
-                }
-            });
-            indicatorsHTML += `</div>`;
-
-            if(count === 0) {
-                container.innerHTML = "<div style='display:flex;justify-content:center;align-items:center;height:100%;'>لا توجد يوميات 📭</div>";
+        function initSlides(d) {
+            slides = [];
+            slideBox.innerHTML = "";
+            for(let i=1; i<=3; i++) {
+                if(d['img'+i] || d['txt'+i]) slides.push({img:d['img'+i], txt:d['txt'+i]});
+            }
+            if(slides.length === 0) {
+                slideBox.innerHTML = `<div class="bg-slide fallback active"></div>`;
+                slideTxt.innerText = d.bio || "Welcome";
                 return;
             }
-
-            container.innerHTML = slidesHTML + indicatorsHTML;
-
-            // منطق التبديل التلقائي
-            if (feedInterval) clearInterval(feedInterval);
-            let currentSlide = 0;
-            
-            feedInterval = setInterval(() => {
-                // إزالة Active
-                document.getElementById(`slide-${currentSlide}`).classList.remove('active');
-                document.getElementById(`ind-${currentSlide}`).classList.remove('active');
-                
-                // الانتقال للتالي
-                currentSlide = (currentSlide + 1) % count;
-                
-                // إضافة Active
-                document.getElementById(`slide-${currentSlide}`).classList.add('active');
-                document.getElementById(`ind-${currentSlide}`).classList.add('active');
-            }, 4000); // كل 4 ثواني
+            slides.forEach((s, i) => {
+                const el = document.createElement('img');
+                el.src = s.img || "https://via.placeholder.com/600";
+                el.className = "bg-slide";
+                el.id = `slide-${i}`;
+                slideBox.appendChild(el);
+            });
+            runSlides();
         }
 
-        // 6. الاتصال بقاعدة البيانات
-        db.ref('appData').on('value', snap => {
-            const d = snap.val() || {};
-            
-            document.getElementById('ui-name').innerText = d.name || "أحمد";
-            document.getElementById('ui-bio').innerText = d.bio || "Welcome to my world";
-            document.getElementById('ui-pfp').src = d.pfp || "https://via.placeholder.com/150";
-            if(d.musicUrl && audio.src !== d.musicUrl) audio.src = d.musicUrl;
+        function runSlides() {
+            if(slideTimer) clearInterval(slideTimer);
+            showS(0);
+            // التعديل الثاني: سرعة تبديل الشرائح (8 ثواني بدل 4)
+            slideTimer = setInterval(() => {
+                currSlide = (currSlide + 1) % slides.length;
+                showS(currSlide);
+            }, 8000); 
+        }
 
-            // تشغيل سلايدر اليوميات
-            initFeedSlider(d);
+        function showS(idx) {
+            document.querySelectorAll('.bg-slide').forEach(e => e.classList.remove('active'));
+            const el = document.getElementById(`slide-${idx}`);
+            if(el) {
+                el.classList.add('active');
+                slideTxt.innerText = slides[idx].txt || "";
+            }
+        }
+
+        function switchView(v) {
+            if(v === 'home') {
+                document.getElementById('view-msg').classList.remove('active');
+                updateDock(0);
+            } else {
+                document.getElementById('view-msg').classList.add('active');
+                updateDock(1);
+            }
+        }
+        function updateDock(idx) {
+            document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.dock-btn')[idx].classList.add('active');
+        }
+
+        db.ref('appData').on('value', s => {
+            const d = s.val() || {};
+            document.getElementById('ui-name').innerText = d.name || "User";
+            document.getElementById('ui-bio').innerText = d.bio || "Online";
+            document.getElementById('ui-status').innerText = d.status || "Vibing...";
+            document.getElementById('ui-pfp').src = d.pfp || "https://via.placeholder.com/100";
+            if(d.musicUrl && audio.src !== d.musicUrl) audio.src = d.musicUrl;
+            initSlides(d);
         });
 
-        // 7. لوحة التحكم
         let taps = 0;
         document.getElementById('secret-trigger').onclick = () => {
             taps++;
             if(taps === 3) {
-                if(prompt("Password:") === "1234") {
-                    document.getElementById('admin-panel').style.display = 'block';
-                    loadAdmin();
+                if(prompt("Code:") === "1234") {
+                    document.getElementById('admin-panel').style.display='block';
+                    loadAdm();
                 }
                 taps = 0;
             }
         };
-        function closeAdmin() { document.getElementById('admin-panel').style.display = 'none'; }
 
-        function loadAdmin() {
+        function loadAdm() {
             db.ref('appData').once('value', s => {
                 const d = s.val() || {};
                 document.getElementById('adm-name').value = d.name || "";
                 document.getElementById('adm-bio').value = d.bio || "";
+                document.getElementById('adm-status').value = d.status || "";
                 document.getElementById('adm-pfp').value = d.pfp || "";
                 document.getElementById('adm-music').value = d.musicUrl || "";
-                
-                document.getElementById('adm-img-1').value = d.img1 || ""; document.getElementById('adm-txt-1').value = d.txt1 || "";
-                document.getElementById('adm-img-2').value = d.img2 || ""; document.getElementById('adm-txt-2').value = d.txt2 || "";
-                document.getElementById('adm-img-3').value = d.img3 || ""; document.getElementById('adm-txt-3').value = d.txt3 || "";
+                for(let i=1; i<=3; i++) {
+                    document.getElementById('adm-img-'+i).value = d['img'+i] || "";
+                    document.getElementById('adm-txt-'+i).value = d['txt'+i] || "";
+                }
             });
-            // جلب الرسائل
             db.ref('messages').on('value', s => {
-                const list = document.getElementById('admin-msgs');
-                document.getElementById('adm-msg-count').innerText = s.numChildren();
-                list.innerHTML = "";
-                s.forEach(c => {
-                    list.innerHTML += `
-                        <div style="background:#222; padding:10px; margin-bottom:5px; border-radius:5px; border-right:3px solid var(--primary);">
-                            ${c.val().text} 
-                            <i class="fas fa-trash" style="color:#ff4444; float:left; cursor:pointer;" onclick="delMsg('${c.key}')"></i>
-                            <div style="font-size:9px; color:#666; margin-top:5px;">${c.val().time}</div>
-                        </div>`;
+                const b = document.getElementById('admin-msgs');
+                b.innerHTML = "";
+                s.forEach(m => {
+                    b.innerHTML += `<div style="background:#222; padding:10px; margin-bottom:5px; border-radius:5px;">${m.val().text} <span style="float:left; color:red; cursor:pointer;" onclick="db.ref('messages/${m.key}').remove()">✖</span></div>`;
                 });
             });
         }
 
-        function saveMaster() {
-            db.ref('appData').update({
+        function saveData() {
+            let data = {
                 name: document.getElementById('adm-name').value,
                 bio: document.getElementById('adm-bio').value,
+                status: document.getElementById('adm-status').value,
                 pfp: document.getElementById('adm-pfp').value,
-                musicUrl: document.getElementById('adm-music').value,
-                img1: document.getElementById('adm-img-1').value, txt1: document.getElementById('adm-txt-1').value,
-                img2: document.getElementById('adm-img-2').value, txt2: document.getElementById('adm-txt-2').value,
-                img3: document.getElementById('adm-img-3').value, txt3: document.getElementById('adm-txt-3').value
-            }).then(() => { alert("تم الحفظ بنجاح!"); closeAdmin(); });
+                musicUrl: document.getElementById('adm-music').value
+            };
+            for(let i=1; i<=3; i++) {
+                data['img'+i] = document.getElementById('adm-img-'+i).value;
+                data['txt'+i] = document.getElementById('adm-txt-'+i).value;
+            }
+            db.ref('appData').update(data).then(() => { alert("Saved!"); document.getElementById('admin-panel').style.display='none'; });
         }
 
         function sendMsg() {
-            const m = document.getElementById('v-msg').value;
-            if(m) { db.ref('messages').push({text:m, time:new Date().toLocaleString()}); alert("وصلتني رسالتك!"); document.getElementById('v-msg').value = ""; }
+            const v = document.getElementById('v-msg').value;
+            if(v) { db.ref('messages').push({text:v, time:Date.now()}); alert("Sent!"); document.getElementById('v-msg').value=""; switchView('home'); }
         }
-        function delMsg(k) { if(confirm("حذف الرسالة؟")) db.ref('messages').child(k).remove(); }
     </script>
 </body>
 </html>
