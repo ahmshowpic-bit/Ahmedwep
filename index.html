@@ -5,222 +5,1062 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>AHMED | PERFECT VIBES</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;500;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
             --primary: #00F0FF;
             --secondary: #FF0055;
+            --accent: #9D00FF;
             --bg-deep: #050510;
-            --glass-strong: rgba(25, 25, 40, 0.85);
-            --glass-light: rgba(255, 255, 255, 0.1);
-            --border: rgba(255, 255, 255, 0.15);
+            --glass-strong: rgba(25, 25, 40, 0.92);
+            --glass-light: rgba(255, 255, 255, 0.08);
+            --border: rgba(255, 255, 255, 0.18);
+            --success: #00FF9D;
+            --text-primary: #FFFFFF;
+            --text-secondary: #B0B0D0;
+            --card-gradient: linear-gradient(145deg, #0a0a1a, #151530);
+            --neon-glow: 0 0 20px rgba(0, 240, 255, 0.5);
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        * { 
+            margin: 0; 
+            padding: 0;
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+            outline: none; 
+            font-family: 'Tajawal', sans-serif;
+        }
 
         body {
-            margin: 0; font-family: 'Tajawal', sans-serif;
+            font-family: 'Tajawal', sans-serif;
             background-color: var(--bg-deep);
-            color: white; 
-            /* تغيير: استخدام 100dvh لحساب حساب شريط المتصفح */
-            height: 100dvh; 
-            overflow: hidden;
-            display: flex; justify-content: center; align-items: center;
+            color: white;
+            min-height: 100dvh;
+            overflow-x: hidden;
+            position: relative;
         }
 
-        /* --- الخلفية --- */
+        /* --- خلفية متطورة --- */
         .nebula-bg {
-            position: fixed; inset: 0; z-index: -1;
-            background: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #000 100%);
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            background: radial-gradient(circle at 70% 30%, #1a1a3e 0%, #050510 40%, #000 100%);
+            overflow: hidden;
         }
-        .stars {
-            position: fixed; inset: 0; background: url('https://www.transparenttextures.com/patterns/stardust.png');
-            opacity: 0.3; animation: twinkling 5s infinite alternate;
+
+        .dynamic-grid {
+            position: fixed;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: -1;
+            opacity: 0.3;
         }
-        @keyframes twinkling { 0% {opacity:0.2;} 100% {opacity:0.4;} }
+
+        .floating-elements {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .floating-element {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+            opacity: 0.05;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(100px, 100px) rotate(360deg); }
+        }
 
         /* --- إطار التطبيق --- */
         .app-frame {
-            width: 100%; max-width: 500px; height: 100%;
-            display: flex; flex-direction: column; 
-            /* تقليل الحواف الخارجية */
-            padding: 10px; 
-            /* السماح بالسكرول البسيط عند الحاجة */
-            overflow-y: auto; 
+            width: 100%;
+            max-width: 500px;
+            min-height: 100dvh;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            position: relative;
         }
 
-        /* --- الهيدر العلوي --- */
+        /* --- الهيدر المحسّن --- */
         .top-bar {
-            display: flex; align-items: center; justify-content: space-between;
-            background: var(--glass-strong); backdrop-filter: blur(15px);
-            padding: 5px 15px; border-radius: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--glass-strong);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            padding: 8px 20px;
+            border-radius: 25px;
             border: 1px solid var(--border);
-            /* تقليل المسافة أسفل الهيدر لرفع الكارت */
-            margin-bottom: 10px; 
-            /* تقليل ارتفاع الهيدر قليلاً */
-            height: 65px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 50; flex-shrink: 0;
+            margin-bottom: 15px;
+            height: 70px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+            z-index: 50;
         }
-        .profile-mini { position: relative; width: 45px; height: 45px; flex-shrink: 0; }
-        .pfp-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid white; }
-        
-        .user-text { flex: 1; margin-right: 12px; display: flex; flex-direction: column; justify-content: center; }
-        .u-name { font-size: 15px; font-weight: 800; margin: 0; line-height: 1.2; }
-        .u-bio { font-size: 10px; opacity: 0.6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
 
-        /* شريط الحالة */
-        .status-badge {
-            background: rgba(0, 240, 255, 0.08);
-            border: 1px solid var(--primary);
-            padding: 4px 10px; border-radius: 20px;
-            display: flex; align-items: center; gap: 8px;
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
-            max-width: 120px;
+        .top-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            z-index: 1;
         }
-        .mini-wave { display: flex; gap: 2px; align-items: flex-end; height: 12px; }
-        .bar-s { width: 2px; background: var(--secondary); height: 5px; animation: tinyWave 0.8s infinite alternate; }
-        .bar-s:nth-child(2) { animation-delay: 0.2s; }
-        .bar-s:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes tinyWave { 0% {height: 4px;} 100% {height: 12px;} }
+
+        .profile-mini {
+            position: relative;
+            width: 50px;
+            height: 50px;
+            flex-shrink: 0;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .profile-mini:hover {
+            transform: scale(1.05);
+        }
+
+        .profile-mini::after {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .profile-mini:hover::after {
+            opacity: 1;
+        }
+
+        .pfp-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        .profile-mini:hover .pfp-img {
+            border-color: var(--primary);
+            box-shadow: var(--neon-glow);
+        }
+
+        .user-text {
+            flex: 1;
+            margin-right: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .u-name {
+            font-size: 16px;
+            font-weight: 800;
+            margin: 0;
+            line-height: 1.2;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .u-bio {
+            font-size: 11px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 160px;
+            margin-top: 2px;
+        }
+
+        /* شريط الحالة المحسّن */
+        .status-badge {
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+            max-width: 140px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .status-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+        }
+
+        .mini-wave {
+            display: flex;
+            gap: 3px;
+            align-items: flex-end;
+            height: 15px;
+        }
+
+        .bar-s {
+            width: 3px;
+            background: var(--secondary);
+            height: 5px;
+            border-radius: 2px;
+            animation: tinyWave 0.8s infinite alternate;
+        }
+
+        .bar-s:nth-child(2) { 
+            background: var(--primary);
+            animation-delay: 0.2s; 
+        }
+        .bar-s:nth-child(3) { 
+            background: var(--accent);
+            animation-delay: 0.4s; 
+        }
+
+        @keyframes tinyWave { 
+            0% { height: 4px; } 
+            100% { height: 12px; } 
+        }
 
         .status-content {
-            font-size: 10px; font-weight: bold; color: var(--primary);
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            font-size: 11px;
+            font-weight: bold;
+            color: var(--primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        /* --- الكارت المضيء --- */
-        .main-stage { 
-            flex: 1; position: relative; display: flex; flex-direction: column; 
-            min-height: 0; /* مهم جداً للسماح بتقليص الحجم */
+        /* --- الكارت الرئيسي المحسّن --- */
+        .main-stage {
+            flex: 1;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            border-radius: 30px;
+            overflow: hidden;
+            margin-bottom: 15px;
         }
 
         .immersive-card {
-            flex: 1; position: relative; border-radius: 30px;
-            display: flex; flex-direction: column;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-            background: #000; overflow: hidden; padding: 3px;
+            flex: 1;
+            position: relative;
+            border-radius: 30px;
+            display: flex;
+            flex-direction: column;
+            background: #000;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+            transform-style: preserve-3d;
+            perspective: 1000px;
         }
-        
-        .immersive-card::before {
-            content: ''; position: absolute; inset: -50%;
-            background: conic-gradient(from 0deg, transparent 0deg, var(--primary) 60deg, transparent 120deg, var(--secondary) 180deg, transparent 240deg, var(--primary) 300deg, transparent 360deg);
-            animation: rotateBorder 12s linear infinite; z-index: 0;
+
+        .card-glow {
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent));
+            border-radius: 32px;
+            z-index: 0;
+            filter: blur(10px);
+            opacity: 0.5;
+            animation: glowRotate 8s linear infinite;
         }
-        @keyframes rotateBorder { 100% { transform: rotate(360deg); } }
+
+        @keyframes glowRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
 
         .card-inner {
-            position: relative; width: 100%; height: 100%;
-            background: #111; border-radius: 28px;
-            overflow: hidden; z-index: 1;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: var(--card-gradient);
+            border-radius: 28px;
+            overflow: hidden;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* --- Slideshow --- */
-        .slide-layer { position: absolute; inset: 0; z-index: 0; }
+        /* --- Slideshow محسّن --- */
+        .slide-layer {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+        }
+
         .bg-slide {
-            position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
-            opacity: 0; transition: opacity 2s ease-in-out, transform 12s linear;
-            transform: scale(1); filter: brightness(0.6);
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            filter: brightness(0.7) contrast(1.1);
+            transform: scale(1.05);
         }
-        .bg-slide.active { opacity: 1; transform: scale(1.1); }
-        .bg-slide.fallback { background: linear-gradient(45deg, #222, #000); opacity: 1; }
 
-        /* --- Controls --- */
+        .bg-slide.active {
+            opacity: 1;
+            animation: slideZoom 12s linear infinite alternate;
+        }
+
+        @keyframes slideZoom {
+            0% { transform: scale(1.05); }
+            100% { transform: scale(1.15); }
+        }
+
+        .bg-slide.fallback {
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            opacity: 1;
+        }
+
+        .slide-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, transparent 40%, rgba(0, 0, 0, 0.8) 100%);
+            z-index: 1;
+        }
+
+        /* --- Controls محسّنة --- */
         .controls-layer {
-            position: relative; z-index: 10; height: 100%; width: 100%;
-            display: flex; flex-direction: column;
-            justify-content: space-between; align-items: center;
-            padding: 15px;
+            position: relative;
+            z-index: 10;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 25px 15px;
         }
-        .spacer { flex: 1; }
 
-        .play-wrapper { flex: 1; display: flex; align-items: center; justify-content: center; }
+        .top-controls {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+        }
+
+        .music-info {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 70%;
+        }
+
+        .music-title {
+            font-size: 14px;
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: var(--text-primary);
+        }
+
+        .music-artist {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .control-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        .play-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         .play-btn-big {
-            width: 80px; height: 80px; border-radius: 50%;
-            background: rgba(255,255,255,0.15); backdrop-filter: blur(5px);
-            border: 1px solid rgba(255,255,255,0.5);
-            display: flex; justify-content: center; align-items: center;
-            font-size: 30px; color: white; cursor: pointer;
-            transition: 0.3s; box-shadow: 0 0 30px rgba(0,240,255,0.3);
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 35px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 40px rgba(0, 240, 255, 0.3);
+            position: relative;
+            overflow: hidden;
         }
-        .play-btn-big:active { transform: scale(0.9); }
+
+        .play-btn-big::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .play-btn-big:hover {
+            transform: scale(1.05);
+            border-color: var(--primary);
+        }
+
+        .play-btn-big:active {
+            transform: scale(0.95);
+        }
+
+        .play-btn-big i {
+            position: relative;
+            z-index: 1;
+        }
+
         .immersive-card.playing .play-btn-big {
-            border-color: var(--secondary); background: rgba(255, 0, 85, 0.2);
-            box-shadow: 0 0 60px var(--secondary); animation: pulseBtn 2s infinite;
+            border-color: var(--secondary);
+            background: rgba(255, 0, 85, 0.2);
+            box-shadow: 0 0 80px var(--secondary);
+            animation: pulseBtn 2s infinite;
         }
-        @keyframes pulseBtn { 0% {transform:scale(1);} 50% {transform:scale(1.1);} 100% {transform:scale(1);} }
+
+        .immersive-card.playing .play-btn-big::before {
+            opacity: 0.2;
+        }
+
+        @keyframes pulseBtn {
+            0% { box-shadow: 0 0 30px rgba(255, 0, 85, 0.5); }
+            50% { box-shadow: 0 0 60px rgba(255, 0, 85, 0.8); }
+            100% { box-shadow: 0 0 30px rgba(255, 0, 85, 0.5); }
+        }
+
+        /* شريط التقدم */
+        .progress-container {
+            width: 90%;
+            margin-top: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            border-radius: 2px;
+            position: relative;
+            transition: width 0.1s linear;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .time-display {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
 
         .bottom-info {
-            flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
-            width: 100%; padding-bottom: 5px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 15px;
         }
+
         .visualizer {
-            display: flex; gap: 5px; height: 30px; align-items: flex-end; margin-bottom: 10px; opacity: 0; transition: 0.5s;
+            display: flex;
+            gap: 6px;
+            height: 40px;
+            align-items: flex-end;
+            margin-bottom: 20px;
+            opacity: 0;
+            transition: 0.5s;
+            width: 100%;
+            justify-content: center;
         }
-        .immersive-card.playing .visualizer { opacity: 1; }
-        .v-bar { width: 5px; background: var(--primary); border-radius: 10px; height: 5px; }
-        .immersive-card.playing .v-bar { animation: wave 0.6s infinite alternate; }
-        .immersive-card.playing .v-bar:nth-child(even) { background: var(--secondary); animation-delay: 0.1s; }
-        @keyframes wave { 0% {height: 5px;} 100% {height: 30px;} }
+
+        .immersive-card.playing .visualizer {
+            opacity: 1;
+        }
+
+        .v-bar {
+            width: 6px;
+            background: linear-gradient(to top, var(--primary), var(--accent));
+            border-radius: 10px;
+            height: 5px;
+        }
+
+        .immersive-card.playing .v-bar {
+            animation: wave 0.8s infinite alternate;
+        }
+
+        .immersive-card.playing .v-bar:nth-child(even) {
+            background: linear-gradient(to top, var(--secondary), var(--accent));
+            animation-delay: 0.15s;
+        }
+
+        @keyframes wave {
+            0% { height: 5px; }
+            100% { height: 40px; }
+        }
 
         .slide-caption {
-            font-size: 15px; font-weight: bold; text-align: center;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.9);
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-            padding: 8px 20px; border-radius: 20px; width: 100%;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            padding: 12px 25px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            width: 90%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            color: var(--text-primary);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s ease;
         }
 
-        /* --- Messages --- */
+        .slide-caption::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+        }
+
+        /* --- شات محسّن --- */
         .message-section {
-            position: absolute; inset: 0; z-index: 20;
-            background: rgba(0,0,0,0.85); backdrop-filter: blur(20px);
-            border-radius: 35px; display: none;
-            flex-direction: column; justify-content: center; align-items: center; padding: 30px;
-            animation: zoomIn 0.3s ease; border: 1px solid var(--border);
+            position: absolute;
+            inset: 0;
+            z-index: 20;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(25px);
+            border-radius: 35px;
+            display: none;
+            flex-direction: column;
+            padding: 25px;
+            animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid var(--border);
         }
-        .message-section.active { display: flex; }
-        @keyframes zoomIn { from {opacity:0; transform: scale(0.95);} to {opacity:1; transform: scale(1);} }
-        
-        .msg-input { width: 100%; padding: 15px; background: rgba(255,255,255,0.1); border: 1px solid #555; border-radius: 15px; color: white; text-align: center; margin-bottom: 20px; font-family: inherit; }
-        .send-btn { padding: 12px 40px; background: linear-gradient(90deg, var(--primary), var(--secondary)); border: none; border-radius: 50px; color: white; font-weight: bold; cursor: pointer; }
 
-        /* --- Dock --- */
+        .message-section.active {
+            display: flex;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .msg-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .msg-header i {
+            font-size: 28px;
+            color: var(--primary);
+            background: rgba(0, 240, 255, 0.1);
+            padding: 12px;
+            border-radius: 50%;
+        }
+
+        .msg-header h3 {
+            font-size: 22px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0;
+        }
+
+        .msg-input-container {
+            width: 100%;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .msg-input {
+            width: 100%;
+            padding: 18px 20px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            color: white;
+            font-family: inherit;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            resize: none;
+            min-height: 120px;
+        }
+
+        .msg-input:focus {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+        }
+
+        .msg-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .char-count {
+            position: absolute;
+            bottom: 10px;
+            left: 15px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .send-btn {
+            padding: 16px 45px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0, 240, 255, 0.3);
+        }
+
+        .send-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 240, 255, 0.4);
+        }
+
+        .send-btn:active {
+            transform: translateY(0);
+        }
+
+        /* --- Dock محسّن --- */
         .dock {
-            /* تقليل المسافة العلوية لرفع الأزرار */
-            margin-top: 10px; 
-            /* تقليل الارتفاع قليلاً */
-            height: 65px;
-            background: var(--glass-light); border: 1px solid var(--border);
-            border-radius: 40px; display: flex; justify-content: space-around; align-items: center;
-            backdrop-filter: blur(15px); flex-shrink: 0;
+            height: 75px;
+            background: var(--glass-strong);
+            border: 1px solid var(--border);
+            border-radius: 25px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            backdrop-filter: blur(20px);
+            padding: 0 20px;
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            z-index: 10;
         }
-        .dock-btn { display: flex; flex-direction: column; align-items: center; color: rgba(255,255,255,0.4); cursor: pointer; transition: 0.3s; }
-        .dock-btn.active { color: white; transform: translateY(-3px); text-shadow: 0 0 10px var(--primary); }
 
-        /* --- Admin --- */
-        #admin-panel { display: none; position: fixed; inset: 0; background: #000; z-index: 9999; padding: 30px; overflow-y: auto; }
-        .adm-inp { width: 100%; background: #222; border: 1px solid #444; color: white; padding: 12px; margin-bottom: 10px; border-radius: 8px; }
+        .dock::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+        }
 
+        .dock-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            padding: 8px 15px;
+            border-radius: 15px;
+            position: relative;
+        }
+
+        .dock-btn:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .dock-btn.active {
+            color: var(--primary);
+            transform: translateY(-5px);
+        }
+
+        .dock-btn.active::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            width: 30px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 3px;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .dock-btn i {
+            font-size: 22px;
+            margin-bottom: 6px;
+            transition: all 0.3s;
+        }
+
+        .dock-btn.active i {
+            transform: scale(1.2);
+            filter: drop-shadow(0 0 8px var(--primary));
+        }
+
+        .dock-btn span {
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        /* --- لوحة التحكم --- */
+        #admin-panel {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 5, 16, 0.98);
+            backdrop-filter: blur(30px);
+            z-index: 9999;
+            padding: 30px;
+            overflow-y: auto;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .admin-header h2 {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0;
+        }
+
+        .close-admin {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .close-admin:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .admin-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .section-title {
+            color: var(--primary);
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            font-size: 20px;
+        }
+
+        .adm-inp {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 14px 18px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .adm-inp:focus {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+        }
+
+        .adm-btn {
+            padding: 15px 30px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 15px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .adm-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 240, 255, 0.3);
+        }
+
+        /* --- التنبيهات --- */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--glass-strong);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 15px 25px;
+            color: white;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateX(150%);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 10000;
+            max-width: 350px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification i {
+            color: var(--success);
+            font-size: 20px;
+        }
+
+        /* --- تحسينات التجاوب --- */
+        @media (max-width: 480px) {
+            .app-frame {
+                padding: 12px;
+            }
+            
+            .top-bar {
+                padding: 8px 15px;
+                height: 65px;
+            }
+            
+            .play-btn-big {
+                width: 80px;
+                height: 80px;
+                font-size: 30px;
+            }
+            
+            .dock {
+                height: 70px;
+                padding: 0 15px;
+            }
+            
+            .message-section {
+                padding: 20px;
+            }
+        }
+
+        /* --- تأثيرات تحميل --- */
+        .loading {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-deep);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+
+        .loading.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader {
+            width: 60px;
+            height: 60px;
+            border: 3px solid transparent;
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        .loader::before {
+            content: '';
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            bottom: 5px;
+            left: 5px;
+            border: 3px solid transparent;
+            border-top-color: var(--secondary);
+            border-radius: 50%;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* --- تلميحات الأدوات --- */
+        [data-tooltip] {
+            position: relative;
+        }
+
+        [data-tooltip]::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 1000;
+            margin-bottom: 8px;
+        }
+
+        [data-tooltip]:hover::after {
+            opacity: 1;
+            visibility: visible;
+        }
     </style>
 </head>
 <body>
 
+    <div class="loading" id="loading">
+        <div class="loader"></div>
+        <p>جاري التحميل...</p>
+    </div>
+
     <div class="nebula-bg">
-        <div class="stars"></div>
+        <div class="dynamic-grid"></div>
+        <div class="floating-elements" id="floatingElements"></div>
     </div>
 
     <div class="app-frame">
         <div class="top-bar">
-            <div class="profile-mini" id="secret-trigger">
+            <div class="profile-mini" id="secret-trigger" onclick="handleSecretClick()" data-tooltip="اضغط 3 مرات للوحة التحكم">
                 <img id="ui-pfp" src="https://via.placeholder.com/100" class="pfp-img">
             </div>
             <div class="user-text">
                 <h2 class="u-name" id="ui-name">...</h2>
                 <div class="u-bio" id="ui-bio">...</div>
             </div>
-            <div class="status-badge">
+            <div class="status-badge" onclick="showNotification('الحالة نشطة', 'success')">
                 <div class="mini-wave">
-                    <div class="bar-s"></div><div class="bar-s"></div><div class="bar-s"></div>
+                    <div class="bar-s"></div>
+                    <div class="bar-s"></div>
+                    <div class="bar-s"></div>
                 </div>
                 <div class="status-content" id="ui-status">Vibing...</div>
             </div>
@@ -228,22 +1068,51 @@
 
         <div class="main-stage">
             <div id="view-home" class="immersive-card">
+                <div class="card-glow"></div>
                 <div class="card-inner">
                     <div class="slide-layer" id="bg-slideshow">
                         <div class="bg-slide fallback active"></div>
+                        <div class="slide-overlay"></div>
                     </div>
+                    
                     <div class="controls-layer">
-                        <div class="spacer"></div>
+                        <div class="top-controls">
+                            <div class="music-info">
+                                <div class="music-title" id="music-title">الموسيقى الحالية</div>
+                                <div class="music-artist" id="music-artist">Perfect Vibes</div>
+                            </div>
+                            <div class="control-btn" onclick="toggleMute()" data-tooltip="كتم/إلغاء كتم">
+                                <i class="fas fa-volume-up" id="volume-icon"></i>
+                            </div>
+                        </div>
+
                         <div class="play-wrapper">
                             <div class="play-btn-big" onclick="togglePlay()">
                                 <i class="fas fa-play" id="main-icon"></i>
                             </div>
                         </div>
-                        <div class="bottom-info">
-                            <div class="visualizer">
-                                <div class="v-bar"></div><div class="v-bar"></div><div class="v-bar"></div><div class="v-bar"></div><div class="v-bar"></div>
+
+                        <div class="progress-container">
+                            <div class="progress-bar" onclick="seekAudio(event)">
+                                <div class="progress-fill" id="progress-fill"></div>
                             </div>
-                            <div class="slide-caption" id="slide-text">Welcome</div>
+                            <div class="time-display">
+                                <span id="current-time">0:00</span>
+                                <span id="total-time">0:00</span>
+                            </div>
+                        </div>
+
+                        <div class="bottom-info">
+                            <div class="visualizer" id="visualizer">
+                                <div class="v-bar"></div>
+                                <div class="v-bar"></div>
+                                <div class="v-bar"></div>
+                                <div class="v-bar"></div>
+                                <div class="v-bar"></div>
+                                <div class="v-bar"></div>
+                                <div class="v-bar"></div>
+                            </div>
+                            <div class="slide-caption" id="slide-text">مرحباً في Perfect Vibes</div>
                         </div>
                     </div>
                 </div>
@@ -251,207 +1120,319 @@
             </div>
 
             <div id="view-msg" class="message-section">
-                <i class="fas fa-paper-plane" style="font-size:40px; color:var(--primary); margin-bottom:20px;"></i>
-                <h3 style="margin-top:0;">Send Message</h3>
-                <input id="v-msg" class="msg-input" placeholder="اكتب هنا...">
-                <button onclick="sendMsg()" class="send-btn">إرسال</button>
+                <div class="msg-header">
+                    <i class="far fa-paper-plane"></i>
+                    <h3>تواصل معي</h3>
+                </div>
+                <div class="msg-input-container">
+                    <textarea class="msg-input" placeholder="اكتب رسالتك هنا..." oninput="updateCharCount(this)"></textarea>
+                    <span class="char-count">0 حرف</span>
+                </div>
+                <button class="send-btn" onclick="sendMessage()">
+                    إرسال الرسالة <i class="fas fa-arrow-left"></i>
+                </button>
             </div>
         </div>
 
         <div class="dock">
-            <div class="dock-btn active" onclick="switchView('home')">
-                <i class="fas fa-compact-disc" style="font-size:24px; margin-bottom:5px;"></i>
-                <span>Vibes</span>
+            <div class="dock-btn active" onclick="switchTab('home')" id="tab-home">
+                <i class="fas fa-home"></i>
+                <span>الرئيسية</span>
             </div>
-            <div class="dock-btn" onclick="switchView('msg')">
-                <i class="fas fa-comment-dots" style="font-size:24px; margin-bottom:5px;"></i>
-                <span>Chat</span>
+            <div class="dock-btn" onclick="switchTab('msg')" id="tab-msg">
+                <i class="far fa-envelope"></i>
+                <span>راسلني</span>
             </div>
         </div>
     </div>
 
     <div id="admin-panel">
-        <h2 style="color:var(--primary)">Settings ⚙️</h2>
-        <button onclick="document.getElementById('admin-panel').style.display='none'" style="float:right; background:none; border:none; color:white; font-size:20px;">✕</button>
-        <br><br>
-        
-        <label style="color:#888;">Profile & Status</label>
-        <input id="adm-name" class="adm-inp" placeholder="Name">
-        <input id="adm-bio" class="adm-inp" placeholder="Bio">
-        <input id="adm-status" class="adm-inp" placeholder="Status (Song/Mood)" style="border-color:var(--primary);">
-        <input id="adm-pfp" class="adm-inp" placeholder="PFP URL">
-        <input id="adm-music" class="adm-inp" placeholder="Music URL">
-        
-        <label style="color:#888; margin-top:10px; display:block;">Slideshow</label>
-        <input id="adm-img-1" class="adm-inp" placeholder="Img 1 URL">
-        <input id="adm-txt-1" class="adm-inp" placeholder="Txt 1">
-        <input id="adm-img-2" class="adm-inp" placeholder="Img 2 URL">
-        <input id="adm-txt-2" class="adm-inp" placeholder="Txt 2">
-        <input id="adm-img-3" class="adm-inp" placeholder="Img 3 URL">
-        <input id="adm-txt-3" class="adm-inp" placeholder="Txt 3">
-
-        <button onclick="saveData()" class="send-btn" style="width:100%; margin-top:20px;">Save</button>
-        
-        <div style="margin-top:30px;">
-            <h4>Messages</h4>
-            <div id="admin-msgs"></div>
+        <div class="admin-header">
+            <h2>إعدادات التحكم</h2>
+            <button class="close-admin" onclick="toggleAdmin()">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
+
+        <div class="admin-section">
+            <div class="section-title"><i class="fas fa-user-edit"></i> المعلومات الشخصية</div>
+            <input type="text" id="adm-name" class="adm-inp" placeholder="الاسم">
+            <input type="text" id="adm-bio" class="adm-inp" placeholder="النبذة المختصرة">
+            <input type="text" id="adm-status" class="adm-inp" placeholder="الحالة (Status)">
+            <input type="text" id="adm-img" class="adm-inp" placeholder="رابط صورة البروفايل">
+        </div>
+
+        <div class="admin-section">
+            <div class="section-title"><i class="fas fa-music"></i> الصوتيات</div>
+            <input type="text" id="adm-music-url" class="adm-inp" placeholder="رابط ملف الموسيقى (MP3)">
+            <input type="text" id="adm-music-name" class="adm-inp" placeholder="اسم الأغنية">
+        </div>
+
+        <div class="admin-section">
+            <div class="section-title"><i class="fas fa-images"></i> الخلفيات والنصوص</div>
+            <textarea id="adm-slides" class="adm-inp" style="height: 150px;" placeholder='أدخل النصوص والصور بتنسيق JSON، مثال: [{"img":"url1","text":"نص1"},{"img":"url2","text":"نص2"}]'></textarea>
+        </div>
+
+        <button class="adm-btn" onclick="saveData()">حفظ التغييرات</button>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <div id="notification" class="notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notif-text">تمت العملية بنجاح</span>
+    </div>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIza...",
-            authDomain: "mypersonalapp-2f2cc.firebaseapp.com",
-            databaseURL: "https://mypersonalapp-2f2cc-default-rtdb.firebaseio.com",
-            projectId: "mypersonalapp-2f2cc",
-            storageBucket: "mypersonalapp-2f2cc.appspot.com",
-            messagingSenderId: "...",
-            appId: "..."
+        // --- الإعدادات الافتراضية ---
+        const defaultConfig = {
+            name: "AHMED",
+            bio: "Just Vibing in the Neon City",
+            status: "Online",
+            pfp: "https://i.pinimg.com/736x/21/f2/a9/21f2a96b429d8995a97576f30e99881e.jpg", // صورة افتراضية
+            musicUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", // موسيقى افتراضية
+            musicName: "Cyber Dreams",
+            slides: [
+                { img: "https://images.unsplash.com/photo-1570284613060-766c33850e00?q=80&w=2070", text: "كل شيء يبدو أفضل في الليل" },
+                { img: "https://images.unsplash.com/photo-1555680202-c86f0e12f086?q=80&w=2070", text: "المستقبل الآن" },
+                { img: "https://images.unsplash.com/photo-1563089145-599997674d42?q=80&w=2070", text: "استمع واسترخِ" }
+            ]
         };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
 
+        // --- المتغيرات العامة ---
+        let currentSlide = 0;
+        let slideInterval;
+        let secretClicks = 0;
+        let secretTimer;
         const audio = document.getElementById('audio-player');
-        const card = document.getElementById('view-home');
-        const icon = document.getElementById('main-icon');
-        const slideBox = document.getElementById('bg-slideshow');
-        const slideTxt = document.getElementById('slide-text');
-        
-        let slides = [];
-        let slideTimer;
-        let currSlide = 0;
 
-        function togglePlay() {
-            if(audio.paused) {
-                audio.play().then(() => {
-                    card.classList.add('playing');
-                    icon.classList.replace('fa-play', 'fa-pause');
-                });
-            } else {
-                audio.pause();
-                card.classList.remove('playing');
-                icon.classList.replace('fa-pause', 'fa-play');
-            }
-        }
-
-        function initSlides(d) {
-            slides = [];
-            slideBox.innerHTML = "";
-            for(let i=1; i<=3; i++) {
-                if(d['img'+i] || d['txt'+i]) slides.push({img:d['img'+i], txt:d['txt'+i]});
-            }
-            if(slides.length === 0) {
-                slideBox.innerHTML = `<div class="bg-slide fallback active"></div>`;
-                slideTxt.innerText = d.bio || "Welcome";
-                return;
-            }
-            slides.forEach((s, i) => {
-                const el = document.createElement('img');
-                el.src = s.img || "https://via.placeholder.com/600";
-                el.className = "bg-slide";
-                el.id = `slide-${i}`;
-                slideBox.appendChild(el);
-            });
-            runSlides();
-        }
-
-        function runSlides() {
-            if(slideTimer) clearInterval(slideTimer);
-            showS(0);
-            slideTimer = setInterval(() => {
-                currSlide = (currSlide + 1) % slides.length;
-                showS(currSlide);
-            }, 8000); 
-        }
-
-        function showS(idx) {
-            document.querySelectorAll('.bg-slide').forEach(e => e.classList.remove('active'));
-            const el = document.getElementById(`slide-${idx}`);
-            if(el) {
-                el.classList.add('active');
-                slideTxt.innerText = slides[idx].txt || "";
-            }
-        }
-
-        function switchView(v) {
-            if(v === 'home') {
-                document.getElementById('view-msg').classList.remove('active');
-                updateDock(0);
-            } else {
-                document.getElementById('view-msg').classList.add('active');
-                updateDock(1);
-            }
-        }
-        function updateDock(idx) {
-            document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.dock-btn')[idx].classList.add('active');
-        }
-
-        db.ref('appData').on('value', s => {
-            const d = s.val() || {};
-            document.getElementById('ui-name').innerText = d.name || "User";
-            document.getElementById('ui-bio').innerText = d.bio || "Online";
-            document.getElementById('ui-status').innerText = d.status || "Vibing...";
-            document.getElementById('ui-pfp').src = d.pfp || "https://via.placeholder.com/100";
-            if(d.musicUrl && audio.src !== d.musicUrl) audio.src = d.musicUrl;
-            initSlides(d);
+        // --- عند تحميل الصفحة ---
+        window.addEventListener('load', () => {
+            loadData();
+            createFloatingElements();
+            startSlideshow();
+            
+            // إخفاء شاشة التحميل
+            setTimeout(() => {
+                document.getElementById('loading').classList.add('hidden');
+            }, 1500);
         });
 
-        let taps = 0;
-        document.getElementById('secret-trigger').onclick = () => {
-            taps++;
-            if(taps === 3) {
-                if(prompt("Code:") === "1234") {
-                    document.getElementById('admin-panel').style.display='block';
-                    loadAdm();
-                }
-                taps = 0;
+        // --- إدارة البيانات (Load/Save) ---
+        function loadData() {
+            const data = JSON.parse(localStorage.getItem('userConfig')) || defaultConfig;
+            
+            // تحديث الواجهة
+            document.getElementById('ui-name').textContent = data.name;
+            document.getElementById('ui-bio').textContent = data.bio;
+            document.getElementById('ui-status').textContent = data.status;
+            document.getElementById('ui-pfp').src = data.pfp;
+            document.getElementById('music-title').textContent = data.musicName;
+            
+            // تحديث الصوت
+            if(audio.src !== data.musicUrl) {
+                audio.src = data.musicUrl;
             }
-        };
 
-        function loadAdm() {
-            db.ref('appData').once('value', s => {
-                const d = s.val() || {};
-                document.getElementById('adm-name').value = d.name || "";
-                document.getElementById('adm-bio').value = d.bio || "";
-                document.getElementById('adm-status').value = d.status || "";
-                document.getElementById('adm-pfp').value = d.pfp || "";
-                document.getElementById('adm-music').value = d.musicUrl || "";
-                for(let i=1; i<=3; i++) {
-                    document.getElementById('adm-img-'+i).value = d['img'+i] || "";
-                    document.getElementById('adm-txt-'+i).value = d['txt'+i] || "";
-                }
-            });
-            db.ref('messages').on('value', s => {
-                const b = document.getElementById('admin-msgs');
-                b.innerHTML = "";
-                s.forEach(m => {
-                    b.innerHTML += `<div style="background:#222; padding:10px; margin-bottom:5px; border-radius:5px;">${m.val().text} <span style="float:left; color:red; cursor:pointer;" onclick="db.ref('messages/${m.key}').remove()">✖</span></div>`;
-                });
-            });
+            // تحديث قيم الأدمن
+            document.getElementById('adm-name').value = data.name;
+            document.getElementById('adm-bio').value = data.bio;
+            document.getElementById('adm-status').value = data.status;
+            document.getElementById('adm-img').value = data.pfp;
+            document.getElementById('adm-music-url').value = data.musicUrl;
+            document.getElementById('adm-music-name').value = data.musicName;
+            document.getElementById('adm-slides').value = JSON.stringify(data.slides, null, 2);
         }
 
         function saveData() {
-            let data = {
-                name: document.getElementById('adm-name').value,
-                bio: document.getElementById('adm-bio').value,
-                status: document.getElementById('adm-status').value,
-                pfp: document.getElementById('adm-pfp').value,
-                musicUrl: document.getElementById('adm-music').value
-            };
-            for(let i=1; i<=3; i++) {
-                data['img'+i] = document.getElementById('adm-img-'+i).value;
-                data['txt'+i] = document.getElementById('adm-txt-'+i).value;
+            try {
+                const slidesVal = JSON.parse(document.getElementById('adm-slides').value);
+                
+                const newData = {
+                    name: document.getElementById('adm-name').value,
+                    bio: document.getElementById('adm-bio').value,
+                    status: document.getElementById('adm-status').value,
+                    pfp: document.getElementById('adm-img').value,
+                    musicUrl: document.getElementById('adm-music-url').value,
+                    musicName: document.getElementById('adm-music-name').value,
+                    slides: slidesVal
+                };
+
+                localStorage.setItem('userConfig', JSON.stringify(newData));
+                loadData();
+                toggleAdmin();
+                showNotification('تم حفظ الإعدادات بنجاح', 'success');
+                startSlideshow(); // إعادة تشغيل الشرائح بالبيانات الجديدة
+            } catch (e) {
+                alert("خطأ في تنسيق JSON الخاص بالشرائح");
             }
-            db.ref('appData').update(data).then(() => { alert("Saved!"); document.getElementById('admin-panel').style.display='none'; });
         }
 
-        function sendMsg() {
-            const v = document.getElementById('v-msg').value;
-            if(v) { db.ref('messages').push({text:v, time:Date.now()}); alert("Sent!"); document.getElementById('v-msg').value=""; switchView('home'); }
+        // --- مشغل الصوتيات ---
+        function togglePlay() {
+            const container = document.getElementById('view-home');
+            const icon = document.getElementById('main-icon');
+            
+            if (audio.paused) {
+                audio.play().then(() => {
+                    container.classList.add('playing');
+                    icon.classList.remove('fa-play');
+                    icon.classList.add('fa-pause');
+                }).catch(e => console.log("Audio play error:", e));
+            } else {
+                audio.pause();
+                container.classList.remove('playing');
+                icon.classList.remove('fa-pause');
+                icon.classList.add('fa-play');
+            }
+        }
+
+        audio.addEventListener('timeupdate', () => {
+            const percent = (audio.currentTime / audio.duration) * 100;
+            document.getElementById('progress-fill').style.width = percent + '%';
+            document.getElementById('current-time').textContent = formatTime(audio.currentTime);
+            document.getElementById('total-time').textContent = formatTime(audio.duration || 0);
+        });
+
+        function seekAudio(e) {
+            const width = e.target.closest('.progress-bar').clientWidth;
+            const clickX = e.offsetX;
+            const duration = audio.duration;
+            audio.currentTime = (clickX / width) * duration;
+        }
+
+        function toggleMute() {
+            audio.muted = !audio.muted;
+            const icon = document.getElementById('volume-icon');
+            icon.className = audio.muted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
+        }
+
+        function formatTime(s) {
+            const mins = Math.floor(s / 60);
+            const secs = Math.floor(s % 60);
+            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+
+        // --- Slideshow Logic ---
+        function startSlideshow() {
+            clearInterval(slideInterval);
+            const data = JSON.parse(localStorage.getItem('userConfig')) || defaultConfig;
+            const slides = data.slides;
+            const container = document.getElementById('bg-slideshow');
+            const caption = document.getElementById('slide-text');
+
+            if (slides.length === 0) return;
+
+            // عرض الشريحة الأولى فوراً
+            updateSlideView(slides[0]);
+
+            slideInterval = setInterval(() => {
+                currentSlide = (currentSlide + 1) % slides.length;
+                updateSlideView(slides[currentSlide]);
+            }, 6000); // تغيير كل 6 ثواني
+
+            function updateSlideView(slide) {
+                // إنشاء عنصر صورة جديد للتأثير السلس
+                const newImg = document.createElement('img');
+                newImg.src = slide.img;
+                newImg.className = 'bg-slide';
+                
+                // إضافة الصورة للكونتينر
+                container.appendChild(newImg);
+                
+                // تفعيل الأنيميشن
+                setTimeout(() => newImg.classList.add('active'), 50);
+
+                // إزالة الصور القديمة بعد انتهاء التأثير
+                const oldImages = container.querySelectorAll('.bg-slide');
+                if (oldImages.length > 2) {
+                    oldImages[0].remove();
+                }
+
+                // تحديث النص
+                caption.style.opacity = 0;
+                setTimeout(() => {
+                    caption.textContent = slide.text;
+                    caption.style.opacity = 1;
+                }, 500);
+            }
+        }
+
+        // --- التنقل بين التبويبات ---
+        function switchTab(tab) {
+            const homeView = document.getElementById('view-home');
+            const msgView = document.getElementById('view-msg');
+            const btnHome = document.getElementById('tab-home');
+            const btnMsg = document.getElementById('tab-msg');
+
+            if (tab === 'home') {
+                homeView.style.display = 'flex';
+                msgView.classList.remove('active');
+                setTimeout(() => msgView.style.display = 'none', 300); // Wait for anim
+                btnHome.classList.add('active');
+                btnMsg.classList.remove('active');
+            } else {
+                msgView.style.display = 'flex';
+                setTimeout(() => msgView.classList.add('active'), 10);
+                homeView.style.display = 'none';
+                btnHome.classList.remove('active');
+                btnMsg.classList.add('active');
+            }
+        }
+
+        // --- المراسلة ---
+        function updateCharCount(textarea) {
+            document.querySelector('.char-count').textContent = textarea.value.length + " حرف";
+        }
+
+        function sendMessage() {
+            const msg = document.querySelector('.msg-input').value;
+            if (!msg) {
+                showNotification("الرجاء كتابة رسالة أولاً", "error");
+                return;
+            }
+            // محاكاة إرسال (يمكن ربطه بواتساب)
+            // window.location.href = `https://wa.me/YOUR_NUMBER?text=${encodeURIComponent(msg)}`;
+            showNotification("تم إرسال الرسالة بنجاح!", "success");
+            document.querySelector('.msg-input').value = "";
+        }
+
+        // --- أدوات النظام ---
+        function handleSecretClick() {
+            clearTimeout(secretTimer);
+            secretClicks++;
+            if (secretClicks >= 3) {
+                toggleAdmin();
+                secretClicks = 0;
+            }
+            secretTimer = setTimeout(() => secretClicks = 0, 1000);
+        }
+
+        function toggleAdmin() {
+            const panel = document.getElementById('admin-panel');
+            panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function showNotification(text, type) {
+            const notif = document.getElementById('notification');
+            const notifText = document.getElementById('notif-text');
+            notifText.textContent = text;
+            notif.classList.add('show');
+            setTimeout(() => notif.classList.remove('show'), 3000);
+        }
+
+        function createFloatingElements() {
+            const container = document.getElementById('floatingElements');
+            for(let i=0; i<15; i++) {
+                const el = document.createElement('div');
+                el.className = 'floating-element';
+                const size = Math.random() * 50 + 20;
+                el.style.width = size + 'px';
+                el.style.height = size + 'px';
+                el.style.left = Math.random() * 100 + '%';
+                el.style.top = Math.random() * 100 + '%';
+                el.style.animationDuration = (Math.random() * 20 + 10) + 's';
+                el.style.animationDelay = (Math.random() * 5) + 's';
+                container.appendChild(el);
+            }
         }
     </script>
 </body>
