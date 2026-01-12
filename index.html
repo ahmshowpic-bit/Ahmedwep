@@ -7,6 +7,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
     
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
+    
     <style>
         :root {
             --primary: #00F0FF;
@@ -901,6 +908,25 @@
             box-shadow: 0 10px 25px rgba(0, 240, 255, 0.3);
         }
 
+        .adm-btn-secondary {
+            padding: 15px 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .adm-btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
         /* --- التنبيهات --- */
         .notification {
             position: fixed;
@@ -932,6 +958,67 @@
             font-size: 20px;
         }
 
+        /* --- شريط التقدم لرفع الملفات --- */
+        .upload-progress {
+            display: none;
+            margin-top: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        .upload-progress progress {
+            width: 100%;
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .upload-progress span {
+            display: block;
+            text-align: center;
+            margin-top: 5px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* --- أزرار Firebase --- */
+        .firebase-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .firebase-buttons button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-sync {
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            color: white;
+        }
+
+        .btn-load {
+            background: linear-gradient(90deg, var(--success), #00cc88);
+            color: white;
+        }
+
+        .btn-export {
+            background: linear-gradient(90deg, var(--secondary), #ff3366);
+            color: white;
+        }
+
+        .firebase-buttons button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
         /* --- تحسينات التجاوب --- */
         @media (max-width: 480px) {
             .app-frame {
@@ -956,6 +1043,14 @@
             
             .message-section {
                 padding: 20px;
+            }
+            
+            .admin-panel {
+                padding: 20px;
+            }
+            
+            .firebase-buttons {
+                flex-direction: column;
             }
         }
 
@@ -1160,20 +1255,57 @@
             <input type="text" id="adm-bio" class="adm-inp" placeholder="النبذة المختصرة">
             <input type="text" id="adm-status" class="adm-inp" placeholder="الحالة (Status)">
             <input type="text" id="adm-img" class="adm-inp" placeholder="رابط صورة البروفايل">
+            <input type="file" id="adm-upload-pfp" class="adm-inp" accept="image/*" onchange="uploadImage('pfp')">
+            <div id="upload-progress-pfp" class="upload-progress">
+                <progress value="0" max="100"></progress>
+                <span id="upload-status-pfp">0%</span>
+            </div>
         </div>
 
         <div class="admin-section">
             <div class="section-title"><i class="fas fa-music"></i> الصوتيات</div>
             <input type="text" id="adm-music-url" class="adm-inp" placeholder="رابط ملف الموسيقى (MP3)">
+            <input type="file" id="adm-upload-music" class="adm-inp" accept="audio/*" onchange="uploadAudio()">
+            <div id="upload-progress-music" class="upload-progress">
+                <progress value="0" max="100"></progress>
+                <span id="upload-status-music">0%</span>
+            </div>
             <input type="text" id="adm-music-name" class="adm-inp" placeholder="اسم الأغنية">
         </div>
 
         <div class="admin-section">
             <div class="section-title"><i class="fas fa-images"></i> الخلفيات والنصوص</div>
             <textarea id="adm-slides" class="adm-inp" style="height: 150px;" placeholder='أدخل النصوص والصور بتنسيق JSON، مثال: [{"img":"url1","text":"نص1"},{"img":"url2","text":"نص2"}]'></textarea>
+            <input type="file" id="adm-upload-slide" class="adm-inp" accept="image/*" multiple onchange="uploadSlides()">
+            <div id="upload-progress-slides" class="upload-progress">
+                <progress value="0" max="100"></progress>
+                <span id="upload-status-slides">0%</span>
+            </div>
         </div>
 
-        <button class="adm-btn" onclick="saveData()">حفظ التغييرات</button>
+        <div class="admin-section">
+            <div class="section-title"><i class="fab fa-google"></i> مزامنة Google Firebase</div>
+            <div class="firebase-buttons">
+                <button class="btn-sync" onclick="syncWithFirebase()">
+                    <i class="fas fa-cloud-upload-alt"></i> مزامنة مع Firebase
+                </button>
+                <button class="btn-load" onclick="loadFromFirebase()">
+                    <i class="fas fa-cloud-download-alt"></i> تحميل من Firebase
+                </button>
+                <button class="btn-export" onclick="exportConfig()">
+                    <i class="fas fa-file-export"></i> تصدير الإعدادات
+                </button>
+            </div>
+            <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 10px;">
+                <small style="color: var(--text-secondary);">
+                    <i class="fas fa-info-circle"></i> معرف المستخدم: <span id="user-id-display">...</span>
+                </small>
+            </div>
+        </div>
+
+        <button class="adm-btn" onclick="saveData()">
+            <i class="fas fa-save"></i> حفظ التغييرات محلياً
+        </button>
     </div>
 
     <div id="notification" class="notification">
@@ -1182,33 +1314,91 @@
     </div>
 
     <script>
-        // --- الإعدادات الافتراضية ---
+        // ===================== إعدادات Firebase =====================
+        const firebaseConfig = {
+            apiKey: "AIzaSyCUK7SXiX_uBObNqWjM5u-eKUKkCTwCJKc",
+            authDomain: "mypersonalapp-2f2cc.firebaseapp.com",
+            databaseURL: "https://mypersonalapp-2f2cc-default-rtdb.firebaseio.com",
+            projectId: "mypersonalapp-2f2cc",
+            storageBucket: "mypersonalapp-2f2cc.firebasestorage.app",
+            messagingSenderId: "1093218114240",
+            appId: "1:1093218114240:web:e082d82c94c286d2c6eb25",
+            measurementId: "G-W8R99YNJQ9"
+        };
+
+        // ===================== تهيئة Firebase =====================
+        let firebaseApp;
+        let db;
+        let storage;
+        let analytics;
+        let auth;
+
+        try {
+            firebaseApp = firebase.initializeApp(firebaseConfig);
+            db = firebase.database();
+            storage = firebase.storage();
+            analytics = firebase.analytics();
+            auth = firebase.auth();
+            
+            console.log("✅ Firebase initialized successfully");
+        } catch (error) {
+            console.error("❌ Firebase initialization error:", error);
+            showNotification("خطأ في تهيئة Firebase", "error");
+        }
+
+        // ===================== الإعدادات الافتراضية =====================
         const defaultConfig = {
             name: "AHMED",
             bio: "Just Vibing in the Neon City",
             status: "Online",
-            pfp: "https://i.pinimg.com/736x/21/f2/a9/21f2a96b429d8995a97576f30e99881e.jpg", // صورة افتراضية
-            musicUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", // موسيقى افتراضية
+            pfp: "https://i.pinimg.com/736x/21/f2/a9/21f2a96b429d8995a97576f30e99881e.jpg",
+            musicUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
             musicName: "Cyber Dreams",
             slides: [
                 { img: "https://images.unsplash.com/photo-1570284613060-766c33850e00?q=80&w=2070", text: "كل شيء يبدو أفضل في الليل" },
                 { img: "https://images.unsplash.com/photo-1555680202-c86f0e12f086?q=80&w=2070", text: "المستقبل الآن" },
                 { img: "https://images.unsplash.com/photo-1563089145-599997674d42?q=80&w=2070", text: "استمع واسترخِ" }
-            ]
+            ],
+            lastSync: null,
+            syncCount: 0
         };
 
-        // --- المتغيرات العامة ---
+        // ===================== المتغيرات العامة =====================
         let currentSlide = 0;
         let slideInterval;
         let secretClicks = 0;
         let secretTimer;
         const audio = document.getElementById('audio-player');
+        
+        // معرف المستخدم الفريد
+        let userId = localStorage.getItem('firebaseUserId');
+        if (!userId) {
+            userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('firebaseUserId', userId);
+        }
 
-        // --- عند تحميل الصفحة ---
+        // ===================== عند تحميل الصفحة =====================
         window.addEventListener('load', () => {
+            // عرض معرف المستخدم
+            document.getElementById('user-id-display').textContent = userId.substring(0, 15) + '...';
+            
+            // تحميل البيانات
             loadData();
             createFloatingElements();
             startSlideshow();
+            
+            // تتبع التحليلات
+            if (analytics) {
+                analytics.logEvent('page_view', {
+                    page_title: 'Perfect Vibes App',
+                    user_id: userId
+                });
+            }
+            
+            // محاولة التحميل التلقائي من Firebase
+            setTimeout(() => {
+                autoLoadFromFirebase();
+            }, 2000);
             
             // إخفاء شاشة التحميل
             setTimeout(() => {
@@ -1216,7 +1406,38 @@
             }, 1500);
         });
 
-        // --- إدارة البيانات (Load/Save) ---
+        // ===================== تحميل تلقائي من Firebase =====================
+        async function autoLoadFromFirebase() {
+            try {
+                if (!db) return;
+                
+                const lastSync = localStorage.getItem('lastFirebaseSync');
+                const now = Date.now();
+                
+                // إذا مر أكثر من 5 دقائق منذ آخر مزامنة
+                if (!lastSync || (now - parseInt(lastSync)) > 5 * 60 * 1000) {
+                    const snapshot = await db.ref(`users/${userId}/config`).once('value');
+                    if (snapshot.exists()) {
+                        const remoteData = snapshot.val();
+                        if (remoteData.lastSync) {
+                            const localData = JSON.parse(localStorage.getItem('userConfig') || '{}');
+                            
+                            // استخدام البيانات الأحدث
+                            if (!localData.lastSync || remoteData.lastSync > localData.lastSync) {
+                                localStorage.setItem('userConfig', JSON.stringify(remoteData));
+                                loadData();
+                                startSlideshow();
+                                showNotification('تم تحديث البيانات من السحابة', 'info');
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.log("Auto-load from Firebase failed:", error);
+            }
+        }
+
+        // ===================== إدارة البيانات (Load/Save) =====================
         function loadData() {
             const data = JSON.parse(localStorage.getItem('userConfig')) || defaultConfig;
             
@@ -1228,7 +1449,7 @@
             document.getElementById('music-title').textContent = data.musicName;
             
             // تحديث الصوت
-            if(audio.src !== data.musicUrl) {
+            if (audio.src !== data.musicUrl) {
                 audio.src = data.musicUrl;
             }
 
@@ -1244,29 +1465,400 @@
 
         function saveData() {
             try {
-                const slidesVal = JSON.parse(document.getElementById('adm-slides').value);
+                const slidesVal = JSON.parse(document.getElementById('adm-slides').value || '[]');
                 
                 const newData = {
-                    name: document.getElementById('adm-name').value,
-                    bio: document.getElementById('adm-bio').value,
-                    status: document.getElementById('adm-status').value,
-                    pfp: document.getElementById('adm-img').value,
-                    musicUrl: document.getElementById('adm-music-url').value,
-                    musicName: document.getElementById('adm-music-name').value,
-                    slides: slidesVal
+                    name: document.getElementById('adm-name').value || defaultConfig.name,
+                    bio: document.getElementById('adm-bio').value || defaultConfig.bio,
+                    status: document.getElementById('adm-status').value || defaultConfig.status,
+                    pfp: document.getElementById('adm-img').value || defaultConfig.pfp,
+                    musicUrl: document.getElementById('adm-music-url').value || defaultConfig.musicUrl,
+                    musicName: document.getElementById('adm-music-name').value || defaultConfig.musicName,
+                    slides: slidesVal,
+                    lastSync: Date.now(),
+                    syncCount: (JSON.parse(localStorage.getItem('userConfig') || '{}').syncCount || 0) + 1
                 };
 
                 localStorage.setItem('userConfig', JSON.stringify(newData));
                 loadData();
-                toggleAdmin();
-                showNotification('تم حفظ الإعدادات بنجاح', 'success');
-                startSlideshow(); // إعادة تشغيل الشرائح بالبيانات الجديدة
+                showNotification('تم حفظ الإعدادات محلياً', 'success');
+                startSlideshow();
+                
+                // تتبع الحدث
+                if (analytics) {
+                    analytics.logEvent('save_config', {
+                        user_id: userId,
+                        config_type: 'local'
+                    });
+                }
             } catch (e) {
-                alert("خطأ في تنسيق JSON الخاص بالشرائح");
+                console.error("Save error:", e);
+                showNotification("خطأ في حفظ البيانات: " + e.message, "error");
             }
         }
 
-        // --- مشغل الصوتيات ---
+        // ===================== مزامنة مع Firebase =====================
+        async function syncWithFirebase() {
+            try {
+                if (!db) {
+                    showNotification("Firebase غير مهيأ", "error");
+                    return;
+                }
+                
+                const localData = JSON.parse(localStorage.getItem('userConfig')) || defaultConfig;
+                
+                // تحديث بيانات المزامنة
+                const dataToSync = {
+                    ...localData,
+                    lastSync: Date.now(),
+                    syncCount: (localData.syncCount || 0) + 1,
+                    userId: userId,
+                    device: navigator.userAgent.substring(0, 100)
+                };
+                
+                // حفظ محلياً أولاً
+                localStorage.setItem('userConfig', JSON.stringify(dataToSync));
+                
+                // المزامنة مع Firebase
+                await db.ref(`users/${userId}/config`).set(dataToSync);
+                
+                // حفظ وقت المزامنة الأخير
+                localStorage.setItem('lastFirebaseSync', Date.now().toString());
+                
+                showNotification('تم مزامنة البيانات مع Firebase بنجاح', 'success');
+                
+                // تحديث الواجهة
+                loadData();
+                
+                // تتبع الحدث
+                if (analytics) {
+                    analytics.logEvent('firebase_sync', {
+                        user_id: userId,
+                        sync_count: dataToSync.syncCount
+                    });
+                }
+                
+            } catch (error) {
+                console.error("Firebase sync error:", error);
+                showNotification('خطأ في المزامنة: ' + error.message, 'error');
+            }
+        }
+
+        // ===================== تحميل من Firebase =====================
+        async function loadFromFirebase() {
+            try {
+                if (!db) {
+                    showNotification("Firebase غير مهيأ", "error");
+                    return;
+                }
+                
+                const snapshot = await db.ref(`users/${userId}/config`).once('value');
+                
+                if (!snapshot.exists()) {
+                    showNotification("لا توجد بيانات محفوظة على السحابة", "info");
+                    return;
+                }
+                
+                const remoteData = snapshot.val();
+                
+                // تحديث البيانات المحلية
+                localStorage.setItem('userConfig', JSON.stringify(remoteData));
+                localStorage.setItem('lastFirebaseSync', Date.now().toString());
+                
+                // تحديث الواجهة
+                loadData();
+                startSlideshow();
+                
+                showNotification('تم تحميل البيانات من Firebase بنجاح', 'success');
+                
+                // تتبع الحدث
+                if (analytics) {
+                    analytics.logEvent('firebase_load', {
+                        user_id: userId,
+                        data_source: 'remote'
+                    });
+                }
+                
+            } catch (error) {
+                console.error("Firebase load error:", error);
+                showNotification('خطأ في تحميل البيانات: ' + error.message, 'error');
+            }
+        }
+
+        // ===================== رفع الملفات إلى Firebase Storage =====================
+        async function uploadImage(type) {
+            const fileInput = document.getElementById(`adm-upload-${type}`);
+            const file = fileInput.files[0];
+            
+            if (!file) return;
+            
+            if (!storage) {
+                showNotification("خدمة التخزين غير متاحة", "error");
+                return;
+            }
+            
+            const progressDiv = document.getElementById(`upload-progress-${type}`);
+            const progressBar = progressDiv.querySelector('progress');
+            const statusSpan = document.getElementById(`upload-status-${type}`);
+            
+            progressDiv.style.display = 'block';
+            
+            try {
+                const timestamp = Date.now();
+                const fileName = `${type}_${timestamp}_${file.name.replace(/\s+/g, '_')}`;
+                const storageRef = storage.ref(`uploads/${userId}/${fileName}`);
+                
+                const uploadTask = storageRef.put(file);
+                
+                uploadTask.on('state_changed', 
+                    (snapshot) => {
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        progressBar.value = progress;
+                        statusSpan.textContent = Math.round(progress) + '%';
+                    },
+                    (error) => {
+                        console.error("Upload error:", error);
+                        showNotification('خطأ في رفع الصورة: ' + error.message, 'error');
+                        progressDiv.style.display = 'none';
+                    },
+                    async () => {
+                        const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+                        
+                        document.getElementById('adm-img').value = downloadURL;
+                        
+                        showNotification('تم رفع الصورة بنجاح', 'success');
+                        progressDiv.style.display = 'none';
+                        fileInput.value = '';
+                        
+                        if (analytics) {
+                            analytics.logEvent('upload_image', {
+                                user_id: userId,
+                                file_type: type,
+                                file_size: file.size,
+                                file_name: file.name
+                            });
+                        }
+                    }
+                );
+            } catch (error) {
+                console.error('Upload process error:', error);
+                showNotification('خطأ في عملية الرفع', 'error');
+                progressDiv.style.display = 'none';
+            }
+        }
+
+        async function uploadAudio() {
+            const fileInput = document.getElementById('adm-upload-music');
+            const file = fileInput.files[0];
+            
+            if (!file) return;
+            
+            if (!storage) {
+                showNotification("خدمة التخزين غير متاحة", "error");
+                return;
+            }
+            
+            const progressDiv = document.getElementById('upload-progress-music');
+            const progressBar = progressDiv.querySelector('progress');
+            const statusSpan = document.getElementById('upload-status-music');
+            
+            progressDiv.style.display = 'block';
+            
+            try {
+                const timestamp = Date.now();
+                const fileName = `audio_${timestamp}_${file.name.replace(/\s+/g, '_')}`;
+                const storageRef = storage.ref(`uploads/${userId}/audio/${fileName}`);
+                
+                const uploadTask = storageRef.put(file);
+                
+                uploadTask.on('state_changed', 
+                    (snapshot) => {
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        progressBar.value = progress;
+                        statusSpan.textContent = Math.round(progress) + '%';
+                    },
+                    (error) => {
+                        console.error("Upload error:", error);
+                        showNotification('خطأ في رفع الملف الصوتي: ' + error.message, 'error');
+                        progressDiv.style.display = 'none';
+                    },
+                    async () => {
+                        const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+                        
+                        document.getElementById('adm-music-url').value = downloadURL;
+                        
+                        showNotification('تم رفع الملف الصوتي بنجاح', 'success');
+                        progressDiv.style.display = 'none';
+                        fileInput.value = '';
+                        
+                        if (analytics) {
+                            analytics.logEvent('upload_audio', {
+                                user_id: userId,
+                                file_size: file.size,
+                                file_name: file.name
+                            });
+                        }
+                    }
+                );
+            } catch (error) {
+                console.error('Upload process error:', error);
+                showNotification('خطأ في عملية الرفع', 'error');
+                progressDiv.style.display = 'none';
+            }
+        }
+
+        async function uploadSlides() {
+            const fileInput = document.getElementById('adm-upload-slide');
+            const files = Array.from(fileInput.files);
+            
+            if (files.length === 0) return;
+            
+            if (!storage) {
+                showNotification("خدمة التخزين غير متاحة", "error");
+                return;
+            }
+            
+            const progressDiv = document.getElementById('upload-progress-slides');
+            const progressBar = progressDiv.querySelector('progress');
+            const statusSpan = document.getElementById('upload-status-slides');
+            
+            progressDiv.style.display = 'block';
+            
+            try {
+                let currentSlides = [];
+                try {
+                    currentSlides = JSON.parse(document.getElementById('adm-slides').value || '[]');
+                } catch (e) {
+                    currentSlides = [];
+                }
+                
+                let uploadedCount = 0;
+                const totalFiles = files.length;
+                
+                for (const file of files) {
+                    const timestamp = Date.now();
+                    const fileName = `slide_${timestamp}_${uploadedCount}_${file.name.replace(/\s+/g, '_')}`;
+                    const storageRef = storage.ref(`uploads/${userId}/slides/${fileName}`);
+                    
+                    const uploadTask = storageRef.put(file);
+                    
+                    await new Promise((resolve, reject) => {
+                        uploadTask.on('state_changed',
+                            (snapshot) => {
+                                const progress = ((uploadedCount + (snapshot.bytesTransferred / snapshot.totalBytes)) / totalFiles) * 100;
+                                progressBar.value = progress;
+                                statusSpan.textContent = Math.round(progress) + '%';
+                            },
+                            (error) => reject(error),
+                            async () => {
+                                const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+                                currentSlides.push({
+                                    img: downloadURL,
+                                    text: `صورة ${currentSlides.length + 1}`,
+                                    uploadedAt: Date.now()
+                                });
+                                uploadedCount++;
+                                resolve();
+                            }
+                        );
+                    });
+                }
+                
+                document.getElementById('adm-slides').value = JSON.stringify(currentSlides, null, 2);
+                showNotification(`تم رفع ${uploadedCount} صورة بنجاح`, 'success');
+                progressDiv.style.display = 'none';
+                fileInput.value = '';
+                
+                if (analytics) {
+                    analytics.logEvent('upload_slides', {
+                        user_id: userId,
+                        count: uploadedCount
+                    });
+                }
+            } catch (error) {
+                console.error('Upload slides error:', error);
+                showNotification('خطأ في رفع الصور: ' + error.message, 'error');
+                progressDiv.style.display = 'none';
+            }
+        }
+
+        // ===================== تخزين الرسائل في Firebase =====================
+        async function sendMessage() {
+            const msg = document.querySelector('.msg-input').value.trim();
+            if (!msg) {
+                showNotification("الرجاء كتابة رسالة أولاً", "error");
+                return;
+            }
+            
+            try {
+                if (!db) {
+                    showNotification("قاعدة البيانات غير متاحة", "error");
+                    return;
+                }
+                
+                const messageData = {
+                    text: msg,
+                    timestamp: Date.now(),
+                    userId: userId,
+                    userAgent: navigator.userAgent.substring(0, 100),
+                    read: false
+                };
+                
+                await db.ref('messages').push(messageData);
+                
+                showNotification("تم إرسال الرسالة بنجاح!", "success");
+                document.querySelector('.msg-input').value = "";
+                document.querySelector('.char-count').textContent = "0 حرف";
+                
+                if (analytics) {
+                    analytics.logEvent('send_message', {
+                        user_id: userId,
+                        message_length: msg.length
+                    });
+                }
+                
+            } catch (error) {
+                console.error('Send message error:', error);
+                showNotification("خطأ في إرسال الرسالة: " + error.message, "error");
+            }
+        }
+
+        // ===================== تصدير الإعدادات =====================
+        function exportConfig() {
+            try {
+                const data = JSON.parse(localStorage.getItem('userConfig')) || defaultConfig;
+                const exportData = {
+                    ...data,
+                    exportDate: new Date().toISOString(),
+                    exportSource: 'Perfect Vibes App',
+                    userId: userId
+                };
+                
+                const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `perfect-vibes-config-${Date.now()}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showNotification('تم تصدير الإعدادات بنجاح', 'success');
+                
+                if (analytics) {
+                    analytics.logEvent('export_config', {
+                        user_id: userId
+                    });
+                }
+                
+            } catch (error) {
+                console.error('Export error:', error);
+                showNotification('خطأ في التصدير: ' + error.message, 'error');
+            }
+        }
+
+        // ===================== وظائف الصوت =====================
         function togglePlay() {
             const container = document.getElementById('view-home');
             const icon = document.getElementById('main-icon');
@@ -1276,12 +1868,28 @@
                     container.classList.add('playing');
                     icon.classList.remove('fa-play');
                     icon.classList.add('fa-pause');
-                }).catch(e => console.log("Audio play error:", e));
+                    
+                    if (analytics) {
+                        analytics.logEvent('play_audio', {
+                            user_id: userId,
+                            audio_url: audio.src
+                        });
+                    }
+                }).catch(e => {
+                    console.log("Audio play error:", e);
+                    showNotification("خطأ في تشغيل الصوت", "error");
+                });
             } else {
                 audio.pause();
                 container.classList.remove('playing');
                 icon.classList.remove('fa-pause');
                 icon.classList.add('fa-play');
+                
+                if (analytics) {
+                    analytics.logEvent('pause_audio', {
+                        user_id: userId
+                    });
+                }
             }
         }
 
@@ -1297,12 +1905,26 @@
             const clickX = e.offsetX;
             const duration = audio.duration;
             audio.currentTime = (clickX / width) * duration;
+            
+            if (analytics) {
+                analytics.logEvent('audio_seek', {
+                    user_id: userId,
+                    seek_position: audio.currentTime
+                });
+            }
         }
 
         function toggleMute() {
             audio.muted = !audio.muted;
             const icon = document.getElementById('volume-icon');
             icon.className = audio.muted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
+            
+            if (analytics) {
+                analytics.logEvent('toggle_mute', {
+                    user_id: userId,
+                    muted: audio.muted
+                });
+            }
         }
 
         function formatTime(s) {
@@ -1311,52 +1933,52 @@
             return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
         }
 
-        // --- Slideshow Logic ---
+        // ===================== Slideshow =====================
         function startSlideshow() {
             clearInterval(slideInterval);
             const data = JSON.parse(localStorage.getItem('userConfig')) || defaultConfig;
-            const slides = data.slides;
+            const slides = data.slides || [];
             const container = document.getElementById('bg-slideshow');
             const caption = document.getElementById('slide-text');
 
-            if (slides.length === 0) return;
+            if (slides.length === 0) {
+                caption.textContent = "أضف صوراً من لوحة التحكم";
+                return;
+            }
 
-            // عرض الشريحة الأولى فوراً
             updateSlideView(slides[0]);
 
             slideInterval = setInterval(() => {
                 currentSlide = (currentSlide + 1) % slides.length;
                 updateSlideView(slides[currentSlide]);
-            }, 6000); // تغيير كل 6 ثواني
+            }, 6000);
 
             function updateSlideView(slide) {
-                // إنشاء عنصر صورة جديد للتأثير السلس
                 const newImg = document.createElement('img');
                 newImg.src = slide.img;
                 newImg.className = 'bg-slide';
+                newImg.onerror = function() {
+                    this.src = 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2070';
+                };
                 
-                // إضافة الصورة للكونتينر
                 container.appendChild(newImg);
                 
-                // تفعيل الأنيميشن
                 setTimeout(() => newImg.classList.add('active'), 50);
 
-                // إزالة الصور القديمة بعد انتهاء التأثير
                 const oldImages = container.querySelectorAll('.bg-slide');
                 if (oldImages.length > 2) {
                     oldImages[0].remove();
                 }
 
-                // تحديث النص
                 caption.style.opacity = 0;
                 setTimeout(() => {
-                    caption.textContent = slide.text;
+                    caption.textContent = slide.text || "Perfect Vibes";
                     caption.style.opacity = 1;
                 }, 500);
             }
         }
 
-        // --- التنقل بين التبويبات ---
+        // ===================== التنقل بين التبويبات =====================
         function switchTab(tab) {
             const homeView = document.getElementById('view-home');
             const msgView = document.getElementById('view-msg');
@@ -1366,7 +1988,7 @@
             if (tab === 'home') {
                 homeView.style.display = 'flex';
                 msgView.classList.remove('active');
-                setTimeout(() => msgView.style.display = 'none', 300); // Wait for anim
+                setTimeout(() => msgView.style.display = 'none', 300);
                 btnHome.classList.add('active');
                 btnMsg.classList.remove('active');
             } else {
@@ -1376,52 +1998,97 @@
                 btnHome.classList.remove('active');
                 btnMsg.classList.add('active');
             }
-        }
-
-        // --- المراسلة ---
-        function updateCharCount(textarea) {
-            document.querySelector('.char-count').textContent = textarea.value.length + " حرف";
-        }
-
-        function sendMessage() {
-            const msg = document.querySelector('.msg-input').value;
-            if (!msg) {
-                showNotification("الرجاء كتابة رسالة أولاً", "error");
-                return;
+            
+            if (analytics) {
+                analytics.logEvent('switch_tab', {
+                    user_id: userId,
+                    tab: tab
+                });
             }
-            // محاكاة إرسال (يمكن ربطه بواتساب)
-            // window.location.href = `https://wa.me/YOUR_NUMBER?text=${encodeURIComponent(msg)}`;
-            showNotification("تم إرسال الرسالة بنجاح!", "success");
-            document.querySelector('.msg-input').value = "";
         }
 
-        // --- أدوات النظام ---
+        // ===================== تحديث عدد الأحرف =====================
+        function updateCharCount(textarea) {
+            const count = textarea.value.length;
+            document.querySelector('.char-count').textContent = count + " حرف";
+            
+            if (count > 500) {
+                textarea.style.borderColor = 'var(--secondary)';
+            } else {
+                textarea.style.borderColor = '';
+            }
+        }
+
+        // ===================== إدارة لوحة التحكم =====================
         function handleSecretClick() {
             clearTimeout(secretTimer);
             secretClicks++;
+            
             if (secretClicks >= 3) {
                 toggleAdmin();
                 secretClicks = 0;
+                
+                if (analytics) {
+                    analytics.logEvent('admin_panel_open', {
+                        user_id: userId,
+                        method: 'secret_click'
+                    });
+                }
             }
-            secretTimer = setTimeout(() => secretClicks = 0, 1000);
+            
+            secretTimer = setTimeout(() => {
+                secretClicks = 0;
+            }, 1000);
         }
 
         function toggleAdmin() {
             const panel = document.getElementById('admin-panel');
             panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+            
+            if (panel.style.display === 'block') {
+                // تحديث البيانات عند فتح اللوحة
+                loadData();
+            }
         }
 
+        // ===================== نظام التنبيهات =====================
         function showNotification(text, type) {
             const notif = document.getElementById('notification');
             const notifText = document.getElementById('notif-text');
             notifText.textContent = text;
+            
+            const icon = notif.querySelector('i');
+            if (type === 'error') {
+                icon.className = 'fas fa-exclamation-circle';
+                icon.style.color = '#FF0055';
+                notif.style.borderLeft = '4px solid #FF0055';
+            } else if (type === 'success') {
+                icon.className = 'fas fa-check-circle';
+                icon.style.color = '#00FF9D';
+                notif.style.borderLeft = '4px solid #00FF9D';
+            } else if (type === 'info') {
+                icon.className = 'fas fa-info-circle';
+                icon.style.color = '#00F0FF';
+                notif.style.borderLeft = '4px solid #00F0FF';
+            } else {
+                icon.className = 'fas fa-bell';
+                icon.style.color = '#9D00FF';
+                notif.style.borderLeft = '4px solid #9D00FF';
+            }
+            
             notif.classList.add('show');
-            setTimeout(() => notif.classList.remove('show'), 3000);
+            
+            setTimeout(() => {
+                notif.classList.remove('show');
+            }, 3000);
         }
 
+        // ===================== إنشاء العناصر العائمة =====================
         function createFloatingElements() {
             const container = document.getElementById('floatingElements');
-            for(let i=0; i<15; i++) {
+            container.innerHTML = '';
+            
+            for(let i = 0; i < 15; i++) {
                 const el = document.createElement('div');
                 el.className = 'floating-element';
                 const size = Math.random() * 50 + 20;
@@ -1431,9 +2098,56 @@
                 el.style.top = Math.random() * 100 + '%';
                 el.style.animationDuration = (Math.random() * 20 + 10) + 's';
                 el.style.animationDelay = (Math.random() * 5) + 's';
+                
+                const colorType = Math.floor(Math.random() * 3);
+                if (colorType === 0) {
+                    el.style.background = 'radial-gradient(circle, var(--primary) 0%, transparent 70%)';
+                } else if (colorType === 1) {
+                    el.style.background = 'radial-gradient(circle, var(--secondary) 0%, transparent 70%)';
+                } else {
+                    el.style.background = 'radial-gradient(circle, var(--accent) 0%, transparent 70%)';
+                }
+                
                 container.appendChild(el);
             }
         }
+
+        // ===================== التحكم بالتكرار =====================
+        audio.loop = true;
+        
+        // ===================== إدارة الأخطاء =====================
+        window.addEventListener('error', function(e) {
+            console.error('Global error:', e.error);
+            
+            if (analytics) {
+                analytics.logEvent('app_error', {
+                    user_id: userId,
+                    error_message: e.message,
+                    error_file: e.filename,
+                    error_line: e.lineno
+                });
+            }
+        });
+
+        // ===================== حفظ تلقائي عند الخروج =====================
+        window.addEventListener('beforeunload', function() {
+            const data = JSON.parse(localStorage.getItem('userConfig') || '{}');
+            if (data.name && data.name !== defaultConfig.name) {
+                // محاولة مزامنة سريعة إذا كانت هناك بيانات
+                try {
+                    if (db) {
+                        const syncData = {
+                            ...data,
+                            lastSync: Date.now(),
+                            lastAccess: Date.now()
+                        };
+                        db.ref(`users/${userId}/lastAccess`).set(Date.now());
+                    }
+                } catch (error) {
+                    console.log("Quick sync on unload failed:", error);
+                }
+            }
+        });
     </script>
 </body>
 </html>
