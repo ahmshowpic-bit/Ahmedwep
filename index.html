@@ -11,11 +11,10 @@
         :root {
             --primary: #00f2ff;
             --secondary: #ff0055;
-            --bg-deep: #0a0a12;
-            --panel-bg: rgba(20, 20, 35, 0.85);
-            --glass: rgba(255, 255, 255, 0.05);
-            --border: rgba(255, 255, 255, 0.1);
-            --sidebar-w: 260px;
+            --bg-deep: #050510;
+            --glass: rgba(20, 20, 35, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --sidebar-w: 80px; /* تم تصغير القائمة لتكون أيقونات فقط أو صغيرة */
             --player-h: 90px;
         }
 
@@ -26,238 +25,290 @@
             height: 100vh; overflow: hidden;
         }
 
-        /* الخلفية الديناميكية */
-        #dynamic-bg {
+        /* الخلفية المتقلبة (Slideshow) */
+        #bg-slideshow {
             position: fixed; inset: 0; z-index: -2;
-            background-size: cover; background-position: center;
-            transition: opacity 1s ease-in-out, transform 10s ease;
-            opacity: 0.4; transform: scale(1);
+            background: #000; transition: 1s;
         }
-        #dynamic-bg.zoom { transform: scale(1.1); }
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: -1; backdrop-filter: blur(10px); }
+        .bg-slide {
+            position: absolute; inset: 0; width: 100%; height: 100%;
+            object-fit: cover; opacity: 0; transition: opacity 2s ease-in-out;
+            filter: brightness(0.4);
+        }
+        .bg-slide.active { opacity: 1; transform: scale(1.05); transition: opacity 2s, transform 10s; }
+        .grid-overlay {
+            position: fixed; inset: 0; z-index: -1; pointer-events: none;
+            background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
 
         /* التخطيط */
-        .layout { display: flex; height: calc(100% - var(--player-h)); }
+        .layout { display: flex; height: 100%; }
         
         /* القائمة الجانبية */
         .sidebar {
-            width: var(--sidebar-w); background: var(--panel-bg);
-            border-left: 1px solid var(--border);
-            display: flex; flex-direction: column; padding: 30px 20px;
-            transition: 0.3s; z-index: 10;
+            width: var(--sidebar-w); background: var(--glass);
+            backdrop-filter: blur(15px); border-left: 1px solid var(--glass-border);
+            display: flex; flex-direction: column; align-items: center; padding: 20px 0;
+            z-index: 50; transition: 0.3s;
         }
-        .brand { font-size: 24px; font-weight: 800; margin-bottom: 40px; letter-spacing: 1px; }
-        .brand span { color: var(--primary); }
+        .sidebar:hover { width: 200px; } /* تتوسع عند التحويم */
+        
+        .brand { 
+            font-size: 20px; font-weight: 800; margin-bottom: 40px; color: white; 
+            display: none; white-space: nowrap; 
+        }
+        .sidebar:hover .brand { display: block; }
         
         .nav-btn {
-            padding: 15px; margin-bottom: 10px; border-radius: 12px;
-            cursor: pointer; color: #aaa; transition: 0.3s; display: flex; align-items: center; gap: 15px; font-weight: 500;
+            width: 100%; padding: 15px; margin-bottom: 5px; cursor: pointer;
+            color: #aaa; transition: 0.3s; display: flex; align-items: center;
+            justify-content: center; position: relative;
         }
-        .nav-btn:hover, .nav-btn.active { background: var(--glass); color: white; }
-        .nav-btn.active { border-right: 3px solid var(--primary); }
+        .nav-btn i { font-size: 22px; width: 40px; text-align: center; }
+        .nav-btn span { display: none; margin-right: 10px; font-size: 14px; white-space: nowrap; }
+        .sidebar:hover .nav-btn { justify-content: flex-start; padding-right: 20px; }
+        .sidebar:hover .nav-btn span { display: block; }
         
+        .nav-btn:hover, .nav-btn.active { color: var(--primary); background: rgba(255,255,255,0.05); }
+        .nav-btn.active::after {
+            content: ''; position: absolute; right: 0; top: 10%; height: 80%; width: 3px; background: var(--primary);
+        }
+
         /* المحتوى */
-        .content { flex: 1; padding: 30px; overflow-y: auto; position: relative; scroll-behavior: smooth; }
-        .section { display: none; animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
-        .section.active { display: block; }
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* العناصر */
-        .card { background: var(--glass); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 20px; }
-        
-        /* قائمة الأغاني */
-        .song-list-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
-        .song-item { 
-            background: rgba(255,255,255,0.05); border-radius: 15px; padding: 15px; 
-            cursor: pointer; transition: 0.3s; border: 1px solid transparent; display: flex; align-items: center; gap: 15px;
+        .content { flex: 1; position: relative; overflow: hidden; }
+        .section { 
+            position: absolute; inset: 0; display: none; 
+            padding: 30px; padding-bottom: 120px; overflow-y: auto; 
+            animation: fadeIn 0.5s;
         }
-        .song-item:hover { background: rgba(255,255,255,0.1); transform: translateX(-5px); }
-        .song-item.playing { border-color: var(--primary); background: rgba(0, 242, 255, 0.1); }
-        .song-icon { width: 40px; height: 40px; background: var(--secondary); border-radius: 50%; display: grid; place-items: center; font-size: 14px; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from{opacity:0; transform: translateY(10px);} to{opacity:1; transform: translateY(0);} }
 
-        /* --- المشغل السفلي الذكي --- */
+        /* --- قسم الرئيسية --- */
+        .hero-center {
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            height: 100%; text-align: center;
+        }
+        .hero-title { font-size: 3rem; font-weight: 800; text-shadow: 0 0 20px var(--primary); margin: 0; }
+        .hero-sub { color: #ccc; margin-top: 10px; font-size: 1.2rem; }
+
+        /* --- قسم الموسيقى (القائمة المنزلقة) --- */
+        /* الواجهة فارغة للعرض، والقائمة مخفية */
+        .playlist-drawer {
+            position: fixed; bottom: var(--player-h); left: 0; right: var(--sidebar-w);
+            background: rgba(10,10,15,0.95); border-top: 1px solid var(--primary);
+            max-height: 0; overflow-y: auto; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 90; backdrop-filter: blur(20px);
+        }
+        .playlist-drawer.open { max-height: 60vh; }
+        
+        .song-item {
+            padding: 15px 20px; display: flex; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05);
+            cursor: pointer; transition: 0.2s;
+        }
+        .song-item:hover { background: rgba(255,255,255,0.1); }
+        .song-item.playing { color: var(--primary); background: rgba(0, 242, 255, 0.1); }
+
+        /* --- قسم يومياتي (Reels Style) --- */
+        #view-diaries { padding: 0; overflow: hidden; background: rgba(0,0,0,0.8); }
+        
+        .diaries-container {
+            height: 100%; width: 100%;
+            overflow-y: scroll; scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+        /* إخفاء شريط التمرير لليوميات */
+        .diaries-container::-webkit-scrollbar { display: none; }
+        
+        .diary-post {
+            height: 100%; width: 100%;
+            scroll-snap-align: start;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            position: relative; padding: 20px; border-bottom: 1px solid #333;
+            background: linear-gradient(to bottom, #1a1a2e, #000);
+        }
+        .post-content-box {
+            background: rgba(255,255,255,0.05); backdrop-filter: blur(10px);
+            padding: 30px; border-radius: 20px; max-width: 600px; width: 100%;
+            text-align: center; border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .post-author { font-size: 1.5rem; color: var(--primary); font-weight: bold; margin-bottom: 15px; }
+        .post-text { font-size: 1.2rem; line-height: 1.6; color: white; }
+        .post-date { margin-top: 20px; font-size: 0.8rem; color: #888; }
+        
+        .scroll-hint {
+            position: absolute; bottom: 120px; left: 50%; transform: translateX(-50%);
+            color: white; animation: bounce 2s infinite; font-size: 24px; opacity: 0.7; pointer-events: none;
+        }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateX(-50%) translateY(0);} 40% {transform: translateX(-50%) translateY(-10px);} 60% {transform: translateX(-50%) translateY(-5px);} }
+
+        /* زر إضافة يوميات */
+        .add-diary-btn {
+            position: fixed; bottom: 110px; left: 20px;
+            width: 50px; height: 50px; background: var(--secondary);
+            border-radius: 50%; display: grid; place-items: center; color: white;
+            font-size: 24px; cursor: pointer; z-index: 100; box-shadow: 0 0 20px var(--secondary);
+        }
+
+        /* نافذة كتابة المنشور */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000;
+            display: none; align-items: center; justify-content: center; padding: 20px;
+        }
+        .modal-box { background: #222; padding: 25px; border-radius: 15px; width: 100%; max-width: 500px; border: 1px solid var(--primary); }
+        .inp { width: 100%; padding: 12px; background: #000; border: 1px solid #444; color: white; margin-bottom: 10px; border-radius: 5px; }
+        .btn { width: 100%; padding: 12px; background: var(--primary); color: black; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; }
+
+        /* شريط المشغل السفلي */
         .music-bar {
             position: fixed; bottom: 0; left: 0; right: 0; height: var(--player-h);
-            background: rgba(10, 10, 20, 0.95); border-top: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.9); border-top: 1px solid rgba(255,255,255,0.1);
             display: flex; align-items: center; justify-content: space-between;
-            padding: 0 30px; z-index: 100; backdrop-filter: blur(15px);
+            padding: 0 20px; z-index: 100;
         }
-
-        /* الخط المتصل المتحرك (Visualizer) */
-        .visualizer-line {
-            position: absolute; top: -2px; left: 0; width: 100%; height: 4px;
-            background: linear-gradient(90deg, transparent, var(--primary), var(--secondary), var(--primary), transparent);
-            background-size: 200% 100%;
-            opacity: 0.3;
-            transition: 0.5s;
-        }
-        .music-bar.is-playing .visualizer-line {
-            opacity: 1;
-            animation: soundWave 2s linear infinite;
-            box-shadow: 0 0 15px var(--primary);
-        }
-        @keyframes soundWave { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
-
-        /* معلومات الأغنية في المشغل */
-        .player-info { display: flex; align-items: center; gap: 15px; flex: 1; }
-        .album-art { width: 50px; height: 50px; border-radius: 10px; background-size: cover; background-color: #333; }
-        .track-details h4 { margin: 0; font-size: 16px; width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .track-details p { margin: 0; font-size: 12px; color: #888; }
-
-        /* أزرار التحكم */
-        .controls { display: flex; align-items: center; gap: 20px; flex: 1; justify-content: center; }
+        .controls { display: flex; gap: 20px; align-items: center; }
         .ctrl-btn { background: none; border: none; color: white; font-size: 20px; cursor: pointer; transition: 0.2s; }
-        .ctrl-btn:hover { color: var(--primary); transform: scale(1.1); }
-        .play-btn-main { width: 50px; height: 50px; background: white; color: black; border-radius: 50%; display: grid; place-items: center; font-size: 18px; }
-        
-        /* مؤقت الشريط */
-        .progress-container { width: 100%; height: 4px; background: #333; position: absolute; bottom: 0; left: 0; cursor: pointer; }
-        .progress-bar { height: 100%; background: var(--primary); width: 0%; transition: width 0.1s linear; }
-
-        /* نموذج التواصل */
-        .contact-form { max-width: 600px; margin: auto; text-align: center; }
-        .inp { width: 100%; background: #1a1a25; border: 1px solid var(--border); padding: 15px; color: white; border-radius: 10px; margin-bottom: 15px; font-family: inherit; }
-        .btn { background: var(--primary); color: #000; border: none; padding: 12px 30px; border-radius: 50px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .btn:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--primary); }
-
-        /* أزرار الحذف */
-        .del-btn { 
-            background: #ff0000; color: white; width: 25px; height: 25px; 
-            border-radius: 50%; border: none; cursor: pointer; margin-right: auto;
-            display: none;
+        .ctrl-btn:hover { color: var(--primary); }
+        .play-main { width: 50px; height: 50px; background: white; color: black; border-radius: 50%; display: grid; place-items: center; font-size: 20px; }
+        .playlist-toggle { 
+            background: rgba(255,255,255,0.1); padding: 5px 15px; border-radius: 15px; 
+            font-size: 12px; display: flex; align-items: center; gap: 5px; cursor: pointer;
         }
-        body.is-admin .del-btn { display: block; }
+        .playlist-toggle.active { background: var(--primary); color: black; }
 
-        /* لوحة التحكم */
-        .admin-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 200;
-            padding: 40px; overflow-y: auto; display: none;
-        }
-        .admin-box { max-width: 600px; margin: auto; background: #151520; padding: 30px; border-radius: 20px; border: 1px solid var(--primary); }
-        
-        /* الموبايل */
+        /* موبايل */
         @media (max-width: 768px) {
-            .sidebar { display: none; }
-            .content { padding: 20px; padding-bottom: 120px; }
-            .music-bar { padding: 0 15px; height: 80px; }
-            .track-details h4 { font-size: 14px; width: 120px; }
-            .controls { gap: 15px; }
-            .album-art { width: 40px; height: 40px; }
-            
-            /* قائمة الموبايل العلوية */
-            .mob-nav { 
-                display: flex; gap: 15px; overflow-x: auto; padding: 10px; margin-bottom: 20px;
-                background: rgba(255,255,255,0.05); border-radius: 10px;
+            .sidebar { 
+                width: 100%; height: 60px; bottom: 0; top: auto; flex-direction: row; 
+                justify-content: space-around; border-top: 1px solid #333; border-left: none; padding: 0;
             }
-            .mob-nav div { white-space: nowrap; padding: 5px 15px; border-radius: 20px; font-size: 14px; }
-            .mob-nav div.active { background: var(--primary); color: black; }
+            .sidebar:hover { width: 100%; }
+            .nav-btn { flex-direction: column; padding: 5px; margin: 0; gap: 2px; }
+            .nav-btn span { display: block; font-size: 10px; }
+            .nav-btn i { font-size: 18px; }
+            .sidebar .brand { display: none; }
+            .playlist-drawer { right: 0; bottom: 150px; /* فوق البار السفلي */ }
+            .music-bar { bottom: 60px; /* فوق القائمة */ }
+            .add-diary-btn { bottom: 160px; }
         }
-        @media (min-width: 769px) { .mob-nav { display: none; } }
+
     </style>
 </head>
 <body>
 
-    <div id="dynamic-bg"></div>
-    <div class="overlay"></div>
+    <div id="bg-slideshow"></div>
+    <div class="grid-overlay"></div>
 
     <div class="layout">
         <nav class="sidebar">
             <div class="brand">MY <span>UNIVERSE</span></div>
-            <div class="nav-btn active" onclick="go('home')"><i class="fas fa-music"></i> الموسيقى</div>
-            <div class="nav-btn" onclick="go('contact')"><i class="fas fa-envelope"></i> راسلني</div>
-            <div style="margin-top: auto;">
-                <div class="nav-btn" onclick="openAdminCheck()"><i class="fas fa-user-shield"></i> الإدارة</div>
+            
+            <div class="nav-btn active" onclick="go('home')">
+                <i class="fas fa-home"></i> <span>الرئيسية</span>
+            </div>
+            
+            <div class="nav-btn" onclick="go('music')">
+                <i class="fas fa-music"></i> <span>الموسيقى</span>
+            </div>
+            
+            <div class="nav-btn" onclick="go('diaries')">
+                <i class="fas fa-book-open"></i> <span>يومياتي</span>
+            </div>
+
+            <div class="nav-btn" onclick="openAdminCheck()" style="margin-top: auto;">
+                <i class="fas fa-user-shield"></i>
             </div>
         </nav>
 
         <main class="content">
             
-            <div class="mob-nav">
-                <div class="active" onclick="go('home')">الرئيسية</div>
-                <div onclick="go('contact')">اتصل بي</div>
-                <div onclick="openAdminCheck()">الإدارة</div>
+            <div id="view-home" class="section active">
+                <div class="hero-center">
+                    <h1 class="hero-title" id="display-welcome">WELCOME</h1>
+                    <p class="hero-sub">Music & Vibes</p>
+                </div>
             </div>
 
-            <div id="view-home" class="section active">
-                <div class="hero-text" style="text-align: center; margin-bottom: 40px; padding-top: 20px;">
-                    <h1 style="font-size: 2.5rem; margin: 0; text-shadow: 0 0 20px var(--primary);">MUSIC LIBRARY</h1>
-                    <p style="color: #aaa;">اختر الموسيقى ليتغير مزاج الكون من حولك</p>
+            <div id="view-music" class="section" style="display:none;">
                 </div>
 
-                <div id="music-list" class="song-list-container">
+            <div id="view-diaries" class="section" style="display:none;">
+                <div id="diaries-feed" class="diaries-container">
                     </div>
-            </div>
-
-            <div id="view-contact" class="section">
-                <div class="contact-form">
-                    <i class="fas fa-paper-plane" style="font-size: 50px; color: var(--secondary); margin-bottom: 20px;"></i>
-                    <h2>تواصل معي</h2>
-                    <input id="contact-name" class="inp" placeholder="اسمك">
-                    <textarea id="contact-msg" class="inp" rows="5" placeholder="رسالتك..."></textarea>
-                    <button onclick="sendMessage()" class="btn">إرسال</button>
+                
+                <div class="add-diary-btn" onclick="document.getElementById('diary-modal').style.display='flex'">
+                    <i class="fas fa-plus"></i>
                 </div>
             </div>
 
         </main>
     </div>
 
-    <div class="music-bar" id="music-bar-ui">
-        <div class="visualizer-line"></div> <div class="progress-container" onclick="seek(event)">
-            <div class="progress-bar" id="prog-bar"></div>
+    <div id="diary-modal" class="modal-overlay">
+        <div class="modal-box">
+            <h3 style="color:var(--primary)">نشر في اليوميات 📝</h3>
+            <input id="diary-author" class="inp" placeholder="اسمك المستعار (مثلاً: عاشق الليل)">
+            <textarea id="diary-content" class="inp" rows="5" placeholder="اكتب ما يخطر في بالك..."></textarea>
+            <button class="btn" onclick="publishDiary()">نشر الآن</button>
+            <button class="btn" style="background:#333; margin-top:10px; color:white;" onclick="document.getElementById('diary-modal').style.display='none'">إلغاء</button>
+        </div>
+    </div>
+
+    <div id="playlist-drawer" class="playlist-drawer">
+        <div style="padding:15px; background:rgba(255,255,255,0.05); display:flex; justify-content:space-between;">
+            <span>مكتبة الأغاني</span>
+            <span style="font-size:12px; color:#aaa;">اختر للاستماع</span>
+        </div>
+        <div id="music-list-container"></div>
+    </div>
+
+    <div class="music-bar">
+        <div class="playlist-toggle" onclick="togglePlaylist()" id="plist-btn">
+            <i class="fas fa-list"></i> القائمة
         </div>
 
-        <div class="player-info">
-            <div class="album-art" id="player-art" style="background-image: url('https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=200');"></div>
-            <div class="track-details">
-                <h4 id="player-title">اختر أغنية للبدء</h4>
-                <p id="player-status">Waiting...</p>
-            </div>
+        <div style="text-align: center; flex:1;">
+            <div id="player-song-name" style="font-size:14px; font-weight:bold;">اختر موسيقى</div>
         </div>
 
         <div class="controls">
             <button class="ctrl-btn" onclick="prevSong()"><i class="fas fa-step-forward"></i></button>
-            <button class="ctrl-btn play-btn-main" onclick="togglePlay()">
-                <i id="main-play-icon" class="fas fa-play"></i>
-            </button>
+            <button class="ctrl-btn play-main" onclick="togglePlay()"><i id="play-icon" class="fas fa-play"></i></button>
             <button class="ctrl-btn" onclick="nextSong()"><i class="fas fa-step-backward"></i></button>
         </div>
     </div>
 
-    <div id="admin-panel" class="admin-overlay">
-        <div class="admin-box">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-                <h2>Control Panel ⚙️</h2>
-                <button onclick="document.getElementById('admin-panel').style.display='none'" style="background:none; border:none; color:white; font-size:24px;">✕</button>
+    <div id="admin-panel" class="modal-overlay">
+        <div class="modal-box">
+            <div style="display:flex; justify-content:space-between;">
+                <h3>لوحة التحكم</h3>
+                <button onclick="document.getElementById('admin-panel').style.display='none'" style="color:red; background:none; border:none;">✕</button>
             </div>
             
-            <div class="auth-status" id="auth-info" style="margin-bottom:20px; color:#aaa; font-size:12px;"></div>
-
-            <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px;">
-                <button onclick="showTab('add')" class="btn" style="padding: 5px 15px; font-size:12px;">➕ إضافة موسيقى</button>
-                <button onclick="showTab('inbox')" class="btn" style="padding: 5px 15px; font-size:12px; background:#333;">📩 الرسائل</button>
-                <button onclick="logoutAdmin()" class="btn" style="padding: 5px 15px; font-size:12px; background:#500; margin-right:auto;">خروج</button>
+            <div style="margin-bottom:20px;">
+                <label style="font-size:12px; color:#aaa;">رسالة الترحيب في الرئيسية:</label>
+                <input id="adm-welcome-msg" class="inp" placeholder="اكتب رسالة الترحيب هنا">
+                <button onclick="saveSettings()" class="btn" style="padding:8px;">حفظ الرسالة</button>
             </div>
 
-            <div id="adm-tab-add">
-                <h4>إضافة أغنية جديدة</h4>
-                <input id="add-song-name" class="inp" placeholder="اسم الأغنية">
-                <input id="add-song-url" class="inp" placeholder="رابط ملف الصوت (MP3 Link)">
-                
-                <p style="margin: 10px 0 5px; color: var(--primary); font-size: 14px;">خيارات صورة الخلفية (Music Mode):</p>
-                <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px;">
-                    <label style="display: block; font-size: 12px; color: #ccc; margin-bottom: 5px;">1. رابط مباشر للصورة (اختياري):</label>
-                    <input id="add-img-url" class="inp" placeholder="https://example.com/image.jpg" style="margin-bottom: 5px;">
-                    
-                    <div style="text-align: center; color: #888; font-size: 12px;">-- أو --</div>
-                    
-                    <p style="font-size: 12px; color: #ccc; margin-top: 5px;">2. اترك الحقل فارغاً ليقوم الكود بجلب صورة عشوائية ذكية من الإنترنت.</p>
-                </div>
-                
-                <button onclick="addMusic()" class="btn" style="width: 100%; margin-top: 15px;">نشر الآن</button>
-            </div>
+            <hr style="border-color:#333; margin:15px 0;">
 
-            <div id="adm-tab-inbox" style="display:none;">
-                <div id="inbox-list"></div>
+            <div style="display:flex; gap:5px; margin-bottom:10px;">
+                <input id="adm-song-name" class="inp" placeholder="اسم الأغنية">
+                <input id="adm-song-url" class="inp" placeholder="رابط MP3">
+            </div>
+            <button onclick="addMusic()" class="btn">إضافة أغنية</button>
+            
+            <hr style="border-color:#333; margin:15px 0;">
+            
+            <input id="adm-img-url" class="inp" placeholder="رابط صورة للخلفية">
+            <button onclick="addSlide()" class="btn" style="margin-top:5px;">إضافة صورة</button>
+
+            <div style="margin-top:20px; font-size:12px; color:#888;">
+                * لحذف أغنية، اذهب للقائمة واضغط على الزر الأحمر بجانبها.
             </div>
         </div>
     </div>
@@ -269,7 +320,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 
     <script>
-        // --- إعدادات فايربيس ---
         const ADMIN_EMAIL = "ahmshowpic@gmail.com"; 
         const firebaseConfig = {
             apiKey: "AIzaSyCUK7SXiX_uBObNqWjM5u-eKUKkCTwCJKc",
@@ -278,245 +328,218 @@
             projectId: "mypersonalapp-2f2cc",
             storageBucket: "mypersonalapp-2f2cc.firebasestorage.app",
             messagingSenderId: "1093218114240",
-            appId: "1:1093218114240:web:e082d82c94c286d2c6eb25",
-            measurementId: "G-W8R99YNJQ9"
+            appId: "1:1093218114240:web:e082d82c94c286d2c6eb25"
         };
-        
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        const auth = firebase.auth(); 
+        const auth = firebase.auth();
         
-        // --- متغيرات المشغل ---
-        const audio = document.getElementById('audio-player');
         let playList = [];
-        let currentIndex = 0;
+        let curIndex = 0;
         let isAdmin = false;
+        const audio = document.getElementById('audio-player');
 
-        // --- التحقق من الأدمن ---
+        // --- 1. التحقق من المستخدم ---
         auth.onAuthStateChanged(user => {
             isAdmin = (user && user.email === ADMIN_EMAIL);
-            if(isAdmin) {
-                document.body.classList.add('is-admin');
-                document.getElementById('auth-info').innerHTML = `Logged as Admin: ${user.email}`;
-            } else {
-                document.body.classList.remove('is-admin');
-                document.getElementById('auth-info').innerHTML = `Guest Mode`;
-            }
+            loadMusic(); // إعادة تحميل الموسيقى لعرض أزرار الحذف للأدمن
         });
 
-        // --- تحميل الموسيقى ---
-        db.ref('music').on('value', snap => {
-            const container = document.getElementById('music-list');
-            container.innerHTML = "";
-            playList = [];
-            
-            if(snap.exists()){
-                let i = 0;
-                snap.forEach(child => {
-                    const song = child.val();
-                    const id = child.key;
-                    // إضافة للأريي (Playlist)
-                    playList.push({ ...song, id: id });
-                    
-                    // تحديد الصورة (إما مخصصة أو عشوائية)
-                    const displayImg = song.image || getDiffRandomImage(i);
-
-                    container.innerHTML += `
-                        <div class="song-item" onclick="playIndex(${i})">
-                            <div class="song-icon" style="background-image: url('${displayImg}'); background-size: cover;">
-                                ${!song.image ? '<i class="fas fa-music" style="background:rgba(0,0,0,0.5); width:100%; height:100%; display:grid; place-items:center; border-radius:50%;"></i>' : ''}
-                            </div>
-                            <div style="flex:1;">
-                                <div style="font-weight:bold; font-size:14px;">${song.name}</div>
-                                <div style="font-size:11px; color:#888;">Audio Track</div>
-                            </div>
-                            <button class="del-btn" onclick="delMusic('${id}', event)">✕</button>
-                        </div>
-                    `;
-                    i++;
-                });
-            } else {
-                container.innerHTML = "<p style='padding:20px; opacity:0.5;'>لا توجد موسيقى بعد.</p>";
-            }
-        });
-
-        // --- وظائف المشغل الذكية ---
-        function playIndex(index) {
-            if(index < 0 || index >= playList.length) return;
-            currentIndex = index;
-            const song = playList[index];
-            
-            // تشغيل الصوت
-            audio.src = song.url;
-            audio.play();
-            
-            // تحديث واجهة المشغل
-            document.getElementById('player-title').innerText = song.name;
-            document.getElementById('player-status').innerText = "Now Playing 🎵";
-            document.getElementById('main-play-icon').className = "fas fa-pause";
-            document.getElementById('music-bar-ui').classList.add('is-playing');
-            
-            // تحديث الأغاني في القائمة
-            document.querySelectorAll('.song-item').forEach((el, idx) => {
-                if(idx === index) el.classList.add('playing');
-                else el.classList.remove('playing');
-            });
-
-            // *** تغيير الخلفية حسب "مود الأغنية" ***
-            // إذا كان هناك رابط صورة مخصص نستخدمه، وإلا نستخدم صورة عشوائية متغيرة
-            let bgUrl = song.image;
-            if(!bgUrl) {
-                // كود جلب صورة عشوائية من الإنترنت (Unsplash)
-                // نستخدم Keywords مثل music, dark, neon, abstract لتناسب الجو
-                bgUrl = `https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=1920&random=${Math.random()}`; 
-            }
-            
-            // تحديث صورة المشغل المصغرة
-            document.getElementById('player-art').style.backgroundImage = `url('${bgUrl}')`;
-
-            // تحديث خلفية الموقع بالكامل
-            const bgEl = document.getElementById('dynamic-bg');
-            bgEl.style.opacity = 0; // إخفاء لحظي للتدريج
-            setTimeout(() => {
-                bgEl.style.backgroundImage = `url('${bgUrl}')`;
-                bgEl.style.opacity = 0.4; // إعادة الظهور
-                bgEl.classList.add('zoom'); // تأثير زوم بسيط
-                setTimeout(() => bgEl.classList.remove('zoom'), 10000);
-            }, 500);
-        }
-
-        function togglePlay() {
-            if(!audio.src) {
-                if(playList.length > 0) playIndex(0);
-                return;
-            }
-            if(audio.paused) {
-                audio.play();
-                document.getElementById('main-play-icon').className = "fas fa-pause";
-                document.getElementById('music-bar-ui').classList.add('is-playing');
-            } else {
-                audio.pause();
-                document.getElementById('main-play-icon').className = "fas fa-play";
-                document.getElementById('music-bar-ui').classList.remove('is-playing');
-            }
-        }
-
-        function nextSong() { playIndex((currentIndex + 1) % playList.length); }
-        function prevSong() { playIndex((currentIndex - 1 + playList.length) % playList.length); }
-
-        // شريط التقدم
-        audio.ontimeupdate = () => {
-            if(audio.duration) {
-                const pct = (audio.currentTime / audio.duration) * 100;
-                document.getElementById('prog-bar').style.width = pct + "%";
-            }
-        };
-        audio.onended = nextSong;
-
-        function seek(e) {
-            const width = e.target.clientWidth;
-            const clickX = e.offsetX;
-            const duration = audio.duration;
-            audio.currentTime = (clickX / width) * duration;
-        }
-
-        // --- وظائف مساعدة ---
-        function getDiffRandomImage(seed) {
-            // صور احتياطية للمعاينة فقط
-            const imgs = [
-                "https://images.unsplash.com/photo-1514525253440-b393452e23f0?w=200",
-                "https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=200",
-                "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=200"
-            ];
-            return imgs[seed % imgs.length];
-        }
-
+        // --- 2. التنقل ---
         function go(id) {
             document.querySelectorAll('.section').forEach(e => e.classList.remove('active'));
             document.getElementById('view-'+id).classList.add('active');
-            
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            // تحديد الزر النشط بسيط هنا
-            if(id === 'home') document.querySelector('.nav-btn:nth-child(2)').classList.add('active');
-            if(id === 'contact') document.querySelector('.nav-btn:nth-child(3)').classList.add('active');
+            // تحديد الزر النشط تقريبياً
+            if(id=='home') document.querySelectorAll('.nav-btn')[0].classList.add('active');
+            if(id=='music') document.querySelectorAll('.nav-btn')[1].classList.add('active');
+            if(id=='diaries') document.querySelectorAll('.nav-btn')[2].classList.add('active');
         }
 
-        // --- الإدارة ---
+        // --- 3. قسم الموسيقى والتحكم ---
+        function loadMusic() {
+            db.ref('music').on('value', snap => {
+                const list = document.getElementById('music-list-container');
+                list.innerHTML = "";
+                playList = [];
+                let i = 0;
+                if(snap.exists()) {
+                    snap.forEach(c => {
+                        const s = c.val();
+                        playList.push({...s, key:c.key});
+                        list.innerHTML += `
+                            <div class="song-item" onclick="playIndex(${i})">
+                                <i class="fas fa-music" style="margin-left:10px;"></i>
+                                <div style="flex:1;">${s.name}</div>
+                                ${isAdmin ? `<button onclick="delMusic('${c.key}', event)" style="color:red; background:none; border:none;">✕</button>` : ''}
+                            </div>
+                        `;
+                        i++;
+                    });
+                } else {
+                    list.innerHTML = "<div style='padding:20px; color:#aaa'>القائمة فارغة</div>";
+                }
+            });
+        }
+
+        function playIndex(i) {
+            if(i<0 || i>=playList.length) return;
+            curIndex = i;
+            audio.src = playList[i].url;
+            audio.play();
+            document.getElementById('player-song-name').innerText = playList[i].name;
+            document.getElementById('play-icon').className = "fas fa-pause";
+            
+            // تمييز الأغنية
+            document.querySelectorAll('.song-item').forEach((el, idx) => {
+                if(idx===i) el.classList.add('playing');
+                else el.classList.remove('playing');
+            });
+
+            // إخفاء القائمة تلقائياً بعد الاختيار (للاستمتاع بالخلفية)
+            togglePlaylist(false);
+        }
+
+        function togglePlay() {
+            if(!audio.src && playList.length) playIndex(0);
+            else if(audio.paused) {
+                audio.play();
+                document.getElementById('play-icon').className = "fas fa-pause";
+            } else {
+                audio.pause();
+                document.getElementById('play-icon').className = "fas fa-play";
+            }
+        }
+        function nextSong() { playIndex((curIndex+1)%playList.length); }
+        function prevSong() { playIndex((curIndex-1+playList.length)%playList.length); }
+
+        function togglePlaylist(forceState) {
+            const d = document.getElementById('playlist-drawer');
+            const b = document.getElementById('plist-btn');
+            const isOpen = d.classList.contains('open');
+            
+            if (forceState === false || (forceState === undefined && isOpen)) {
+                d.classList.remove('open');
+                b.classList.remove('active');
+            } else {
+                d.classList.add('open');
+                b.classList.add('active');
+            }
+        }
+
+        // --- 4. الخلفيات (Slideshow) ---
+        db.ref('slideshow').on('value', snap => {
+            const con = document.getElementById('bg-slideshow');
+            con.innerHTML = "";
+            const slides = [];
+            if(snap.exists()) {
+                snap.forEach(c => {
+                    slides.push(c.val().url);
+                    con.innerHTML += `<img src="${c.val().url}" class="bg-slide">`;
+                });
+                startSlides(slides.length);
+            } else {
+                con.innerHTML = `<img src="https://images.unsplash.com/photo-1511447333015-45b65e60f6d5?q=80&w=1920" class="bg-slide active">`;
+            }
+        });
+        
+        let slideTimer;
+        function startSlides(len) {
+            clearInterval(slideTimer);
+            if(len < 2) {
+                if(document.querySelector('.bg-slide')) document.querySelector('.bg-slide').classList.add('active');
+                return;
+            }
+            let idx = 0;
+            const imgs = document.querySelectorAll('.bg-slide');
+            imgs[0].classList.add('active');
+            slideTimer = setInterval(() => {
+                imgs[idx].classList.remove('active');
+                idx = (idx+1)%len;
+                imgs[idx].classList.add('active');
+            }, 6000);
+        }
+
+        // --- 5. قسم اليوميات (Diaries) ---
+        db.ref('diaries').limitToLast(20).on('value', snap => {
+            const feed = document.getElementById('diaries-feed');
+            feed.innerHTML = ""; 
+            if(snap.exists()) {
+                const posts = [];
+                snap.forEach(c => posts.push(c.val()));
+                // نعكس الترتيب ليظهر الأحدث أولاً
+                posts.reverse().forEach(p => {
+                    feed.innerHTML += `
+                        <div class="diary-post">
+                            <div class="post-content-box">
+                                <div class="post-author">${p.author}</div>
+                                <div class="post-text">${p.text}</div>
+                                <div class="post-date">${p.date}</div>
+                            </div>
+                            <div class="scroll-hint"><i class="fas fa-chevron-down"></i></div>
+                        </div>
+                    `;
+                });
+                // إزالة سهم التلميح من آخر منشور
+                if(feed.lastElementChild) {
+                    feed.lastElementChild.querySelector('.scroll-hint').style.display='none';
+                }
+            } else {
+                feed.innerHTML = `<div class="diary-post"><div class="post-content-box"><h3>لا توجد يوميات بعد</h3><p>كن أول من يكتب هنا!</p></div></div>`;
+            }
+        });
+
+        function publishDiary() {
+            const author = document.getElementById('diary-author').value;
+            const text = document.getElementById('diary-content').value;
+            if(author && text) {
+                db.ref('diaries').push({
+                    author: author,
+                    text: text,
+                    date: new Date().toLocaleString()
+                });
+                document.getElementById('diary-modal').style.display='none';
+                document.getElementById('diary-content').value = "";
+            } else {
+                alert("الرجاء كتابة الاسم والنص");
+            }
+        }
+
+        // --- 6. الإعدادات والترحيب ---
+        db.ref('settings/welcome').on('value', snap => {
+            if(snap.exists()) document.getElementById('display-welcome').innerText = snap.val();
+        });
+
+        function saveSettings() {
+            const msg = document.getElementById('adm-welcome-msg').value;
+            if(msg) {
+                db.ref('settings/welcome').set(msg);
+                alert("تم تحديث رسالة الترحيب");
+            }
+        }
+
+        // --- 7. وظائف الأدمن ---
         function openAdminCheck() {
             if(isAdmin) {
-                document.getElementById('admin-panel').style.display = 'block';
-                loadInbox();
+                document.getElementById('admin-panel').style.display='flex';
             } else {
                 const provider = new firebase.auth.GoogleAuthProvider();
-                auth.signInWithPopup(provider)
-                    .then((res) => {
-                        if(res.user.email === ADMIN_EMAIL) {
-                            alert("Welcome Admin");
-                            document.getElementById('admin-panel').style.display = 'block';
-                            loadInbox();
-                        } else {
-                            alert("Not Admin!");
-                            auth.signOut();
-                        }
-                    });
+                auth.signInWithPopup(provider).then(res => {
+                    if(res.user.email === ADMIN_EMAIL) {
+                        document.getElementById('admin-panel').style.display='flex';
+                    } else { alert("لست المدير!"); auth.signOut(); }
+                });
             }
         }
-
         function addMusic() {
-            const name = document.getElementById('add-song-name').value;
-            const url = document.getElementById('add-song-url').value;
-            const img = document.getElementById('add-img-url').value; // الرابط الاختياري
-            
-            if(name && url) {
-                // إذا لم يضع صورة، نحفظها كقيمة فارغة ليتعامل معها الكود تلقائياً
-                db.ref('music').push({
-                    name: name,
-                    url: url,
-                    image: img || "" 
-                });
-                alert("تمت الإضافة بنجاح!");
-                document.getElementById('add-song-name').value = "";
-                document.getElementById('add-song-url').value = "";
-                document.getElementById('add-img-url').value = "";
-            } else {
-                alert("الاسم ورابط الصوت مطلوبان!");
-            }
+            const n = document.getElementById('adm-song-name').value;
+            const u = document.getElementById('adm-song-url').value;
+            if(n&&u) { db.ref('music').push({name:n, url:u}); alert("تم"); }
         }
-
-        function delMusic(key, e) {
-            e.stopPropagation();
-            if(confirm("حذف هذه الأغنية؟")) db.ref('music/'+key).remove();
-        }
-
-        function logoutAdmin() {
-            auth.signOut().then(() => {
-                document.getElementById('admin-panel').style.display = 'none';
-            });
-        }
-
-        // الرسائل
-        function sendMessage() {
-            const name = document.getElementById('contact-name').value;
-            const msg = document.getElementById('contact-msg').value;
-            if(msg) {
-                db.ref('inbox').push({name:name||"Guest", msg:msg, date: new Date().toLocaleString()});
-                alert("Sent!");
-            }
-        }
-        function loadInbox() {
-            db.ref('inbox').limitToLast(10).on('value', snap => {
-                const list = document.getElementById('inbox-list');
-                list.innerHTML = "";
-                snap.forEach(c => {
-                    const m = c.val();
-                    list.innerHTML += `<div style="background:#222; padding:10px; margin-bottom:5px; border-radius:5px;"><b>${m.name}:</b> ${m.msg} <br><small>${m.date}</small></div>`;
-                });
-            });
-        }
-
-        function showTab(t) {
-            document.getElementById('adm-tab-add').style.display = (t==='add'?'block':'none');
-            document.getElementById('adm-tab-inbox').style.display = (t==='inbox'?'block':'none');
+        function delMusic(k, e){ e.stopPropagation(); if(confirm("حذف؟")) db.ref('music/'+k).remove(); }
+        function addSlide() {
+            const u = document.getElementById('adm-img-url').value;
+            if(u) db.ref('slideshow').push({url:u});
         }
 
     </script>
