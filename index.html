@@ -12,10 +12,9 @@
             --primary: #00f2ff;
             --secondary: #ff0055;
             --bg-deep: #050510;
-            --glass: rgba(20, 20, 35, 0.6);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --sidebar-w: 80px; /* تم تصغير القائمة لتكون أيقونات فقط أو صغيرة */
-            --player-h: 90px;
+            --glass: rgba(20, 20, 35, 0.95);
+            --sidebar-h: 70px;
+            --player-h: 80px;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; user-select: none; }
@@ -25,302 +24,357 @@
             height: 100vh; overflow: hidden;
         }
 
-        /* الخلفية المتقلبة (Slideshow) */
+        /* --- الخلفية --- */
         #bg-slideshow {
-            position: fixed; inset: 0; z-index: -2;
-            background: #000; transition: 1s;
+            position: fixed; inset: 0; z-index: -3;
+            background: #000;
         }
         .bg-slide {
             position: absolute; inset: 0; width: 100%; height: 100%;
-            object-fit: cover; opacity: 0; transition: opacity 2s ease-in-out;
+            object-fit: cover; opacity: 0; transition: opacity 2s;
             filter: brightness(0.4);
         }
-        .bg-slide.active { opacity: 1; transform: scale(1.05); transition: opacity 2s, transform 10s; }
-        .grid-overlay {
-            position: fixed; inset: 0; z-index: -1; pointer-events: none;
-            background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
+        .bg-slide.active { opacity: 1; transform: scale(1.05); transition: 10s; }
+
+        /* --- زر الإدارة --- */
+        .admin-trigger-top {
+            position: fixed; top: 20px; left: 20px;
+            width: 40px; height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border-radius: 50%; border: 1px solid rgba(255,255,255,0.2);
+            display: grid; place-items: center; color: white;
+            z-index: 2000; cursor: pointer;
         }
 
-        /* التخطيط */
+        /* --- التخطيط --- */
         .layout { display: flex; height: 100%; }
         
         /* القائمة الجانبية */
         .sidebar {
-            width: var(--sidebar-w); background: var(--glass);
-            backdrop-filter: blur(15px); border-left: 1px solid var(--glass-border);
+            width: 80px; background: var(--glass);
+            border-left: 1px solid rgba(255,255,255,0.1);
             display: flex; flex-direction: column; align-items: center; padding: 20px 0;
-            z-index: 50; transition: 0.3s;
+            z-index: 500; transition: 0.3s;
         }
-        .sidebar:hover { width: 200px; } /* تتوسع عند التحويم */
-        
-        .brand { 
-            font-size: 20px; font-weight: 800; margin-bottom: 40px; color: white; 
-            display: none; white-space: nowrap; 
-        }
-        .sidebar:hover .brand { display: block; }
         
         .nav-btn {
             width: 100%; padding: 15px; margin-bottom: 5px; cursor: pointer;
-            color: #aaa; transition: 0.3s; display: flex; align-items: center;
-            justify-content: center; position: relative;
+            color: #aaa; display: flex; flex-direction: column; align-items: center; gap: 5px;
+            font-size: 10px;
         }
-        .nav-btn i { font-size: 22px; width: 40px; text-align: center; }
-        .nav-btn span { display: none; margin-right: 10px; font-size: 14px; white-space: nowrap; }
-        .sidebar:hover .nav-btn { justify-content: flex-start; padding-right: 20px; }
-        .sidebar:hover .nav-btn span { display: block; }
-        
-        .nav-btn:hover, .nav-btn.active { color: var(--primary); background: rgba(255,255,255,0.05); }
-        .nav-btn.active::after {
-            content: ''; position: absolute; right: 0; top: 10%; height: 80%; width: 3px; background: var(--primary);
-        }
+        .nav-btn i { font-size: 22px; margin-bottom: 2px; }
+        .nav-btn.active { color: var(--primary); }
 
         /* المحتوى */
         .content { flex: 1; position: relative; overflow: hidden; }
         .section { 
             position: absolute; inset: 0; display: none; 
-            padding: 30px; padding-bottom: 120px; overflow-y: auto; 
-            animation: fadeIn 0.5s;
+            padding: 20px; overflow-y: auto; 
+            padding-bottom: 180px; 
         }
-        .section.active { display: block; }
-        @keyframes fadeIn { from{opacity:0; transform: translateY(10px);} to{opacity:1; transform: translateY(0);} }
+        .section.active { display: block; animation: fadeIn 0.4s; }
+        @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
 
-        /* --- قسم الرئيسية --- */
         .hero-center {
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            height: 100%; text-align: center;
+            height: 100%; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; text-align: center;
         }
-        .hero-title { font-size: 3rem; font-weight: 800; text-shadow: 0 0 20px var(--primary); margin: 0; }
-        .hero-sub { color: #ccc; margin-top: 10px; font-size: 1.2rem; }
+        .hero-title { font-size: 2.5rem; margin: 0; text-shadow: 0 0 20px var(--primary); }
 
-        /* --- قسم الموسيقى (القائمة المنزلقة) --- */
-        /* الواجهة فارغة للعرض، والقائمة مخفية */
-        .playlist-drawer {
-            position: fixed; bottom: var(--player-h); left: 0; right: var(--sidebar-w);
-            background: rgba(10,10,15,0.95); border-top: 1px solid var(--primary);
-            max-height: 0; overflow-y: auto; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 90; backdrop-filter: blur(20px);
-        }
-        .playlist-drawer.open { max-height: 60vh; }
-        
-        .song-item {
-            padding: 15px 20px; display: flex; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05);
-            cursor: pointer; transition: 0.2s;
-        }
-        .song-item:hover { background: rgba(255,255,255,0.1); }
-        .song-item.playing { color: var(--primary); background: rgba(0, 242, 255, 0.1); }
-
-        /* --- قسم يومياتي (Reels Style) --- */
-        #view-diaries { padding: 0; overflow: hidden; background: rgba(0,0,0,0.8); }
-        
+        /* --- قسم يومياتي --- */
         .diaries-container {
-            height: 100%; width: 100%;
-            overflow-y: scroll; scroll-snap-type: y mandatory;
-            scroll-behavior: smooth;
+            height: 100%; overflow-y: auto; scroll-behavior: smooth;
         }
-        /* إخفاء شريط التمرير لليوميات */
-        .diaries-container::-webkit-scrollbar { display: none; }
-        
         .diary-post {
-            height: 100%; width: 100%;
-            scroll-snap-align: start;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            position: relative; padding: 20px; border-bottom: 1px solid #333;
-            background: linear-gradient(to bottom, #1a1a2e, #000);
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px; padding: 20px; margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            position: relative;
         }
-        .post-content-box {
-            background: rgba(255,255,255,0.05); backdrop-filter: blur(10px);
-            padding: 30px; border-radius: 20px; max-width: 600px; width: 100%;
-            text-align: center; border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        .post-author { color: var(--primary); font-weight: bold; font-size: 1.1rem; margin-bottom: 10px; }
+        .post-text { font-size: 1rem; line-height: 1.5; color: #eee; }
+        .post-date { color: #888; font-size: 0.8rem; margin-top: 10px; }
+        .post-actions { 
+            position: absolute; left: 15px; top: 15px; 
+            display: flex; gap: 10px; opacity: 0; transition: opacity 0.3s;
         }
-        .post-author { font-size: 1.5rem; color: var(--primary); font-weight: bold; margin-bottom: 15px; }
-        .post-text { font-size: 1.2rem; line-height: 1.6; color: white; }
-        .post-date { margin-top: 20px; font-size: 0.8rem; color: #888; }
+        .diary-post:hover .post-actions { opacity: 1; }
+        .delete-post { color: #ff5555; cursor: pointer; }
+        .admin-post { background: rgba(0, 242, 255, 0.1); border-color: var(--primary); }
         
-        .scroll-hint {
-            position: absolute; bottom: 120px; left: 50%; transform: translateX(-50%);
-            color: white; animation: bounce 2s infinite; font-size: 24px; opacity: 0.7; pointer-events: none;
-        }
-        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateX(-50%) translateY(0);} 40% {transform: translateX(-50%) translateY(-10px);} 60% {transform: translateX(-50%) translateY(-5px);} }
-
-        /* زر إضافة يوميات */
+        /* زر الإضافة */
         .add-diary-btn {
-            position: fixed; bottom: 110px; left: 20px;
-            width: 50px; height: 50px; background: var(--secondary);
-            border-radius: 50%; display: grid; place-items: center; color: white;
-            font-size: 24px; cursor: pointer; z-index: 100; box-shadow: 0 0 20px var(--secondary);
+            position: fixed; 
+            bottom: 180px;
+            left: 20px;
+            width: 55px; height: 55px; 
+            background: var(--secondary);
+            border-radius: 50%; 
+            display: grid; place-items: center; 
+            color: white; font-size: 24px; 
+            cursor: pointer; 
+            z-index: 9999;
+            box-shadow: 0 0 15px var(--secondary);
         }
+        .add-diary-btn:active { transform: scale(0.95); }
 
-        /* نافذة كتابة المنشور */
-        .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000;
-            display: none; align-items: center; justify-content: center; padding: 20px;
-        }
-        .modal-box { background: #222; padding: 25px; border-radius: 15px; width: 100%; max-width: 500px; border: 1px solid var(--primary); }
-        .inp { width: 100%; padding: 12px; background: #000; border: 1px solid #444; color: white; margin-bottom: 10px; border-radius: 5px; }
-        .btn { width: 100%; padding: 12px; background: var(--primary); color: black; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; }
-
-        /* شريط المشغل السفلي */
+        /* --- شريط الموسيقى --- */
         .music-bar {
-            position: fixed; bottom: 0; left: 0; right: 0; height: var(--player-h);
-            background: rgba(0, 0, 0, 0.9); border-top: 1px solid rgba(255,255,255,0.1);
+            position: fixed; bottom: 0; left: 0; right: 80px; height: var(--player-h);
+            background: rgba(10, 10, 15, 0.95); border-top: 1px solid rgba(255,255,255,0.1);
             display: flex; align-items: center; justify-content: space-between;
-            padding: 0 20px; z-index: 100;
+            padding: 0 15px; z-index: 400;
         }
-        .controls { display: flex; gap: 20px; align-items: center; }
-        .ctrl-btn { background: none; border: none; color: white; font-size: 20px; cursor: pointer; transition: 0.2s; }
-        .ctrl-btn:hover { color: var(--primary); }
-        .play-main { width: 50px; height: 50px; background: white; color: black; border-radius: 50%; display: grid; place-items: center; font-size: 20px; }
-        .playlist-toggle { 
-            background: rgba(255,255,255,0.1); padding: 5px 15px; border-radius: 15px; 
-            font-size: 12px; display: flex; align-items: center; gap: 5px; cursor: pointer;
+        .controls { display: flex; gap: 15px; align-items: center; }
+        .play-main { 
+            width: 45px; height: 45px; background: white; color: black; 
+            border-radius: 50%; display: grid; place-items: center; font-size: 18px; 
         }
-        .playlist-toggle.active { background: var(--primary); color: black; }
 
-        /* موبايل */
+        /* القائمة المنزلقة للموسيقى */
+        .playlist-drawer {
+            position: fixed; bottom: var(--player-h); left: 0; right: 80px;
+            background: rgba(20,20,30,0.98); border-top: 1px solid var(--primary);
+            max-height: 0; overflow-y: auto; transition: 0.3s; z-index: 350;
+        }
+        .playlist-drawer.open { max-height: 50vh; }
+        .song-item { padding: 15px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; }
+        .song-item.playing { color: var(--primary); background: rgba(0,242,255,0.1); }
+
+        /* إحصائيات الزوار */
+        .visitors-stats {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            border: 1px solid var(--primary);
+        }
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #333;
+        }
+        .stat-value {
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        /* --- الموبايل --- */
         @media (max-width: 768px) {
             .sidebar { 
-                width: 100%; height: 60px; bottom: 0; top: auto; flex-direction: row; 
-                justify-content: space-around; border-top: 1px solid #333; border-left: none; padding: 0;
+                width: 100%; height: var(--sidebar-h); 
+                bottom: 0; top: auto; position: fixed;
+                flex-direction: row; justify-content: space-around;
+                padding: 0; border-top: 1px solid #333; border-left: none;
+                z-index: 1000;
             }
-            .sidebar:hover { width: 100%; }
-            .nav-btn { flex-direction: column; padding: 5px; margin: 0; gap: 2px; }
-            .nav-btn span { display: block; font-size: 10px; }
-            .nav-btn i { font-size: 18px; }
-            .sidebar .brand { display: none; }
-            .playlist-drawer { right: 0; bottom: 150px; /* فوق البار السفلي */ }
-            .music-bar { bottom: 60px; /* فوق القائمة */ }
-            .add-diary-btn { bottom: 160px; }
+            
+            .music-bar { 
+                right: 0; bottom: var(--sidebar-h); 
+                z-index: 900; 
+            }
+            
+            .playlist-drawer {
+                right: 0; bottom: calc(var(--sidebar-h) + var(--player-h));
+            }
+            
+            .add-diary-btn { bottom: 170px; }
+            
+            .content { padding-bottom: 200px; }
+            
+            .post-actions { opacity: 1; }
         }
 
+        /* --- النوافذ المنبثقة --- */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000;
+            display: none; align-items: center; justify-content: center; padding: 20px;
+        }
+        .modal-box { 
+            background: #151520; padding: 25px; border-radius: 20px; width: 100%; max-width: 450px; 
+            border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        .inp { 
+            width: 100%; background: #0a0a10; border: 1px solid #333; 
+            padding: 15px; color: white; border-radius: 10px; margin-bottom: 15px; 
+            font-family: inherit;
+        }
+        .btn { 
+            width: 100%; padding: 12px; background: var(--primary); color: black; 
+            border: none; border-radius: 30px; font-weight: bold; font-size: 16px; cursor: pointer; 
+        }
+        .btn-red { background: #ff0055; color: white; }
+        .btn-gray { background: #333; color: white; }
+
+        /* خيارات النشر */
+        .post-options {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .post-option-btn {
+            flex: 1;
+            padding: 10px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            text-align: center;
+        }
+        .post-option-btn.active {
+            background: var(--primary);
+            color: black;
+        }
     </style>
 </head>
 <body>
 
     <div id="bg-slideshow"></div>
-    <div class="grid-overlay"></div>
+
+    <div class="admin-trigger-top" onclick="openAdminCheck()">
+        <i class="fas fa-user-shield"></i>
+    </div>
 
     <div class="layout">
         <nav class="sidebar">
-            <div class="brand">MY <span>UNIVERSE</span></div>
-            
             <div class="nav-btn active" onclick="go('home')">
                 <i class="fas fa-home"></i> <span>الرئيسية</span>
             </div>
-            
             <div class="nav-btn" onclick="go('music')">
                 <i class="fas fa-music"></i> <span>الموسيقى</span>
             </div>
-            
             <div class="nav-btn" onclick="go('diaries')">
                 <i class="fas fa-book-open"></i> <span>يومياتي</span>
-            </div>
-
-            <div class="nav-btn" onclick="openAdminCheck()" style="margin-top: auto;">
-                <i class="fas fa-user-shield"></i>
             </div>
         </nav>
 
         <main class="content">
-            
             <div id="view-home" class="section active">
                 <div class="hero-center">
-                    <h1 class="hero-title" id="display-welcome">WELCOME</h1>
-                    <p class="hero-sub">Music & Vibes</p>
+                    <h1 class="hero-title" id="disp-welcome">WELCOME</h1>
+                    <p style="color:#aaa;">Music & Vibes</p>
                 </div>
             </div>
 
-            <div id="view-music" class="section" style="display:none;">
-                </div>
+            <div id="view-music" class="section" style="display:none;"></div>
 
             <div id="view-diaries" class="section" style="display:none;">
-                <div id="diaries-feed" class="diaries-container">
-                    </div>
+                <div style="text-align:center; margin-bottom:20px;">
+                    <h2>يوميات الزوار 📖</h2>
+                    <p style="color:#aaa; font-size:12px;">شاركنا أفكارك هنا</p>
+                </div>
+                <div id="diaries-feed" class="diaries-container"></div>
                 
-                <div class="add-diary-btn" onclick="document.getElementById('diary-modal').style.display='flex'">
+                <div class="add-diary-btn" onclick="openDiaryModal()">
                     <i class="fas fa-plus"></i>
                 </div>
             </div>
-
         </main>
     </div>
 
-    <div id="diary-modal" class="modal-overlay">
-        <div class="modal-box">
-            <h3 style="color:var(--primary)">نشر في اليوميات 📝</h3>
-            <input id="diary-author" class="inp" placeholder="اسمك المستعار (مثلاً: عاشق الليل)">
-            <textarea id="diary-content" class="inp" rows="5" placeholder="اكتب ما يخطر في بالك..."></textarea>
-            <button class="btn" onclick="publishDiary()">نشر الآن</button>
-            <button class="btn" style="background:#333; margin-top:10px; color:white;" onclick="document.getElementById('diary-modal').style.display='none'">إلغاء</button>
+    <div class="music-bar">
+        <div onclick="togglePlaylist()" style="display:flex; align-items:center; gap:5px; cursor:pointer;">
+            <i class="fas fa-list"></i> <span style="font-size:12px;">القائمة</span>
+        </div>
+        <div id="player-title" style="font-size:14px; font-weight:bold;">اختر أغنية</div>
+        <div class="controls">
+            <i class="fas fa-step-forward" onclick="prevSong()" style="cursor:pointer;"></i>
+            <div class="play-main" onclick="togglePlay()"><i id="play-icon" class="fas fa-play"></i></div>
+            <i class="fas fa-step-backward" onclick="nextSong()" style="cursor:pointer;"></i>
         </div>
     </div>
 
     <div id="playlist-drawer" class="playlist-drawer">
-        <div style="padding:15px; background:rgba(255,255,255,0.05); display:flex; justify-content:space-between;">
-            <span>مكتبة الأغاني</span>
-            <span style="font-size:12px; color:#aaa;">اختر للاستماع</span>
-        </div>
-        <div id="music-list-container"></div>
+        <div id="music-list-con"></div>
     </div>
 
-    <div class="music-bar">
-        <div class="playlist-toggle" onclick="togglePlaylist()" id="plist-btn">
-            <i class="fas fa-list"></i> القائمة
-        </div>
-
-        <div style="text-align: center; flex:1;">
-            <div id="player-song-name" style="font-size:14px; font-weight:bold;">اختر موسيقى</div>
-        </div>
-
-        <div class="controls">
-            <button class="ctrl-btn" onclick="prevSong()"><i class="fas fa-step-forward"></i></button>
-            <button class="ctrl-btn play-main" onclick="togglePlay()"><i id="play-icon" class="fas fa-play"></i></button>
-            <button class="ctrl-btn" onclick="nextSong()"><i class="fas fa-step-backward"></i></button>
+    <!-- نافذة النشر للزوار -->
+    <div id="diary-modal" class="modal-overlay">
+        <div class="modal-box">
+            <h3>إضافة منشور ✍️</h3>
+            <div id="post-options" class="post-options" style="display: none;">
+                <div class="post-option-btn active" onclick="setPostType('visitor')">زائر</div>
+                <div class="post-option-btn" onclick="setPostType('admin')">مدير</div>
+            </div>
+            <input id="d-name" class="inp" placeholder="الاسم المستعار">
+            <textarea id="d-msg" class="inp" rows="4" placeholder="اكتب هنا..."></textarea>
+            <button class="btn" onclick="publishDiary()">نشر</button>
+            <button onclick="closeDiaryModal()" class="btn btn-gray" style="margin-top:10px;">إلغاء</button>
         </div>
     </div>
 
+    <!-- لوحة التحكم -->
     <div id="admin-panel" class="modal-overlay">
         <div class="modal-box">
-            <div style="display:flex; justify-content:space-between;">
-                <h3>لوحة التحكم</h3>
-                <button onclick="document.getElementById('admin-panel').style.display='none'" style="color:red; background:none; border:none;">✕</button>
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+                <h3>لوحة التحكم ⚙️</h3>
+                <button onclick="closeAdminPanel()" style="color:red; background:none; border:none; cursor:pointer; font-size:20px;">✕</button>
             </div>
             
-            <div style="margin-bottom:20px;">
-                <label style="font-size:12px; color:#aaa;">رسالة الترحيب في الرئيسية:</label>
-                <input id="adm-welcome-msg" class="inp" placeholder="اكتب رسالة الترحيب هنا">
-                <button onclick="saveSettings()" class="btn" style="padding:8px;">حفظ الرسالة</button>
+            <!-- إحصائيات الزوار -->
+            <div class="visitors-stats">
+                <h4>📊 إحصائيات الموقع</h4>
+                <div class="stat-item">
+                    <span>إجمالي الزوار:</span>
+                    <span id="total-visitors" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>الزوار اليوم:</span>
+                    <span id="today-visitors" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>المنشورات:</span>
+                    <span id="total-posts" class="stat-value">0</span>
+                </div>
+                <button onclick="refreshStats()" class="btn" style="margin-top:10px; padding:8px;">
+                    <i class="fas fa-sync-alt"></i> تحديث الإحصائيات
+                </button>
+                <div style="margin-top:10px; display:flex; gap:10px;">
+                    <label style="font-size:14px;">
+                        <input type="checkbox" id="show-visitors-public" onchange="toggleVisitorsPublic()">
+                        إظهار عدد الزوار للعامة
+                    </label>
+                </div>
             </div>
 
-            <hr style="border-color:#333; margin:15px 0;">
+            <hr style="border-color:#333">
 
-            <div style="display:flex; gap:5px; margin-bottom:10px;">
-                <input id="adm-song-name" class="inp" placeholder="اسم الأغنية">
-                <input id="adm-song-url" class="inp" placeholder="رابط MP3">
-            </div>
-            <button onclick="addMusic()" class="btn">إضافة أغنية</button>
+            <h4>تغيير رسالة الترحيب</h4>
+            <input id="adm-wel" class="inp" placeholder="رسالة الترحيب الجديدة">
+            <button onclick="saveWel()" class="btn" style="margin-bottom:20px;">حفظ الرسالة</button>
+
+            <hr style="border-color:#333">
+
+            <h4>نشر باسم المدير</h4>
+            <textarea id="admin-post-msg" class="inp" rows="3" placeholder="رسالة المدير..."></textarea>
+            <button onclick="publishAsAdmin()" class="btn">نشر باسم المدير</button>
+
+            <hr style="border-color:#333">
+
+            <h4>إدارة الأغاني</h4>
+            <input id="adm-s-name" class="inp" placeholder="اسم الأغنية">
+            <input id="adm-s-url" class="inp" placeholder="رابط MP3">
+            <button onclick="addMusic()" class="btn">إضافة للقائمة</button>
             
-            <hr style="border-color:#333; margin:15px 0;">
+            <hr style="border-color:#333; margin-top:20px;">
             
-            <input id="adm-img-url" class="inp" placeholder="رابط صورة للخلفية">
-            <button onclick="addSlide()" class="btn" style="margin-top:5px;">إضافة صورة</button>
-
-            <div style="margin-top:20px; font-size:12px; color:#888;">
-                * لحذف أغنية، اذهب للقائمة واضغط على الزر الأحمر بجانبها.
-            </div>
+            <h4>إدارة الخلفيات</h4>
+            <input id="adm-img" class="inp" placeholder="رابط الصورة">
+            <button onclick="addSlide()" class="btn">إضافة خلفية</button>
         </div>
     </div>
 
     <audio id="audio-player"></audio>
 
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <!-- Firebase SDK v9 (النسخة المعدلة) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, set, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-    <script>
-        const ADMIN_EMAIL = "ahmshowpic@gmail.com"; 
         const firebaseConfig = {
             apiKey: "AIzaSyCUK7SXiX_uBObNqWjM5u-eKUKkCTwCJKc",
             authDomain: "mypersonalapp-2f2cc.firebaseapp.com",
@@ -330,79 +384,327 @@
             messagingSenderId: "1093218114240",
             appId: "1:1093218114240:web:e082d82c94c286d2c6eb25"
         };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        const auth = firebase.auth();
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const auth = getAuth(app);
+
+        // إعدادات الأدمن
+        const ADMIN_EMAIL = "ahmshowpic@gmail.com"; 
         
+        let isAdmin = false;
         let playList = [];
         let curIndex = 0;
-        let isAdmin = false;
+        let postType = 'visitor'; // 'visitor' or 'admin'
         const audio = document.getElementById('audio-player');
+        let visitorCount = 0;
+        let todayVisitorCount = 0;
 
-        // --- 1. التحقق من المستخدم ---
+        // تسجيل زائر جديد
+        function registerVisitor() {
+            const today = new Date().toDateString();
+            const visitorKey = 'visitor_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            
+            const visitorData = {
+                timestamp: Date.now(),
+                date: today,
+                userAgent: navigator.userAgent
+            };
+            
+            // تسجيل الزيارة
+            const newVisitorRef = push(ref(db, 'visitors'));
+            set(newVisitorRef, visitorData);
+            
+            // تحديث إحصائيات اليوم
+            const todayStatsRef = ref(db, 'stats/today/' + today);
+            onValue(todayStatsRef, (snapshot) => {
+                const count = snapshot.exists() ? snapshot.val().count : 0;
+                update(todayStatsRef, { count: count + 1 });
+            }, { onlyOnce: true });
+            
+            // تحديث الإحصائيات العامة
+            const totalStatsRef = ref(db, 'stats/total');
+            onValue(totalStatsRef, (snapshot) => {
+                const total = snapshot.exists() ? snapshot.val().count : 0;
+                update(totalStatsRef, { count: total + 1 });
+            }, { onlyOnce: true });
+        }
+
+        // تحميل إحصائيات الزوار
+        function loadVisitorStats() {
+            const today = new Date().toDateString();
+            
+            // إجمالي الزوار
+            const totalRef = ref(db, 'stats/total');
+            onValue(totalRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    visitorCount = snapshot.val().count;
+                    document.getElementById('total-visitors').textContent = visitorCount;
+                }
+            });
+            
+            // زوار اليوم
+            const todayRef = ref(db, 'stats/today/' + today);
+            onValue(todayRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    todayVisitorCount = snapshot.val().count;
+                    document.getElementById('today-visitors').textContent = todayVisitorCount;
+                } else {
+                    document.getElementById('today-visitors').textContent = '0';
+                }
+            });
+            
+            // عدد المنشورات
+            const postsRef = ref(db, 'diaries');
+            onValue(postsRef, (snapshot) => {
+                const count = snapshot.exists() ? Object.keys(snapshot.val()).length : 0;
+                document.getElementById('total-posts').textContent = count;
+            });
+        }
+
+        // التحقق من حالة الأدمن
         auth.onAuthStateChanged(user => {
             isAdmin = (user && user.email === ADMIN_EMAIL);
-            loadMusic(); // إعادة تحميل الموسيقى لعرض أزرار الحذف للأدمن
+            if (isAdmin) {
+                document.getElementById('post-options').style.display = 'flex';
+            }
+            loadMusic();
+            loadVisitorStats();
         });
 
-        // --- 2. التنقل ---
+        // تسجيل الزائر عند التحميل
+        window.addEventListener('load', () => {
+            registerVisitor();
+            loadVisitorStats();
+        });
+
+        // --- وظائف التنقل ---
         function go(id) {
             document.querySelectorAll('.section').forEach(e => e.classList.remove('active'));
             document.getElementById('view-'+id).classList.add('active');
+            
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            // تحديد الزر النشط تقريبياً
-            if(id=='home') document.querySelectorAll('.nav-btn')[0].classList.add('active');
-            if(id=='music') document.querySelectorAll('.nav-btn')[1].classList.add('active');
-            if(id=='diaries') document.querySelectorAll('.nav-btn')[2].classList.add('active');
+            if(id === 'home') document.querySelectorAll('.nav-btn')[0].classList.add('active');
+            if(id === 'music') document.querySelectorAll('.nav-btn')[1].classList.add('active');
+            if(id === 'diaries') document.querySelectorAll('.nav-btn')[2].classList.add('active');
         }
 
-        // --- 3. قسم الموسيقى والتحكم ---
-        function loadMusic() {
-            db.ref('music').on('value', snap => {
-                const list = document.getElementById('music-list-container');
-                list.innerHTML = "";
-                playList = [];
-                let i = 0;
-                if(snap.exists()) {
-                    snap.forEach(c => {
-                        const s = c.val();
-                        playList.push({...s, key:c.key});
-                        list.innerHTML += `
-                            <div class="song-item" onclick="playIndex(${i})">
-                                <i class="fas fa-music" style="margin-left:10px;"></i>
-                                <div style="flex:1;">${s.name}</div>
-                                ${isAdmin ? `<button onclick="delMusic('${c.key}', event)" style="color:red; background:none; border:none;">✕</button>` : ''}
-                            </div>
-                        `;
-                        i++;
+        function openDiaryModal() {
+            document.getElementById('diary-modal').style.display = 'flex';
+            document.getElementById('d-name').value = '';
+            document.getElementById('d-msg').value = '';
+            
+            if (isAdmin) {
+                document.getElementById('post-options').style.display = 'flex';
+                setPostType('visitor');
+            }
+        }
+
+        function closeDiaryModal() {
+            document.getElementById('diary-modal').style.display = 'none';
+        }
+
+        function setPostType(type) {
+            postType = type;
+            document.querySelectorAll('.post-option-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (type === 'admin') {
+                document.getElementById('d-name').value = 'المدير';
+                document.getElementById('d-name').readOnly = true;
+            } else {
+                document.getElementById('d-name').value = '';
+                document.getElementById('d-name').readOnly = false;
+            }
+        }
+
+        // --- وظائف اليوميات ---
+        function loadDiaries() {
+            const diariesRef = ref(db, 'diaries');
+            onValue(diariesRef, (snapshot) => {
+                const feed = document.getElementById('diaries-feed');
+                feed.innerHTML = "";
+                
+                if (snapshot.exists()) {
+                    const diaries = snapshot.val();
+                    const diaryKeys = Object.keys(diaries);
+                    
+                    // عرض المنشورات من الأحدث إلى الأقدم
+                    diaryKeys.reverse().forEach(key => {
+                        const diary = diaries[key];
+                        const diaryElement = createDiaryElement(key, diary);
+                        feed.appendChild(diaryElement);
                     });
                 } else {
-                    list.innerHTML = "<div style='padding:20px; color:#aaa'>القائمة فارغة</div>";
+                    feed.innerHTML = "<div style='text-align:center; padding:20px; color:#777;'>كن أول من يكتب!</div>";
+                }
+            });
+        }
+
+        function createDiaryElement(key, diary) {
+            const div = document.createElement('div');
+            div.className = 'diary-post';
+            if (diary.isAdmin) {
+                div.classList.add('admin-post');
+            }
+            
+            const date = new Date(diary.timestamp);
+            const dateStr = date.toLocaleDateString('ar-EG', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            div.innerHTML = `
+                ${isAdmin ? `
+                    <div class="post-actions">
+                        <i class="fas fa-trash delete-post" onclick="deletePost('${key}', event)"></i>
+                    </div>
+                ` : ''}
+                <div class="post-author">${diary.author} ${diary.isAdmin ? '👑' : ''}</div>
+                <div class="post-text">${diary.message}</div>
+                <div class="post-date">${dateStr}</div>
+            `;
+            
+            return div;
+        }
+
+        function publishDiary() {
+            const author = document.getElementById('d-name').value;
+            const message = document.getElementById('d-msg').value;
+            
+            if (!author.trim() || !message.trim()) {
+                alert('يرجى كتابة الاسم والرسالة');
+                return;
+            }
+            
+            const diaryData = {
+                author: author,
+                message: message,
+                timestamp: Date.now(),
+                isAdmin: postType === 'admin'
+            };
+            
+            push(ref(db, 'diaries'), diaryData)
+                .then(() => {
+                    closeDiaryModal();
+                    if (postType === 'admin') {
+                        alert('تم النشر باسم المدير بنجاح!');
+                    } else {
+                        alert('تم نشر منشورك بنجاح!');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error publishing diary:', error);
+                    alert('حدث خطأ أثناء النشر');
+                });
+        }
+
+        function publishAsAdmin() {
+            const message = document.getElementById('admin-post-msg').value;
+            
+            if (!message.trim()) {
+                alert('يرجى كتابة الرسالة');
+                return;
+            }
+            
+            const diaryData = {
+                author: 'المدير',
+                message: message,
+                timestamp: Date.now(),
+                isAdmin: true
+            };
+            
+            push(ref(db, 'diaries'), diaryData)
+                .then(() => {
+                    document.getElementById('admin-post-msg').value = '';
+                    alert('تم النشر باسم المدير بنجاح!');
+                })
+                .catch(error => {
+                    console.error('Error publishing as admin:', error);
+                    alert('حدث خطأ أثناء النشر');
+                });
+        }
+
+        function deletePost(postKey, event) {
+            event.stopPropagation();
+            if (confirm('هل أنت متأكد من حذف هذا المنشور؟')) {
+                remove(ref(db, 'diaries/' + postKey))
+                    .then(() => {
+                        alert('تم حذف المنشور بنجاح');
+                    })
+                    .catch(error => {
+                        console.error('Error deleting post:', error);
+                        alert('حدث خطأ أثناء الحذف');
+                    });
+            }
+        }
+
+        // --- وظائف الموسيقى ---
+        function loadMusic() {
+            const musicRef = ref(db, 'music');
+            onValue(musicRef, (snapshot) => {
+                const con = document.getElementById('music-list-con');
+                con.innerHTML = "";
+                playList = [];
+                
+                if (snapshot.exists()) {
+                    const musicList = snapshot.val();
+                    let index = 0;
+                    
+                    Object.keys(musicList).forEach(key => {
+                        const song = musicList[key];
+                        playList.push({...song, key: key});
+                        
+                        const songItem = document.createElement('div');
+                        songItem.className = 'song-item';
+                        songItem.onclick = () => playIndex(index);
+                        
+                        songItem.innerHTML = `
+                            <span>${song.name}</span>
+                            ${isAdmin ? `<span onclick="delMusic('${key}', event)" style="color:red; cursor:pointer;">✕</span>` : ''}
+                        `;
+                        
+                        con.appendChild(songItem);
+                        index++;
+                    });
+                } else {
+                    con.innerHTML = "<div style='padding:15px; color:#aaa'>لا توجد أغاني</div>";
                 }
             });
         }
 
         function playIndex(i) {
-            if(i<0 || i>=playList.length) return;
+            if (i < 0 || i >= playList.length) return;
+            
             curIndex = i;
             audio.src = playList[i].url;
-            audio.play();
-            document.getElementById('player-song-name').innerText = playList[i].name;
-            document.getElementById('play-icon').className = "fas fa-pause";
-            
-            // تمييز الأغنية
-            document.querySelectorAll('.song-item').forEach((el, idx) => {
-                if(idx===i) el.classList.add('playing');
-                else el.classList.remove('playing');
+            audio.play().then(() => {
+                document.getElementById('player-title').textContent = playList[i].name;
+                document.getElementById('play-icon').className = "fas fa-pause";
+                
+                // إزالة التحديد من جميع العناصر وإضافة للعنصر الحالي
+                document.querySelectorAll('.song-item').forEach((item, idx) => {
+                    if (idx === i) {
+                        item.classList.add('playing');
+                    } else {
+                        item.classList.remove('playing');
+                    }
+                });
+                
+                togglePlaylist();
+            }).catch(error => {
+                console.error('Error playing audio:', error);
+                alert('حدث خطأ في تشغيل الصوت');
             });
-
-            // إخفاء القائمة تلقائياً بعد الاختيار (للاستمتاع بالخلفية)
-            togglePlaylist(false);
         }
 
         function togglePlay() {
-            if(!audio.src && playList.length) playIndex(0);
-            else if(audio.paused) {
+            if (!audio.src && playList.length > 0) {
+                playIndex(0);
+            } else if (audio.paused) {
                 audio.play();
                 document.getElementById('play-icon').className = "fas fa-pause";
             } else {
@@ -410,138 +712,193 @@
                 document.getElementById('play-icon').className = "fas fa-play";
             }
         }
-        function nextSong() { playIndex((curIndex+1)%playList.length); }
-        function prevSong() { playIndex((curIndex-1+playList.length)%playList.length); }
 
-        function togglePlaylist(forceState) {
-            const d = document.getElementById('playlist-drawer');
-            const b = document.getElementById('plist-btn');
-            const isOpen = d.classList.contains('open');
-            
-            if (forceState === false || (forceState === undefined && isOpen)) {
-                d.classList.remove('open');
-                b.classList.remove('active');
-            } else {
-                d.classList.add('open');
-                b.classList.add('active');
-            }
+        function nextSong() {
+            if (playList.length === 0) return;
+            playIndex((curIndex + 1) % playList.length);
         }
 
-        // --- 4. الخلفيات (Slideshow) ---
-        db.ref('slideshow').on('value', snap => {
-            const con = document.getElementById('bg-slideshow');
-            con.innerHTML = "";
-            const slides = [];
-            if(snap.exists()) {
-                snap.forEach(c => {
-                    slides.push(c.val().url);
-                    con.innerHTML += `<img src="${c.val().url}" class="bg-slide">`;
-                });
-                startSlides(slides.length);
-            } else {
-                con.innerHTML = `<img src="https://images.unsplash.com/photo-1511447333015-45b65e60f6d5?q=80&w=1920" class="bg-slide active">`;
-            }
-        });
-        
-        let slideTimer;
-        function startSlides(len) {
-            clearInterval(slideTimer);
-            if(len < 2) {
-                if(document.querySelector('.bg-slide')) document.querySelector('.bg-slide').classList.add('active');
-                return;
-            }
-            let idx = 0;
-            const imgs = document.querySelectorAll('.bg-slide');
-            imgs[0].classList.add('active');
-            slideTimer = setInterval(() => {
-                imgs[idx].classList.remove('active');
-                idx = (idx+1)%len;
-                imgs[idx].classList.add('active');
-            }, 6000);
+        function prevSong() {
+            if (playList.length === 0) return;
+            playIndex((curIndex - 1 + playList.length) % playList.length);
         }
 
-        // --- 5. قسم اليوميات (Diaries) ---
-        db.ref('diaries').limitToLast(20).on('value', snap => {
-            const feed = document.getElementById('diaries-feed');
-            feed.innerHTML = ""; 
-            if(snap.exists()) {
-                const posts = [];
-                snap.forEach(c => posts.push(c.val()));
-                // نعكس الترتيب ليظهر الأحدث أولاً
-                posts.reverse().forEach(p => {
-                    feed.innerHTML += `
-                        <div class="diary-post">
-                            <div class="post-content-box">
-                                <div class="post-author">${p.author}</div>
-                                <div class="post-text">${p.text}</div>
-                                <div class="post-date">${p.date}</div>
-                            </div>
-                            <div class="scroll-hint"><i class="fas fa-chevron-down"></i></div>
-                        </div>
-                    `;
-                });
-                // إزالة سهم التلميح من آخر منشور
-                if(feed.lastElementChild) {
-                    feed.lastElementChild.querySelector('.scroll-hint').style.display='none';
-                }
-            } else {
-                feed.innerHTML = `<div class="diary-post"><div class="post-content-box"><h3>لا توجد يوميات بعد</h3><p>كن أول من يكتب هنا!</p></div></div>`;
-            }
-        });
-
-        function publishDiary() {
-            const author = document.getElementById('diary-author').value;
-            const text = document.getElementById('diary-content').value;
-            if(author && text) {
-                db.ref('diaries').push({
-                    author: author,
-                    text: text,
-                    date: new Date().toLocaleString()
-                });
-                document.getElementById('diary-modal').style.display='none';
-                document.getElementById('diary-content').value = "";
-            } else {
-                alert("الرجاء كتابة الاسم والنص");
-            }
+        function togglePlaylist() {
+            const drawer = document.getElementById('playlist-drawer');
+            drawer.classList.toggle('open');
         }
 
-        // --- 6. الإعدادات والترحيب ---
-        db.ref('settings/welcome').on('value', snap => {
-            if(snap.exists()) document.getElementById('display-welcome').innerText = snap.val();
-        });
-
-        function saveSettings() {
-            const msg = document.getElementById('adm-welcome-msg').value;
-            if(msg) {
-                db.ref('settings/welcome').set(msg);
-                alert("تم تحديث رسالة الترحيب");
-            }
-        }
-
-        // --- 7. وظائف الأدمن ---
+        // --- وظائف الأدمن ---
         function openAdminCheck() {
-            if(isAdmin) {
-                document.getElementById('admin-panel').style.display='flex';
+            if (isAdmin) {
+                openAdminPanel();
             } else {
-                const provider = new firebase.auth.GoogleAuthProvider();
-                auth.signInWithPopup(provider).then(res => {
-                    if(res.user.email === ADMIN_EMAIL) {
-                        document.getElementById('admin-panel').style.display='flex';
-                    } else { alert("لست المدير!"); auth.signOut(); }
-                });
+                const provider = new GoogleAuthProvider();
+                signInWithPopup(auth, provider)
+                    .then((result) => {
+                        if (result.user.email === ADMIN_EMAIL) {
+                            isAdmin = true;
+                            openAdminPanel();
+                        } else {
+                            alert('لست المدير المصرح له!');
+                            auth.signOut();
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Auth error:', error);
+                        alert('حدث خطأ في المصادقة');
+                    });
             }
         }
-        function addMusic() {
-            const n = document.getElementById('adm-song-name').value;
-            const u = document.getElementById('adm-song-url').value;
-            if(n&&u) { db.ref('music').push({name:n, url:u}); alert("تم"); }
-        }
-        function delMusic(k, e){ e.stopPropagation(); if(confirm("حذف؟")) db.ref('music/'+k).remove(); }
-        function addSlide() {
-            const u = document.getElementById('adm-img-url').value;
-            if(u) db.ref('slideshow').push({url:u});
+
+        function openAdminPanel() {
+            document.getElementById('admin-panel').style.display = 'flex';
+            loadVisitorStats();
         }
 
+        function closeAdminPanel() {
+            document.getElementById('admin-panel').style.display = 'none';
+        }
+
+        function saveWel() {
+            const welcomeText = document.getElementById('adm-wel').value;
+            if (welcomeText.trim()) {
+                set(ref(db, 'settings/welcome'), welcomeText)
+                    .then(() => {
+                        alert('تم حفظ رسالة الترحيب بنجاح');
+                    })
+                    .catch(error => {
+                        console.error('Error saving welcome:', error);
+                        alert('حدث خطأ في الحفظ');
+                    });
+            }
+        }
+
+        function addMusic() {
+            const name = document.getElementById('adm-s-name').value;
+            const url = document.getElementById('adm-s-url').value;
+            
+            if (name.trim() && url.trim()) {
+                push(ref(db, 'music'), { name: name, url: url })
+                    .then(() => {
+                        document.getElementById('adm-s-name').value = '';
+                        document.getElementById('adm-s-url').value = '';
+                        alert('تمت إضافة الأغنية بنجاح');
+                    })
+                    .catch(error => {
+                        console.error('Error adding music:', error);
+                        alert('حدث خطأ في الإضافة');
+                    });
+            }
+        }
+
+        function delMusic(key, event) {
+            event.stopPropagation();
+            if (confirm('هل أنت متأكد من حذف هذه الأغنية؟')) {
+                remove(ref(db, 'music/' + key))
+                    .then(() => {
+                        alert('تم حذف الأغنية بنجاح');
+                    })
+                    .catch(error => {
+                        console.error('Error deleting music:', error);
+                        alert('حدث خطأ في الحذف');
+                    });
+            }
+        }
+
+        function addSlide() {
+            const url = document.getElementById('adm-img').value;
+            if (url.trim()) {
+                push(ref(db, 'slideshow'), { url: url })
+                    .then(() => {
+                        document.getElementById('adm-img').value = '';
+                        alert('تمت إضافة الخلفية بنجاح');
+                    })
+                    .catch(error => {
+                        console.error('Error adding slide:', error);
+                        alert('حدث خطأ في الإضافة');
+                    });
+            }
+        }
+
+        function refreshStats() {
+            loadVisitorStats();
+            alert('تم تحديث الإحصائيات');
+        }
+
+        function toggleVisitorsPublic() {
+            const showPublic = document.getElementById('show-visitors-public').checked;
+            set(ref(db, 'settings/showVisitorsPublic'), showPublic)
+                .then(() => {
+                    alert(`تم ${showPublic ? 'إظهار' : 'إخفاء'} عدد الزوار للعامة`);
+                });
+        }
+
+        // --- تحميل بيانات إضافية ---
+        // تحميل رسالة الترحيب
+        onValue(ref(db, 'settings/welcome'), (snapshot) => {
+            if (snapshot.exists()) {
+                document.getElementById('disp-welcome').textContent = snapshot.val();
+            }
+        });
+
+        // تحميل الخلفيات
+        onValue(ref(db, 'slideshow'), (snapshot) => {
+            const container = document.getElementById('bg-slideshow');
+            container.innerHTML = "";
+            
+            if (snapshot.exists()) {
+                const slides = snapshot.val();
+                Object.values(slides).forEach(slide => {
+                    const img = document.createElement('img');
+                    img.src = slide.url;
+                    img.className = 'bg-slide active';
+                    container.appendChild(img);
+                });
+            } else {
+                // صورة افتراضية
+                const img = document.createElement('img');
+                img.src = 'https://images.unsplash.com/photo-1511447333015-45b65e60f6d5?w=1920';
+                img.className = 'bg-slide active';
+                container.appendChild(img);
+            }
+            
+            // تدوير الصور
+            const images = container.querySelectorAll('.bg-slide');
+            if (images.length > 1) {
+                let currentIndex = 0;
+                setInterval(() => {
+                    images[currentIndex].style.opacity = 0;
+                    currentIndex = (currentIndex + 1) % images.length;
+                    images[currentIndex].style.opacity = 1;
+                }, 6000);
+            }
+        });
+
+        // تحميل اليوميات عند بدء التشغيل
+        loadDiaries();
+
+        // جعل الوظائف متاحة عالمياً
+        window.go = go;
+        window.openDiaryModal = openDiaryModal;
+        window.closeDiaryModal = closeDiaryModal;
+        window.setPostType = setPostType;
+        window.publishDiary = publishDiary;
+        window.publishAsAdmin = publishAsAdmin;
+        window.deletePost = deletePost;
+        window.openAdminCheck = openAdminCheck;
+        window.closeAdminPanel = closeAdminPanel;
+        window.saveWel = saveWel;
+        window.addMusic = addMusic;
+        window.delMusic = delMusic;
+        window.addSlide = addSlide;
+        window.refreshStats = refreshStats;
+        window.toggleVisitorsPublic = toggleVisitorsPublic;
+        window.playIndex = playIndex;
+        window.togglePlay = togglePlay;
+        window.nextSong = nextSong;
+        window.prevSong = prevSong;
+        window.togglePlaylist = togglePlaylist;
     </script>
 </body>
 </html>
