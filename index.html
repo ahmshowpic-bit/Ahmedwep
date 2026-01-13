@@ -29,6 +29,7 @@
             overflow: hidden;
         }
 
+        /* --- خلفية وتأثيرات --- */
         #dynamic-bg {
             position: fixed; inset: 0; z-index: -2;
             background-size: cover; background-position: center;
@@ -44,7 +45,7 @@
 
         .layout { display: flex; height: calc(100% - var(--player-h)); position: relative; }
         
-        /* القائمة الجانبية */
+        /* --- القائمة الجانبية (للزوار) --- */
         .sidebar {
             width: var(--sidebar-w); background: var(--panel-bg);
             border-left: 1px solid var(--border);
@@ -61,7 +62,7 @@
         .nav-btn:hover, .nav-btn.active { background: rgba(255,255,255,0.1); color: white; transform: translateX(-5px); }
         .nav-btn.active { border-right: 3px solid var(--primary); }
         
-        /* المحتوى */
+        /* --- المحتوى الرئيسي --- */
         .content { 
             flex: 1; padding: 20px; overflow-y: auto; position: relative; scroll-behavior: smooth; 
             padding-bottom: 100px; width: 100%;
@@ -80,7 +81,7 @@
             text-shadow: 0 0 30px rgba(0, 242, 255, 0.5); line-height: 1.4; margin: 0; white-space: pre-wrap;
         }
 
-        /* قوائم */
+        /* --- قوائم الأغاني --- */
         .song-list-container { 
             display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; 
         }
@@ -92,7 +93,7 @@
         .song-item.playing { border-color: var(--primary); background: rgba(0, 242, 255, 0.1); }
         .song-icon { width: 45px; height: 45px; background: #222; border-radius: 8px; background-size: cover; display: grid; place-items: center; flex-shrink: 0; }
 
-        /* اليوميات */
+        /* --- اليوميات --- */
         #diaries-list { margin-top: 20px; }
         .diary-card {
             background: rgba(30, 30, 40, 0.6); padding: 15px; 
@@ -109,7 +110,7 @@
 
         .visit-counter { font-size: 12px; color: var(--primary); margin-top: 10px; opacity: 0.8; display: none; }
 
-        /* المشغل */
+        /* --- مشغل الموسيقى --- */
         .music-bar {
             position: fixed; bottom: 0; left: 0; right: 0; height: var(--player-h);
             background: rgba(10, 10, 15, 0.98); border-top: 1px solid var(--border);
@@ -140,31 +141,70 @@
         .progress-container { width: 100%; height: 4px; background: #333; position: absolute; bottom: 0; left: 0; cursor: pointer; z-index: 101; }
         .progress-bar { height: 100%; background: var(--primary); width: 0%; position: relative; transition: width 0.1s linear; }
         
-        /* Inputs & Buttons */
+        /* --- المدخلات والأزرار --- */
         .inp-box { background: rgba(30,30,40,0.8); padding: 15px; border-radius: 15px; margin-bottom: 20px; border: 1px solid var(--border); }
         .inp { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid #444; padding: 12px; color: white; border-radius: 10px; margin-bottom: 10px; font-family: inherit; font-size: 14px; }
         .inp:focus { border-color: var(--primary); }
         .btn { background: var(--primary); color: #000; border: none; padding: 10px 20px; border-radius: 50px; font-weight: bold; cursor: pointer; margin-top: 5px; transition: 0.3s; font-size: 14px; }
         
-        /* Admin Panel */
-        .admin-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 200;
-            padding: 10px; overflow-y: auto; display: none; align-items: center; justify-content: center;
-        }
-        .admin-box { width: 100%; max-width: 500px; background: #151520; padding: 20px; border-radius: 20px; border: 1px solid var(--primary); }
+        /* ========================================================= */
+        /* ============== NEW ADMIN PANEL STYLES =================== */
+        /* ========================================================= */
         
-        /* Inbox Message Styling */
-        .msg-item {
-            background:#2a2a35; padding:12px; margin-bottom:10px; border-radius:8px; font-size:13px; border-right: 3px solid var(--secondary);
-            position: relative;
+        .admin-overlay {
+            position: fixed; inset: 0; z-index: 500;
+            background: #050508; display: none; /* Hidden by default */
+            padding: 0; align-items: stretch; justify-content: flex-start;
         }
-        .msg-header { display: flex; justify-content: space-between; margin-bottom: 5px; color: var(--primary); font-weight: bold; }
-        .msg-date { font-size: 10px; color: #888; margin-top: 5px; }
-        .delete-btn {
-            background: #ff4444; color: white; border: none; padding: 4px 10px; border-radius: 4px;
-            font-size: 11px; cursor: pointer; float: left; margin-top: 5px;
-        }
+        .admin-layout { display: flex; width: 100%; height: 100%; }
 
+        /* القائمة الجانبية للأدمن */
+        .admin-sidebar {
+            width: 250px; background: #111; border-left: 1px solid #333;
+            display: flex; flex-direction: column; padding: 20px;
+        }
+        .admin-sidebar h3 { color: var(--primary); margin-top: 0; margin-bottom: 30px; letter-spacing: 1px; font-size: 20px;}
+
+        .adm-nav-item {
+            padding: 12px 15px; margin-bottom: 8px; border-radius: 8px;
+            cursor: pointer; color: #888; transition: 0.3s; font-weight: bold;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .adm-nav-item:hover, .adm-nav-item.active { background: rgba(0, 242, 255, 0.1); color: white; }
+        .adm-nav-item.active { border-right: 3px solid var(--primary); }
+
+        /* محتوى الأدمن */
+        .admin-main { flex: 1; padding: 30px; overflow-y: auto; background: #0a0a0e; position: relative; }
+        .admin-section { display: none; animation: fadeIn 0.3s; }
+        .admin-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* شبكة الرسائل */
+        .msg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
+        .msg-card {
+            background: #1a1a22; border: 1px solid #333; border-radius: 12px; padding: 15px;
+            position: relative; transition: 0.2s; border-right: 3px solid var(--secondary);
+        }
+        .msg-card:hover { transform: translateY(-3px); border-color: var(--primary); }
+        .msg-header { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .msg-sender { color: white; font-weight: bold; font-size: 14px; }
+        .msg-time { font-size: 11px; color: #777; }
+        .msg-body { color: #ccc; font-size: 13px; line-height: 1.5; white-space: pre-wrap; margin-bottom: 10px;}
+        .msg-actions { display: flex; justify-content: flex-end; gap: 10px; }
+
+        /* أزرار الحذف والإجراءات */
+        .btn-sm { padding: 5px 10px; font-size: 12px; border-radius: 5px; border:none; cursor: pointer; }
+        .btn-del { background: rgba(255, 0, 85, 0.2); color: #ff0055; }
+        .btn-del:hover { background: #ff0055; color: white; }
+        .btn-star { background: none; color: #555; font-size: 18px; cursor: pointer; }
+        .btn-star.active { color: var(--gold); }
+
+        /* مجموعات الإدخال */
+        .admin-inp-group { background: #15151a; padding: 20px; border-radius: 15px; border: 1px solid #333; margin-bottom: 20px; }
+        .admin-inp-group label { display: block; color: var(--primary); margin-bottom: 10px; font-size: 14px; }
+
+
+        /* --- الموبايل --- */
         .mob-nav { display: none; } 
 
         @media (max-width: 900px) {
@@ -180,8 +220,13 @@
             .mob-nav div { white-space: nowrap; padding: 8px 15px; border-radius: 20px; font-size: 13px; cursor: pointer; color: #ccc; background: rgba(255,255,255,0.05); }
             .mob-nav div.active { background: var(--primary); color: black; font-weight: bold; }
             .music-bar { padding: 0 15px; height: 80px; }
-            .controls { gap: 10px; }
-            .play-btn-main { width: 38px; height: 38px; font-size: 14px; }
+            
+            /* Admin Mobile */
+            .admin-layout { flex-direction: column; }
+            .admin-sidebar { width: 100%; padding: 10px; flex-direction: row; overflow-x: auto; flex-shrink: 0; align-items: center; }
+            .admin-sidebar h3 { display: none; }
+            .adm-nav-item { white-space: nowrap; font-size: 12px; margin-bottom: 0; padding: 8px 12px; }
+            .admin-main { padding: 15px; }
         }
 
         @media (max-width: 400px) {
@@ -189,8 +234,6 @@
             .album-art { width: 35px; height: 35px; }
             .track-details h4 { font-size: 12px; max-width: 100px; }
             .player-info { gap: 8px; }
-            .ctrl-btn { font-size: 16px; padding: 3px; }
-            .play-btn-main { width: 35px; height: 35px; }
             .song-list-container { grid-template-columns: 1fr; }
         }
     </style>
@@ -213,7 +256,7 @@
             </div>
 
             <div style="margin-top: auto; display:flex; justify-content: center;">
-                <div class="nav-btn" onclick="openAdminCheck()" style="margin:0; width:auto;">
+                <div class="nav-btn" onclick="openAdminCheck()" style="margin:0; width:auto; color: #555;">
                     <i class="fas fa-user-shield"></i>
                 </div>
             </div>
@@ -282,45 +325,62 @@
     </div>
 
     <div id="admin-panel" class="admin-overlay">
-        <div class="admin-box">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-                <h2>Admin Config</h2>
-                <button onclick="document.getElementById('admin-panel').style.display='none'" style="background:none; border:none; color:white; font-size:20px;">✕</button>
-            </div>
-            
-            <div style="display: flex; gap: 10px; border-bottom: 1px solid #444; padding-bottom: 10px; margin-bottom: 20px; overflow-x: auto;">
-                <button onclick="showTab('settings')" class="btn" style="padding: 5px 10px; font-size:12px; flex-shrink:0;">⚙️ الإعدادات</button>
-                <button onclick="showTab('add')" class="btn" style="padding: 5px 10px; font-size:12px; background:#333; flex-shrink:0;">🎵 إضافة</button>
-                <button onclick="showTab('inbox')" class="btn" style="padding: 5px 10px; font-size:12px; background:#333; flex-shrink:0;">📩 رسائل</button>
-                <button onclick="logoutAdmin()" class="btn" style="padding: 5px 10px; font-size:12px; background:#900; margin-right:auto; flex-shrink:0;">خروج</button>
-            </div>
-
-            <div id="adm-tab-settings">
-                <h4>نص الواجهة</h4>
-                <textarea id="admin-welcome-msg" class="inp" rows="3"></textarea>
-                <button onclick="saveWelcomeMsg()" class="btn" style="width:100%; margin-bottom:10px;">حفظ الرسالة</button>
+        <div class="admin-layout">
+            <aside class="admin-sidebar">
+                <h3>Admin Control</h3>
+                <div class="adm-nav-item active" onclick="switchAdminTab('inbox')"><i class="fas fa-inbox"></i> البريد الوارد <span id="inbox-badge" style="background:var(--secondary); padding:2px 6px; border-radius:10px; font-size:10px; margin-right:auto;">0</span></div>
+                <div class="adm-nav-item" onclick="switchAdminTab('music')"><i class="fas fa-music"></i> إدارة الصوتيات</div>
+                <div class="adm-nav-item" onclick="switchAdminTab('settings')"><i class="fas fa-cog"></i> الإعدادات العامة</div>
                 
-                <label style="font-size: 13px; color: #ccc; display: block; margin-bottom: 20px;">
-                    <input type="checkbox" id="show-visits-toggle" onchange="toggleVisitsVisibility()"> إظهار عداد الزيارات للعامة
-                </label>
-
-                <h4>قائمة الأغاني</h4>
-                <div id="admin-songs-list" style="max-height: 200px; overflow-y: auto; background:#222; padding:10px; border-radius:10px;"></div>
-            </div>
-
-            <div id="adm-tab-add" style="display:none;">
-                <input id="add-song-name" class="inp" placeholder="اسم الأغنية">
-                <input id="add-song-url" class="inp" placeholder="رابط الصوت">
-                <input id="add-img-url" class="inp" placeholder="رابط الصورة (اختياري)">
-                <button onclick="addMusic()" class="btn" style="width:100%">نشر</button>
-            </div>
-
-            <div id="adm-tab-inbox" style="display:none;">
-                <div style="text-align:right; margin-bottom:10px; color:#aaa; font-size:12px;">يتم التحديث تلقائياً...</div>
-                <div id="inbox-list" style="max-height: 300px; overflow-y:auto;">
-                    <p style="text-align:center;">جاري تحميل الرسائل...</p>
+                <div style="margin-top: auto;">
+                    <button onclick="closeAdminPanel()" class="btn" style="width:100%; background:#333; font-size:12px;">خروج <i class="fas fa-sign-out-alt"></i></button>
                 </div>
-            </div>
+            </aside>
+
+            <main class="admin-main">
+                
+                <div id="adm-view-inbox" class="admin-section active">
+                    <h2 style="color:white; margin-bottom:20px;">الرسائل الواردة</h2>
+                    <div id="admin-inbox-container" class="msg-grid">
+                        <p style="text-align:center;">جاري تحميل الرسائل...</p>
+                    </div>
+                </div>
+
+                <div id="adm-view-music" class="admin-section">
+                    <h2 style="color:white; margin-bottom:20px;">المكتبة الصوتية</h2>
+                    
+                    <div class="admin-inp-group">
+                        <label>إضافة صوت جديد</label>
+                        <input id="new-song-name" class="inp" placeholder="اسم الأغنية">
+                        <input id="new-song-url" class="inp" placeholder="رابط ملف الصوت (MP3)">
+                        <input id="new-song-img" class="inp" placeholder="رابط الصورة (اختياري)">
+                        <button onclick="addMusicFromAdmin()" class="btn">نشر للموقع</button>
+                    </div>
+
+                    <h4 style="color:#888; margin-bottom:10px;">الأغاني الحالية (اضغط ★ لتعيين الافتراضي)</h4>
+                    <div id="admin-music-list" style="display:flex; flex-direction:column; gap:10px;"></div>
+                </div>
+
+                <div id="adm-view-settings" class="admin-section">
+                    <h2 style="color:white; margin-bottom:20px;">إعدادات الموقع</h2>
+                    
+                    <div class="admin-inp-group">
+                        <label>رسالة الترحيب في الواجهة</label>
+                        <textarea id="adm-welcome-txt" class="inp" rows="3"></textarea>
+                        <button onclick="updateWelcomeMsg()" class="btn">حفظ التغييرات</button>
+                    </div>
+
+                    <div class="admin-inp-group">
+                        <label>عداد الزوار</label>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <input type="checkbox" id="adm-visit-toggle" onchange="toggleVisitsVisibility()" style="width:20px; height:20px;">
+                            <span style="color:#ccc;">عرض العداد للجمهور</span>
+                        </div>
+                        <p style="color:#666; font-size:12px; margin-top:5px;">العدد الحالي: <span id="adm-visit-val" style="color:var(--primary)">0</span></p>
+                    </div>
+                </div>
+
+            </main>
         </div>
     </div>
 
@@ -348,8 +408,7 @@
         const fallbackImages = [
             "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=1920",
             "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=1920",
-            "https://images.unsplash.com/photo-1514525253440-b393452e23f0?w=1920",
-            "https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=1920"
+            "https://images.unsplash.com/photo-1514525253440-b393452e23f0?w=1920"
         ];
 
         const audio = document.getElementById('audio-player');
@@ -357,38 +416,39 @@
         let currentIndex = 0;
         let isAdmin = false;
         let defaultSongId = null;
-        let adminListenerAttached = false; // لمنع تكرار جلب البيانات
+        
+        // متغير لمنع تكرار تحميل بيانات الأدمن
+        let adminListenersActive = false;
 
         function escapeHtml(text) {
             if (!text) return text;
             return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
 
-        // مراقبة حالة تسجيل الدخول
+        // --- Auth State ---
         auth.onAuthStateChanged(user => {
             isAdmin = (user && user.email === ADMIN_EMAIL);
             renderSongList();
             
-            // إذا كان المستخدم أدمن، نبدأ بمراقبة الرسائل فوراً
-            if(isAdmin && !adminListenerAttached) {
-                attachAdminListeners();
+            // إذا كان المستخدم أدمن، نجهز بيانات لوحة التحكم
+            if(isAdmin) {
+                initAdminData();
             }
         });
 
-        // زيادة عدد الزوار
+        // --- زيادة الزوار ---
         db.ref('settings/visitCount').transaction(curr => (curr || 0) + 1);
 
-        // تحميل الإعدادات العامة
+        // --- تحميل الإعدادات العامة ---
         db.ref('settings').on('value', snap => {
             const val = snap.val() || {};
             const msg = val.welcomeMsg || "مرحباً بك في عالمي الموسيقي";
             document.getElementById('welcome-text').innerText = msg;
-            if(document.getElementById('admin-welcome-msg')) document.getElementById('admin-welcome-msg').value = msg;
             
+            // UI
             document.getElementById('v-num').innerText = val.visitCount || 0;
             const isVis = val.showVisits === true;
             document.getElementById('visit-count-ui').style.display = isVis ? 'block' : 'none';
-            if(isAdmin && document.getElementById('show-visits-toggle')) document.getElementById('show-visits-toggle').checked = isVis;
 
             const oldDefault = defaultSongId;
             defaultSongId = val.defaultSongId;
@@ -396,13 +456,12 @@
                 renderSongList();
                 checkDefaultSong();
             }
+
+            // تحديث لوحة التحكم إذا كانت مفتوحة
+            syncAdminSettingsUI(val);
         });
 
-        function toggleVisitsVisibility() {
-            if(isAdmin) db.ref('settings').update({ showVisits: document.getElementById('show-visits-toggle').checked });
-        }
-
-        // تحميل قائمة الأغاني
+        // --- تحميل الأغاني ---
         db.ref('music').on('value', snap => {
             playList = [];
             snap.forEach(child => {
@@ -415,9 +474,7 @@
 
         function renderSongList() {
             const container = document.getElementById('music-list');
-            const adminList = document.getElementById('admin-songs-list');
             let publicHtml = ""; 
-            let adminHtml = ""; 
             
             playList.forEach((s, index) => {
                 const safeName = escapeHtml(s.name);
@@ -428,22 +485,15 @@
                         <div class="song-icon" style="${imgStyle}"><i class="fas fa-play" style="font-size:12px;"></i></div>
                         <div style="flex:1; font-weight:bold; font-size:14px;">${safeName}</div>
                     </div>`;
-                
-                if(isAdmin) {
-                    const isDef = (s.id === defaultSongId) ? "color:gold;" : "color:#555;";
-                    adminHtml += `
-                        <div style="display:flex; align-items:center; background:#333; margin-bottom:5px; padding:5px; border-radius:5px;">
-                            <span style="flex:1; font-size:12px;">${safeName}</span>
-                            <button onclick="setDefaultSong('${s.id}')" title="تعيين كمفضلة" style="background:none; border:none; cursor:pointer; font-size:16px; ${isDef}">★</button>
-                            <button onclick="delMusic('${s.id}')" title="حذف" style="background:none; border:none; color:red; cursor:pointer; margin-right:5px;">✕</button>
-                        </div>`;
-                }
             });
 
             container.innerHTML = publicHtml || "<p style='text-align:center; color:#888'>لا توجد صوتيات حالياً.</p>";
-            if(adminList) adminList.innerHTML = adminHtml || "<p>فارغ.</p>";
+            
+            // تحديث قائمة الأغاني في لوحة الأدمن أيضاً
+            if(isAdmin) updateAdminMusicList();
         }
 
+        // --- منطق المشغل ---
         function checkDefaultSong() {
             if(!audio.src && defaultSongId && playList.length > 0) {
                 const idx = playList.findIndex(s => s.id === defaultSongId);
@@ -503,19 +553,13 @@
             }, 500);
         }
 
-        function nextSong() { 
-            if(playList.length === 0) return;
-            playIndex((currentIndex + 1) % playList.length);
-        }
-        function prevSong() { 
-            if(playList.length === 0) return;
-            playIndex((currentIndex - 1 + playList.length) % playList.length);
-        }
-        
+        function nextSong() { if(playList.length) playIndex((currentIndex + 1) % playList.length); }
+        function prevSong() { if(playList.length) playIndex((currentIndex - 1 + playList.length) % playList.length); }
         audio.onended = nextSong;
         audio.ontimeupdate = () => { if(audio.duration) document.getElementById('prog-bar').style.width = ((audio.currentTime/audio.duration)*100)+"%"; };
         function seek(e) { if(audio.duration) audio.currentTime = (e.offsetX / e.currentTarget.clientWidth) * audio.duration; }
 
+        // --- التنقل ---
         function go(id) {
             document.querySelectorAll('.section').forEach(e => e.classList.remove('active'));
             document.getElementById('view-'+id).classList.add('active');
@@ -530,26 +574,7 @@
             }
         }
 
-        // ============= دوال الأدمن (تم تحديثها) =============
-        
-        function saveWelcomeMsg() { if(isAdmin) db.ref('settings').update({ welcomeMsg: document.getElementById('admin-welcome-msg').value }).then(()=>alert("تم الحفظ")); }
-        function setDefaultSong(id) { if(isAdmin) db.ref('settings').update({ defaultSongId: id }); }
-        
-        function addMusic() {
-            if(!isAdmin) return;
-            const name = document.getElementById('add-song-name').value;
-            const url = document.getElementById('add-song-url').value;
-            const img = document.getElementById('add-img-url').value;
-            if(name && url) { 
-                db.ref('music').push({name, url, image: img||""});
-                alert("تم النشر");
-                document.getElementById('add-song-name').value = "";
-                document.getElementById('add-song-url').value = "";
-            }
-        }
-        function delMusic(id) { if(confirm("حذف؟")) db.ref('music/'+id).remove(); }
-
-        // ============= اليوميات =============
+        // --- اليوميات ---
         function postDiary() {
             const txt = document.getElementById('diary-text').value;
             const name = document.getElementById('diary-name').value;
@@ -572,10 +597,7 @@
         db.ref('diaries').orderByChild('timestamp').limitToLast(50).on('value', snap => {
             const list = document.getElementById('diaries-list'); 
             let posts = [];
-            snap.forEach(c => {
-                const data = c.val();
-                posts.push({ k: c.key, ...data });
-            });
+            snap.forEach(c => { posts.push({ k: c.key, ...c.val() }); });
             posts.reverse();
             
             if(posts.length === 0) { list.innerHTML = '<p style="text-align:center; color:#aaa; padding:20px;">لا توجد يوميات بعد.</p>'; return; }
@@ -583,7 +605,6 @@
             let html = "";
             posts.forEach(p => {
                 const cls = p.isAdminPost ? 'admin-post' : '';
-                // زر حذف اليوميات
                 const del = isAdmin ? 
                     `<button onclick="deleteDiary('${p.k}')" style="position:absolute; left:10px; top:10px; color:red; border:none; background:none; cursor:pointer; font-size:16px;">✕</button>` : '';
                 
@@ -600,7 +621,12 @@
             list.innerHTML = html;
         });
 
-        // ============= الرسائل (Inbox) =============
+        window.deleteDiary = function(key) {
+            if(!isAdmin) return;
+            if(confirm("حذف هذه اليوميات؟")) db.ref('diaries/' + key).remove();
+        };
+
+        // --- إرسال الرسائل (للجمهور) ---
         function sendMessage() {
             const m = document.getElementById('contact-msg').value;
             const n = document.getElementById('contact-name').value;
@@ -616,89 +642,162 @@
             } else { alert("الرسالة فارغة!"); }
         }
 
-        // دالة جديدة لمراقبة الرسائل بشكل حي (Realtime)
-        function attachAdminListeners() {
-            if(adminListenerAttached) return;
-            adminListenerAttached = true;
-
-            // تغيير .once إلى .on لتحديث الرسائل فوراً
-            db.ref('inbox').orderByChild('timestamp').limitToLast(30).on('value', snap => {
-                const l = document.getElementById('inbox-list'); 
-                let msgs = [];
-                
-                // هنا نسحب الـ Key عشان نقدر نحذف
-                snap.forEach(c => msgs.push({ id: c.key, ...c.val() }));
-                
-                if(msgs.length === 0) {
-                    l.innerHTML = "<p style='text-align:center; color:#777;'>لا توجد رسائل.</p>";
-                    return;
-                }
-
-                msgs.reverse(); // الأحدث أولاً
-                
-                let html = "";
-                msgs.forEach(val => {
-                    html += `
-                        <div class="msg-item">
-                            <div class="msg-header">
-                                <span>${val.name}</span>
-                            </div>
-                            <div style="line-height:1.5;">${val.msg}</div>
-                            <div class="msg-date">${val.date}</div>
-                            
-                            <button onclick="deleteMessage('${val.id}')" class="delete-btn">حذف الرسالة</button>
-                            <div style="clear:both;"></div>
-                        </div>`;
-                });
-                l.innerHTML = html;
-            });
-        }
-
-        // دالة حذف الرسائل
-        window.deleteMessage = function(key) {
-            if(!isAdmin) return;
-            if(confirm("هل أنت متأكد من حذف هذه الرسالة نهائياً؟")) {
-                db.ref('inbox/' + key).remove()
-                .then(() => console.log("Deleted"))
-                .catch(err => alert("حدث خطأ: " + err.message));
-            }
-        };
-
-        // دالة حذف اليوميات
-        window.deleteDiary = function(key) {
-            if(!isAdmin) return;
-            if(confirm("حذف هذه اليوميات؟")) {
-                db.ref('diaries/' + key).remove();
-            }
-        };
+        /* ================================================================= */
+        /* ================== NEW ADMIN PANEL LOGIC ======================== */
+        /* ================================================================= */
 
         function openAdminCheck() {
-            if(isAdmin) {
-                document.getElementById('admin-panel').style.display='flex';
-                // لم نعد بحاجة لجلب البيانات هنا لأن الدالة attachAdminListeners تعمل في الخلفية
+            if (isAdmin) {
+                document.getElementById('admin-panel').style.display = 'flex';
+                initAdminData();
             } else {
                 const provider = new firebase.auth.GoogleAuthProvider();
                 auth.signInWithPopup(provider).then(r => {
-                    if(r.user.email !== ADMIN_EMAIL) { 
+                    if (r.user.email !== ADMIN_EMAIL) {
                         alert("عذراً، هذا الحساب ليس لديه صلاحيات المسؤول.");
-                        auth.signOut(); 
+                        auth.signOut();
                     } else {
-                        // عند تسجيل الدخول بنجاح، سيتم استدعاء attachAdminListeners عبر onAuthStateChanged
-                        document.getElementById('admin-panel').style.display='flex';
+                        // سيتم تفعيله عبر onAuthStateChanged
+                        document.getElementById('admin-panel').style.display = 'flex';
                     }
-                }).catch(err => {
-                    console.error(err);
-                    alert("خطأ في تسجيل الدخول");
-                });
+                }).catch(err => alert("خطأ في تسجيل الدخول: " + err.message));
             }
         }
 
-        function logoutAdmin() { auth.signOut().then(()=>window.location.reload()); }
-        
-        function showTab(t) { 
-            ['settings','add','inbox'].forEach(x => document.getElementById('adm-tab-'+x).style.display='none'); 
-            document.getElementById('adm-tab-'+t).style.display='block'; 
+        function closeAdminPanel() {
+            document.getElementById('admin-panel').style.display = 'none';
         }
+
+        function switchAdminTab(tabName) {
+            document.querySelectorAll('.admin-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.adm-nav-item').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById('adm-view-' + tabName).classList.add('active');
+            
+            const btns = document.querySelectorAll('.adm-nav-item');
+            if(tabName === 'inbox') btns[0].classList.add('active');
+            if(tabName === 'music') btns[1].classList.add('active');
+            if(tabName === 'settings') btns[2].classList.add('active');
+        }
+
+        function initAdminData() {
+            if (adminListenersActive) return;
+            adminListenersActive = true;
+
+            // 1. مراقبة الرسائل (Inbox Live Feed)
+            db.ref('inbox').orderByChild('timestamp').limitToLast(100).on('value', snap => {
+                const container = document.getElementById('admin-inbox-container');
+                const badge = document.getElementById('inbox-badge');
+                
+                container.innerHTML = ''; 
+                
+                let count = 0;
+                let msgs = [];
+                snap.forEach(child => {
+                    msgs.push({ k: child.key, ...child.val() });
+                    count++;
+                });
+                
+                badge.innerText = count;
+                
+                if (count === 0) {
+                    container.innerHTML = '<p style="color:#555; text-align:center; grid-column: 1/-1; padding:20px;">لا توجد رسائل جديدة 📭</p>';
+                    return;
+                }
+
+                msgs.reverse().forEach(m => {
+                    const card = document.createElement('div');
+                    card.className = 'msg-card';
+                    card.innerHTML = `
+                        <div class="msg-header">
+                            <span class="msg-sender">${escapeHtml(m.name)}</span>
+                            <span class="msg-time">${m.date || ''}</span>
+                        </div>
+                        <div class="msg-body">${escapeHtml(m.msg)}</div>
+                        <div class="msg-actions">
+                            <button onclick="deleteInboxMsg('${m.k}')" class="btn-sm btn-del"><i class="fas fa-trash"></i> حذف</button>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            });
+
+            // 2. تحديث قائمة الأغاني في الأدمن
+            updateAdminMusicList();
+        }
+
+        window.deleteInboxMsg = function(key) {
+            if(confirm("حذف هذه الرسالة؟")) {
+                db.ref('inbox/'+key).remove().catch(e => alert(e.message));
+            }
+        };
+
+        // --- دوال إدارة الصوتيات (أدمن) ---
+        function addMusicFromAdmin() {
+            const name = document.getElementById('new-song-name').value;
+            const url = document.getElementById('new-song-url').value;
+            const img = document.getElementById('new-song-img').value;
+            
+            if(!name || !url) { alert("الاسم والرابط مطلوبان!"); return; }
+            
+            db.ref('music').push({
+                name: name, url: url, image: img || ""
+            }).then(() => {
+                alert("تمت الإضافة بنجاح 🎵");
+                document.getElementById('new-song-name').value = "";
+                document.getElementById('new-song-url').value = "";
+                document.getElementById('new-song-img').value = "";
+            });
+        }
+        
+        window.delMusic = function(id) { 
+            if(confirm("حذف الأغنية؟")) db.ref('music/'+id).remove(); 
+        }
+
+        window.setDefaultSong = function(id) { 
+            db.ref('settings').update({ defaultSongId: id }); 
+        }
+
+        function updateAdminMusicList() {
+            const listDiv = document.getElementById('admin-music-list');
+            if(!listDiv) return;
+            
+            listDiv.innerHTML = '';
+            playList.forEach(s => {
+                const isDefault = (s.id === defaultSongId);
+                const item = document.createElement('div');
+                item.style.cssText = "background:#222; padding:10px; border-radius:8px; display:flex; align-items:center; justify-content:space-between;";
+                
+                item.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <img src="${s.image || fallbackImages[0]}" style="width:40px; height:40px; border-radius:5px; object-fit:cover;">
+                        <span style="color:white; font-size:13px;">${escapeHtml(s.name)}</span>
+                    </div>
+                    <div>
+                        <button onclick="setDefaultSong('${s.id}')" class="btn-star ${isDefault?'active':''}" title="تعيين كافتراضي">★</button>
+                        <button onclick="delMusic('${s.id}')" style="color:#ff4444; background:none; border:none; cursor:pointer; margin-right:10px;">✕</button>
+                    </div>
+                `;
+                listDiv.appendChild(item);
+            });
+        }
+
+        // --- دوال الإعدادات (أدمن) ---
+        function updateWelcomeMsg() {
+            const txt = document.getElementById('adm-welcome-txt').value;
+            db.ref('settings').update({ welcomeMsg: txt }).then(()=>alert("تم تحديث الواجهة!"));
+        }
+
+        function toggleVisitsVisibility() {
+            db.ref('settings').update({ showVisits: document.getElementById('adm-visit-toggle').checked });
+        }
+
+        function syncAdminSettingsUI(val) {
+            if(document.getElementById('adm-welcome-txt')) document.getElementById('adm-welcome-txt').value = val.welcomeMsg || "";
+            if(document.getElementById('adm-visit-toggle')) document.getElementById('adm-visit-toggle').checked = val.showVisits;
+            if(document.getElementById('adm-visit-val')) document.getElementById('adm-visit-val').innerText = val.visitCount || 0;
+        }
+
     </script>
 </body>
 </html>
