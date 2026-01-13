@@ -389,9 +389,12 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics-compat.js"></script>
 
     <script>
         const ADMIN_EMAIL = "ahmshowpic@gmail.com"; 
+        
+        // إعدادات Firebase المحدثة (Compat Version)
         const firebaseConfig = {
             apiKey: "AIzaSyCUK7SXiX_uBObNqWjM5u-eKUKkCTwCJKc",
             authDomain: "mypersonalapp-2f2cc.firebaseapp.com",
@@ -399,11 +402,15 @@
             projectId: "mypersonalapp-2f2cc",
             storageBucket: "mypersonalapp-2f2cc.firebasestorage.app",
             messagingSenderId: "1093218114240",
-            appId: "1:1093218114240:web:e082d82c94c286d2c6eb25"
+            appId: "1:1093218114240:web:e082d82c94c286d2c6eb25",
+            measurementId: "G-W8R99YNJQ9"
         };
+        
+        // تهيئة الفايربيس
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         const auth = firebase.auth(); 
+        const analytics = firebase.analytics(); // تفعيل التحليلات
         
         const fallbackImages = [
             "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=1920",
