@@ -148,7 +148,7 @@
         .btn { background: var(--primary); color: #000; border: none; padding: 10px 20px; border-radius: 50px; font-weight: bold; cursor: pointer; margin-top: 5px; transition: 0.3s; font-size: 14px; }
         
         /* ========================================================= */
-        /* ============== ADMIN PANEL STYLES =================== */
+        /* ============== NEW ADMIN PANEL STYLES =================== */
         /* ========================================================= */
         
         .admin-overlay {
@@ -365,7 +365,7 @@
                     <h2 style="color:white; margin-bottom:20px;">إعدادات الموقع</h2>
                     
                     <div class="admin-inp-group">
-                        <label>رسالة الترحيب (الوضع العادي)</label>
+                        <label>رسالة الترحيب في الواجهة</label>
                         <textarea id="adm-welcome-txt" class="inp" rows="3"></textarea>
                         <button onclick="updateWelcomeMsg()" class="btn">حفظ التغييرات</button>
                     </div>
@@ -377,20 +377,6 @@
                             <span style="color:#ccc;">عرض العداد للجمهور</span>
                         </div>
                         <p style="color:#666; font-size:12px; margin-top:5px;">العدد الحالي: <span id="adm-visit-val" style="color:var(--primary)">0</span></p>
-                    </div>
-
-                    <div class="admin-inp-group" style="border-color: var(--gold);">
-                        <label style="color:var(--gold); font-weight:bold;">✨ تخصيص الواجهة (الوضع الثابت)</label>
-                        
-                        <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px; background:rgba(255,215,0,0.1); padding:10px; border-radius:10px;">
-                            <input type="checkbox" id="adm-custom-toggle" onchange="saveCustomHeroSettings()" style="width:20px; height:20px; cursor:pointer;">
-                            <span style="color:#fff; font-size:13px;">تفعيل الوضع الثابت (تجاهل صور الأغاني)</span>
-                        </div>
-                    
-                        <input id="adm-custom-img" class="inp" placeholder="رابط الصورة الثابتة (URL)">
-                        <textarea id="adm-custom-text" class="inp" rows="3" placeholder="الرسالة الثابتة (مثلاً: إهداء خاص...)"></textarea>
-                        
-                        <button onclick="saveCustomHeroSettings()" class="btn" style="background:var(--gold); color:black;">حفظ التخصيص</button>
                     </div>
                 </div>
 
@@ -424,7 +410,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         const auth = firebase.auth(); 
-        const analytics = firebase.analytics(); 
+        const analytics = firebase.analytics(); // تفعيل التحليلات
         
         const fallbackImages = [
             "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=1920",
@@ -437,7 +423,8 @@
         let currentIndex = 0;
         let isAdmin = false;
         let defaultSongId = null;
-        let isCustomMode = false; // متغير لتحديد هل الوضع الثابت مفعل
+        
+        // متغير لمنع تكرار تحميل بيانات الأدمن
         let adminListenersActive = false;
 
         function escapeHtml(text) {
@@ -449,43 +436,27 @@
         auth.onAuthStateChanged(user => {
             isAdmin = (user && user.email === ADMIN_EMAIL);
             renderSongList();
-            if(isAdmin) initAdminData();
+            
+            // إذا كان المستخدم أدمن، نجهز بيانات لوحة التحكم
+            if(isAdmin) {
+                initAdminData();
+            }
         });
 
         // --- زيادة الزوار ---
         db.ref('settings/visitCount').transaction(curr => (curr || 0) + 1);
 
-        // --- تحميل الإعدادات العامة (معدل للتعامل مع الوضع الثابت) ---
+        // --- تحميل الإعدادات العامة ---
         db.ref('settings').on('value', snap => {
             const val = snap.val() || {};
+            const msg = val.welcomeMsg || "مرحباً بك في عالمي الموسيقي";
+            document.getElementById('welcome-text').innerText = msg;
             
-            // 1. تحديث حالة الوضع الثابت
-            isCustomMode = val.showCustomHero === true;
-
-            // 2. منطق العرض
-            if (isCustomMode) {
-                // الوضع الثابت مفعل
-                document.getElementById('welcome-text').innerText = val.customHeroText || "Welcome";
-                // نمرر true لإجبار التغيير
-                changeBackground(val.customHeroImage, true); 
-            } else {
-                // الوضع العادي
-                document.getElementById('welcome-text').innerText = val.welcomeMsg || "مرحباً بك في عالمي الموسيقي";
-                
-                // إعادة الخلفية لصورة الأغنية الحالية (إن وجدت) أو عشوائية
-                if(audio.src && !audio.paused && playList[currentIndex]) {
-                    changeBackground(playList[currentIndex].image, true);
-                } else {
-                    if(!val.customHeroImage) changeBackground(null, true); 
-                }
-            }
-            
-            // UI Counters
+            // UI
             document.getElementById('v-num').innerText = val.visitCount || 0;
             const isVis = val.showVisits === true;
             document.getElementById('visit-count-ui').style.display = isVis ? 'block' : 'none';
 
-            // Default Song Logic
             const oldDefault = defaultSongId;
             defaultSongId = val.defaultSongId;
             if (oldDefault !== defaultSongId) {
@@ -493,7 +464,7 @@
                 checkDefaultSong();
             }
 
-            // تحديث لوحة التحكم
+            // تحديث لوحة التحكم إذا كانت مفتوحة
             syncAdminSettingsUI(val);
         });
 
@@ -511,16 +482,21 @@
         function renderSongList() {
             const container = document.getElementById('music-list');
             let publicHtml = ""; 
+            
             playList.forEach((s, index) => {
                 const safeName = escapeHtml(s.name);
                 const imgStyle = s.image ? `background-image:url('${s.image}')` : `background:#333`;
+                
                 publicHtml += `
                     <div class="song-item" onclick="playIndex(${index})">
                         <div class="song-icon" style="${imgStyle}"><i class="fas fa-play" style="font-size:12px;"></i></div>
                         <div style="flex:1; font-weight:bold; font-size:14px;">${safeName}</div>
                     </div>`;
             });
+
             container.innerHTML = publicHtml || "<p style='text-align:center; color:#888'>لا توجد صوتيات حالياً.</p>";
+            
+            // تحديث قائمة الأغاني في لوحة الأدمن أيضاً
             if(isAdmin) updateAdminMusicList();
         }
 
@@ -533,8 +509,7 @@
                     const s = playList[idx]; 
                     audio.src = s.url; 
                     updatePlayerUI(s, false);
-                    // نغير الخلفية فقط إذا لم يكن الوضع الثابت مفعلاً
-                    if(!isCustomMode) changeBackground(s.image); 
+                    changeBackground(s.image); 
                 }
             }
         }
@@ -545,8 +520,7 @@
             audio.src = song.url; 
             audio.play().catch(err => console.log("Autoplay prevented"));
             updatePlayerUI(song, true); 
-            // نغير الخلفية فقط إذا لم يكن الوضع الثابت مفعلاً
-            if(!isCustomMode) changeBackground(song.image);
+            changeBackground(song.image);
         }
 
         function togglePlay() {
@@ -574,11 +548,7 @@
             else musicBar.classList.remove('is-playing');
         }
 
-        // دالة تغيير الخلفية (معدلة)
-        function changeBackground(url, force = false) {
-            // إذا كان الوضع الثابت مفعلاً، ولم يكن الأمر إجبارياً، لا تغير الخلفية
-            if (isCustomMode && !force) return;
-
+        function changeBackground(url) {
             const bgEl = document.getElementById('dynamic-bg');
             const targetUrl = (url && url.length > 10) ? url : fallbackImages[Math.floor(Math.random()*fallbackImages.length)];
             bgEl.style.opacity = 0.2;
@@ -601,6 +571,7 @@
             document.querySelectorAll('.section').forEach(e => e.classList.remove('active'));
             document.getElementById('view-'+id).classList.add('active');
             document.querySelectorAll('.nav-btn, .mob-nav div').forEach(b => b.classList.remove('active'));
+            
             const mapping = { 'home': [0, 0], 'audio': [1, 1], 'diaries': [2, 2], 'contact': [3, 3] };
             if(mapping[id]) {
                 const sidebarBtns = document.querySelectorAll('.sidebar .nav-btn');
@@ -615,9 +586,12 @@
             const txt = document.getElementById('diary-text').value;
             const name = document.getElementById('diary-name').value;
             if(!txt.trim()) { alert("اكتب شيئاً أولاً!"); return; }
+
             let finalName = name || "زائر"; 
             let isAdm = false;
+            
             if(isAdmin && confirm("نشر كمدير؟")) { finalName = "AHMED SAYED | Admin"; isAdm = true; }
+            
             db.ref('diaries').push({ 
                 name: finalName, text: txt, isAdminPost: isAdm, 
                 date: new Date().toLocaleString('en-GB'),
@@ -632,11 +606,15 @@
             let posts = [];
             snap.forEach(c => { posts.push({ k: c.key, ...c.val() }); });
             posts.reverse();
+            
             if(posts.length === 0) { list.innerHTML = '<p style="text-align:center; color:#aaa; padding:20px;">لا توجد يوميات بعد.</p>'; return; }
+            
             let html = "";
             posts.forEach(p => {
                 const cls = p.isAdminPost ? 'admin-post' : '';
-                const del = isAdmin ? `<button onclick="deleteDiary('${p.k}')" style="position:absolute; left:10px; top:10px; color:red; border:none; background:none; cursor:pointer; font-size:16px;">✕</button>` : '';
+                const del = isAdmin ? 
+                    `<button onclick="deleteDiary('${p.k}')" style="position:absolute; left:10px; top:10px; color:red; border:none; background:none; cursor:pointer; font-size:16px;">✕</button>` : '';
+                
                 html += `
                     <div class="diary-card ${cls}">
                         ${del}
@@ -649,9 +627,13 @@
             });
             list.innerHTML = html;
         });
-        window.deleteDiary = function(key) { if(isAdmin && confirm("حذف؟")) db.ref('diaries/' + key).remove(); };
 
-        // --- إرسال الرسائل ---
+        window.deleteDiary = function(key) {
+            if(!isAdmin) return;
+            if(confirm("حذف هذه اليوميات؟")) db.ref('diaries/' + key).remove();
+        };
+
+        // --- إرسال الرسائل (للجمهور) ---
         function sendMessage() {
             const m = document.getElementById('contact-msg').value;
             const n = document.getElementById('contact-name').value;
@@ -668,7 +650,7 @@
         }
 
         /* ================================================================= */
-        /* ================== ADMIN PANEL LOGIC ============================ */
+        /* ================== NEW ADMIN PANEL LOGIC ======================== */
         /* ================================================================= */
 
         function openAdminCheck() {
@@ -679,16 +661,26 @@
                 const provider = new firebase.auth.GoogleAuthProvider();
                 auth.signInWithPopup(provider).then(r => {
                     if (r.user.email !== ADMIN_EMAIL) {
-                        alert("لست الأدمن!"); auth.signOut();
-                    } else { document.getElementById('admin-panel').style.display = 'flex'; }
-                }).catch(err => alert(err.message));
+                        alert("عذراً، هذا الحساب ليس لديه صلاحيات المسؤول.");
+                        auth.signOut();
+                    } else {
+                        // سيتم تفعيله عبر onAuthStateChanged
+                        document.getElementById('admin-panel').style.display = 'flex';
+                    }
+                }).catch(err => alert("خطأ في تسجيل الدخول: " + err.message));
             }
         }
-        function closeAdminPanel() { document.getElementById('admin-panel').style.display = 'none'; }
+
+        function closeAdminPanel() {
+            document.getElementById('admin-panel').style.display = 'none';
+        }
+
         function switchAdminTab(tabName) {
             document.querySelectorAll('.admin-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.adm-nav-item').forEach(el => el.classList.remove('active'));
+            
             document.getElementById('adm-view-' + tabName).classList.add('active');
+            
             const btns = document.querySelectorAll('.adm-nav-item');
             if(tabName === 'inbox') btns[0].classList.add('active');
             if(tabName === 'music') btns[1].classList.add('active');
@@ -698,91 +690,119 @@
         function initAdminData() {
             if (adminListenersActive) return;
             adminListenersActive = true;
-            // Inbox
+
+            // 1. مراقبة الرسائل (Inbox Live Feed)
             db.ref('inbox').orderByChild('timestamp').limitToLast(100).on('value', snap => {
                 const container = document.getElementById('admin-inbox-container');
                 const badge = document.getElementById('inbox-badge');
+                
                 container.innerHTML = ''; 
-                let count = 0; let msgs = [];
-                snap.forEach(child => { msgs.push({ k: child.key, ...child.val() }); count++; });
+                
+                let count = 0;
+                let msgs = [];
+                snap.forEach(child => {
+                    msgs.push({ k: child.key, ...child.val() });
+                    count++;
+                });
+                
                 badge.innerText = count;
-                if (count === 0) { container.innerHTML = '<p style="text-align:center; padding:20px; color:#666">لا رسائل</p>'; return; }
+                
+                if (count === 0) {
+                    container.innerHTML = '<p style="color:#555; text-align:center; grid-column: 1/-1; padding:20px;">لا توجد رسائل جديدة 📭</p>';
+                    return;
+                }
+
                 msgs.reverse().forEach(m => {
-                    const card = document.createElement('div'); card.className = 'msg-card';
+                    const card = document.createElement('div');
+                    card.className = 'msg-card';
                     card.innerHTML = `
-                        <div class="msg-header"><span class="msg-sender">${escapeHtml(m.name)}</span><span class="msg-time">${m.date||''}</span></div>
+                        <div class="msg-header">
+                            <span class="msg-sender">${escapeHtml(m.name)}</span>
+                            <span class="msg-time">${m.date || ''}</span>
+                        </div>
                         <div class="msg-body">${escapeHtml(m.msg)}</div>
-                        <div class="msg-actions"><button onclick="deleteInboxMsg('${m.k}')" class="btn-sm btn-del">حذف</button></div>`;
+                        <div class="msg-actions">
+                            <button onclick="deleteInboxMsg('${m.k}')" class="btn-sm btn-del"><i class="fas fa-trash"></i> حذف</button>
+                        </div>
+                    `;
                     container.appendChild(card);
                 });
             });
+
+            // 2. تحديث قائمة الأغاني في الأدمن
             updateAdminMusicList();
         }
 
-        window.deleteInboxMsg = function(key) { if(confirm("حذف؟")) db.ref('inbox/'+key).remove(); };
-        
+        window.deleteInboxMsg = function(key) {
+            if(confirm("حذف هذه الرسالة؟")) {
+                db.ref('inbox/'+key).remove().catch(e => alert(e.message));
+            }
+        };
+
+        // --- دوال إدارة الصوتيات (أدمن) ---
         function addMusicFromAdmin() {
             const name = document.getElementById('new-song-name').value;
             const url = document.getElementById('new-song-url').value;
             const img = document.getElementById('new-song-img').value;
-            if(!name || !url) { alert("مطلوب الاسم والرابط"); return; }
-            db.ref('music').push({ name: name, url: url, image: img || "" }).then(() => alert("تمت الإضافة"));
+            
+            if(!name || !url) { alert("الاسم والرابط مطلوبان!"); return; }
+            
+            db.ref('music').push({
+                name: name, url: url, image: img || ""
+            }).then(() => {
+                alert("تمت الإضافة بنجاح 🎵");
+                document.getElementById('new-song-name').value = "";
+                document.getElementById('new-song-url').value = "";
+                document.getElementById('new-song-img').value = "";
+            });
         }
-        window.delMusic = function(id) { if(confirm("حذف؟")) db.ref('music/'+id).remove(); }
-        window.setDefaultSong = function(id) { db.ref('settings').update({ defaultSongId: id }); }
+        
+        window.delMusic = function(id) { 
+            if(confirm("حذف الأغنية؟")) db.ref('music/'+id).remove(); 
+        }
+
+        window.setDefaultSong = function(id) { 
+            db.ref('settings').update({ defaultSongId: id }); 
+        }
 
         function updateAdminMusicList() {
             const listDiv = document.getElementById('admin-music-list');
             if(!listDiv) return;
+            
             listDiv.innerHTML = '';
             playList.forEach(s => {
                 const isDefault = (s.id === defaultSongId);
                 const item = document.createElement('div');
-                item.style.cssText = "background:#222; padding:10px; border-radius:8px; display:flex; justify-content:space-between; align-items:center;";
+                item.style.cssText = "background:#222; padding:10px; border-radius:8px; display:flex; align-items:center; justify-content:space-between;";
+                
                 item.innerHTML = `
-                    <div style="display:flex; gap:10px; align-items:center;">
-                        <img src="${s.image||fallbackImages[0]}" style="width:40px;height:40px;border-radius:4px;">
-                        <span>${escapeHtml(s.name)}</span>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <img src="${s.image || fallbackImages[0]}" style="width:40px; height:40px; border-radius:5px; object-fit:cover;">
+                        <span style="color:white; font-size:13px;">${escapeHtml(s.name)}</span>
                     </div>
                     <div>
-                        <button onclick="setDefaultSong('${s.id}')" class="btn-star ${isDefault?'active':''}">★</button>
-                        <button onclick="delMusic('${s.id}')" style="color:#f44; background:none; border:none; cursor:pointer;">✕</button>
-                    </div>`;
+                        <button onclick="setDefaultSong('${s.id}')" class="btn-star ${isDefault?'active':''}" title="تعيين كافتراضي">★</button>
+                        <button onclick="delMusic('${s.id}')" style="color:#ff4444; background:none; border:none; cursor:pointer; margin-right:10px;">✕</button>
+                    </div>
+                `;
                 listDiv.appendChild(item);
             });
         }
 
-        // --- Settings Updates ---
+        // --- دوال الإعدادات (أدمن) ---
         function updateWelcomeMsg() {
             const txt = document.getElementById('adm-welcome-txt').value;
-            db.ref('settings').update({ welcomeMsg: txt }).then(()=>alert("تم الحفظ"));
+            db.ref('settings').update({ welcomeMsg: txt }).then(()=>alert("تم تحديث الواجهة!"));
         }
+
         function toggleVisitsVisibility() {
             db.ref('settings').update({ showVisits: document.getElementById('adm-visit-toggle').checked });
         }
-        
-        // --- دالة حفظ الوضع الثابت ---
-        function saveCustomHeroSettings() {
-            const isEnabled = document.getElementById('adm-custom-toggle').checked;
-            const img = document.getElementById('adm-custom-img').value;
-            const txt = document.getElementById('adm-custom-text').value;
-            db.ref('settings').update({
-                showCustomHero: isEnabled,
-                customHeroImage: img,
-                customHeroText: txt
-            }).then(() => console.log("تم حفظ التخصيص"));
-        }
 
-        // --- مزامنة واجهة الأدمن ---
         function syncAdminSettingsUI(val) {
             if(document.getElementById('adm-welcome-txt')) document.getElementById('adm-welcome-txt').value = val.welcomeMsg || "";
             if(document.getElementById('adm-visit-toggle')) document.getElementById('adm-visit-toggle').checked = val.showVisits;
             if(document.getElementById('adm-visit-val')) document.getElementById('adm-visit-val').innerText = val.visitCount || 0;
-            
-            // مزامنة حقول الوضع الثابت
-            if(document.getElementById('adm-custom-toggle')) document.getElementById('adm-custom-toggle').checked = val.showCustomHero || false;
-            if(document.getElementById('adm-custom-img')) document.getElementById('adm-custom-img').value = val.customHeroImage || "";
-            if(document.getElementById('adm-custom-text')) document.getElementById('adm-custom-text').value = val.customHeroText || "";
         }
 
     </script>
