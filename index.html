@@ -26,22 +26,29 @@
             font-family: 'Tajawal', sans-serif;
             background-color: var(--bg-deep); color: #fff; 
             height: 100vh; overflow: hidden;
+            transition: background 0.5s;
         }
 
-        /* --- خلفية --- */
+        /* --- الخلفية --- */
         #dynamic-bg {
             position: fixed; inset: 0; z-index: -2;
             background-size: cover; background-position: center;
-            transition: background-image 1s ease-in-out, transform 10s ease;
-            filter: brightness(0.6); /* جعل الخلفية أوضح قليلاً */
-            opacity: 0.8;
+            transition: background-image 0.8s ease-in-out, transform 10s ease, filter 0.5s ease;
+            /* الوضع الافتراضي (الرئيسية): ساطع */
+            filter: brightness(1); 
+            opacity: 1; 
             transform: scale(1);
         }
         #dynamic-bg.zoom { transform: scale(1.1); }
-
+        
+        /* كلاس التغميق عند الخروج من الرئيسية */
+        body.dark-mode #dynamic-bg {
+            filter: brightness(0.4); /* تغميق الخلفية لإبراز المحتوى */
+        }
+        
         .overlay { 
             position: fixed; inset: 0; z-index: -1;
-            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.7) 100%);
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 40%);
         }
 
         .layout { display: flex; height: calc(100% - var(--player-h)); position: relative; }
@@ -60,6 +67,7 @@
             background: linear-gradient(to right, #fff, var(--primary));
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             letter-spacing: 1px;
+            text-shadow: 0 0 20px rgba(0, 242, 255, 0.5);
         }
         .brand span { color: var(--primary); }
         
@@ -67,11 +75,12 @@
             padding: 14px 18px; margin-bottom: 8px; border-radius: 12px;
             cursor: pointer; color: #ccc; transition: 0.2s;
             display: flex; align-items: center; gap: 15px; font-weight: bold;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
         }
         .nav-btn:hover, .nav-btn.active { background: rgba(0, 242, 255, 0.15); color: white; }
         .nav-btn.active { border-right: 4px solid var(--primary); }
         
-        /* --- المحتوى الرئيسي --- */
+        /* --- المحتوى --- */
         .content { 
             flex: 1; padding: 20px; overflow-y: auto; position: relative; scroll-behavior: smooth; 
             padding-bottom: 150px;
@@ -83,16 +92,18 @@
         .section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* نص الترحيب */
+        #hero-txt {
+            font-size: clamp(2.5rem, 6vw, 4.5rem); margin: 0; font-weight: 900; line-height:1.4;
+            text-shadow: 0 4px 10px rgba(0,0,0,1), 0 0 20px rgba(0,0,0,0.8), 0 0 40px rgba(0,0,0,0.5);
+        }
+
         /* --- اليوميات --- */
         .diary-input-area { 
             background: var(--card-bg); padding: 20px; border-radius: 15px; 
             margin-bottom: 30px; border: 1px solid #444; 
         }
-        
-        .diary-feed { 
-            display: flex; flex-direction: column; gap: 20px; 
-            width: 100%; max-width: 800px; margin: 0 auto;
-        }
+        .diary-feed { display: flex; flex-direction: column; gap: 20px; width: 100%; max-width: 800px; margin: 0 auto; }
         
         .diary-post {
             background: var(--card-bg); border-radius: 15px;
@@ -101,25 +112,16 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             width: 100%; transition: transform 0.2s;
         }
-        .diary-post.admin-post { border: 1px solid var(--gold); box-shadow: 0 0 10px rgba(255, 215, 0, 0.1); }
+        .diary-post.admin-post { border: 1px solid var(--gold); box-shadow: 0 0 15px rgba(255, 215, 0, 0.15); }
 
-        .post-header {
-            padding: 15px; display: flex; align-items: center; gap: 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
+        .post-header { padding: 15px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .avatar { width: 45px; height: 45px; background: #333; border-radius: 50%; display: grid; place-items: center; font-weight: bold; color: #fff; font-size: 18px; }
         .admin-post .avatar { background: var(--gold); color: #000; }
-        
         .post-info h4 { margin: 0; font-size: 16px; color: white; display: flex; align-items: center; gap: 6px; }
         .post-info span { font-size: 12px; color: #999; }
         .verified { color: var(--gold); font-size: 14px; }
-
         .post-body { padding: 15px; font-size: 15px; line-height: 1.6; color: #eee; white-space: pre-wrap; word-wrap: break-word; }
-
-        .post-stats {
-            padding: 8px 15px; font-size: 12px; color: #aaa; display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-
+        .post-stats { padding: 8px 15px; font-size: 12px; color: #aaa; display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .post-actions { padding: 5px; display: flex; }
         .action-btn { 
             background: none; border: none; color: #aaa; cursor: pointer; flex: 1;
@@ -133,37 +135,72 @@
         .comment-bubble { background: #3a3b3c; padding: 8px 14px; border-radius: 18px; color: #ddd; flex: 1; }
         .comment-inp-group { display: flex; gap: 10px; margin-top: 15px; }
 
-        /* --- Music Player --- */
+        /* --- المشغل الموسيقي المطور --- */
         .music-bar {
             position: fixed; bottom: 0; left: 0; right: 0; height: var(--player-h);
-            background: rgba(10, 10, 15, 0.98); backdrop-filter: blur(20px);
+            background: rgba(10, 10, 15, 0.95); backdrop-filter: blur(20px);
             border-top: 1px solid rgba(255,255,255,0.1);
             display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 100;
         }
-        #visualizer { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.3; pointer-events: none; }
+        #visualizer { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.4; pointer-events: none; }
         .player-content { position: relative; z-index: 1; display: flex; width: 100%; align-items: center; justify-content: space-between; }
         
-        .play-btn-main { width: 50px; height: 50px; background: white; color: black; border-radius: 50%; display: grid; place-items: center; font-size: 20px; cursor: pointer; transition: 0.2s; }
-        .play-btn-main:hover { transform: scale(1.1); box-shadow: 0 0 20px var(--primary); }
-        .ctrl-btn { color: white; background: none; border: none; font-size: 22px; cursor: pointer; margin: 0 10px; }
+        .play-btn-main { width: 55px; height: 55px; background: white; color: black; border-radius: 50%; display: grid; place-items: center; font-size: 22px; cursor: pointer; transition: 0.2s; box-shadow: 0 0 15px rgba(255,255,255,0.2); }
+        .play-btn-main:hover { transform: scale(1.1); box-shadow: 0 0 25px var(--primary); background: var(--primary); }
+        .ctrl-btn { color: white; background: none; border: none; font-size: 24px; cursor: pointer; margin: 0 15px; transition: 0.2s; }
+        .ctrl-btn:hover { color: var(--primary); }
 
-        /* --- Admin --- */
-        .admin-modal { position: fixed; inset: 0; background: #000; z-index: 200; display: none; flex-direction: column; }
-        .admin-body { display: flex; height: 100%; }
-        .admin-nav { width: 220px; background: #111; padding: 20px; }
+        /* تعديل النص تحت اسم الأغنية ليكون بارزاً */
+        #p-desc {
+            font-size: 12px; 
+            color: var(--gold) !important; /* لون ذهبي بارز */
+            background: rgba(0,0,0,0.7); /* خلفية سوداء نصف شفافة */
+            padding: 2px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-top: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            font-weight: bold;
+        }
+
+        /* --- Admin Panel --- */
+        .admin-modal { 
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 200; 
+            display: none; flex-direction: column; backdrop-filter: blur(5px);
+        }
+        .admin-header { 
+            padding: 20px; background: rgba(20,20,20,0.95); border-bottom: 1px solid #333; 
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .admin-body { display: flex; height: 100%; overflow: hidden; }
+        .admin-nav { width: 220px; background: rgba(10,10,10,0.5); padding: 20px; border-left: 1px solid #333; }
         .adm-content { flex: 1; padding: 30px; overflow-y: auto; }
 
-        /* Inputs & Buttons */
-        .inp { width: 100%; background: #222; border: 1px solid #444; color: white; padding: 12px; border-radius: 8px; margin-bottom: 10px; outline: none; }
-        .btn-glow { background: var(--primary); color: #000; border: none; padding: 10px 25px; border-radius: 25px; font-weight: bold; cursor: pointer; box-shadow: 0 0 10px rgba(0, 242, 255, 0.3); }
+        .inp { 
+            width: 100%; background: rgba(255,255,255,0.05); border: 1px solid #444; color: white; 
+            padding: 12px; border-radius: 8px; margin-bottom: 10px; outline: none; transition: 0.3s;
+        }
+        .inp:focus { border-color: var(--primary); background: rgba(255,255,255,0.1); }
+        .btn-glow { 
+            background: var(--primary); color: #000; border: none; padding: 10px 25px; 
+            border-radius: 25px; font-weight: bold; cursor: pointer; 
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.2); transition: 0.3s;
+        }
+        .btn-glow:hover { box-shadow: 0 0 25px rgba(0, 242, 255, 0.5); transform: translateY(-2px); }
+
+        .adm-list-item {
+            background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px; margin-bottom: 8px;
+            display: flex; justify-content: space-between; align-items: center; border: 1px solid transparent;
+        }
+        .adm-list-item.active-default { border-color: var(--gold); background: rgba(255, 215, 0, 0.05); }
 
         /* Mobile */
         .mob-nav { display: none; }
         @media (max-width: 768px) {
             .sidebar { display: none; }
             .mob-nav { display: flex; gap: 10px; overflow-x: auto; padding: 12px; background: rgba(15,15,20,0.95); position: sticky; top: 0; z-index: 50; border-bottom: 1px solid #333; }
-            .mob-chip { white-space: nowrap; padding: 8px 16px; background: #333; border-radius: 20px; font-size: 13px; color: #ccc; }
-            .mob-chip.active { background: var(--primary); color: black; font-weight: bold; }
+            .mob-chip { white-space: nowrap; padding: 8px 16px; background: #333; border-radius: 20px; font-size: 13px; color: #ccc; text-shadow: 0 1px 2px #000; }
+            .mob-chip.active { background: var(--primary); color: black; font-weight: bold; text-shadow: none; }
             .content { padding: 10px; padding-bottom: 130px; }
             .music-bar { height: 130px; padding: 10px; flex-direction: column; justify-content: center; }
             .player-content { flex-direction: column; gap: 8px; width: 100%; }
@@ -174,7 +211,7 @@
         }
         
         .folders-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
-        .folder-card { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; text-align: center; cursor: pointer; border: 1px solid transparent; transition: 0.2s; }
+        .folder-card { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; text-align: center; cursor: pointer; border: 1px solid transparent; transition: 0.2s; backdrop-filter: blur(5px); }
         .folder-card:hover { border-color: var(--primary); background: rgba(255,255,255,0.1); transform: translateY(-5px); }
     </style>
 </head>
@@ -193,7 +230,7 @@
                 <div class="nav-btn" onclick="nav('contact')"><i class="fas fa-envelope"></i> تواصل معي</div>
             </div>
             <div style="margin-top:auto; text-align:center;">
-                <button onclick="openAdmin()" style="background:none; border:none; color:#555; cursor:pointer;"><i class="fas fa-cog"></i> الإدارة</button>
+                <button onclick="openAdmin()" style="background:none; border:none; color:#ddd; cursor:pointer; font-size:14px; text-shadow:0 1px 2px #000;"><i class="fas fa-cog"></i> لوحة التحكم</button>
             </div>
         </nav>
 
@@ -207,28 +244,26 @@
 
             <div id="view-home" class="section active">
                 <div style="height: 60vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-                    <h1 id="hero-txt" style="font-size: clamp(2.5rem, 6vw, 4.5rem); margin: 0; text-shadow: 0 0 20px rgba(0,0,0,0.8); font-weight: 900;">
-                        جاري التحميل...
-                    </h1>
+                    <h1 id="hero-txt">...</h1>
                 </div>
             </div>
 
             <div id="view-music" class="section">
-                <h2>المكتبة الصوتية</h2>
+                <h2 style="text-shadow: 0 2px 5px #000;">المكتبة الصوتية</h2>
                 <div id="folders-view">
                     <div class="folders-grid" id="folders-container"></div>
                 </div>
                 <div id="songs-view" style="display:none;">
-                    <button onclick="showFolders()" style="background:none; border:none; color:var(--primary); font-size:16px; margin-bottom:15px; cursor:pointer; font-weight:bold;">
+                    <button onclick="showFolders()" style="background:none; border:none; color:var(--primary); font-size:16px; margin-bottom:15px; cursor:pointer; font-weight:bold; text-shadow: 0 1px 2px #000;">
                         <i class="fas fa-arrow-right"></i> رجوع للمجلدات
                     </button>
-                    <h3 id="current-folder-title" style="color:#aaa;"></h3>
+                    <h3 id="current-folder-title" style="color:#ddd; text-shadow: 0 1px 2px #000;"></h3>
                     <div id="songs-container" style="display:flex; flex-direction:column; gap:10px;"></div>
                 </div>
             </div>
 
             <div id="view-diaries" class="section">
-                <h2>مجتمع اليوميات</h2>
+                <h2 style="text-shadow: 0 2px 5px #000;">مجتمع اليوميات</h2>
                 <div class="diary-input-area">
                     <input id="d-name" class="inp" placeholder="اسمك (اختياري)" maxlength="20">
                     <textarea id="d-msg" class="inp" rows="3" placeholder="بم تفكر اليوم؟"></textarea>
@@ -257,33 +292,36 @@
     <div class="music-bar">
         <canvas id="visualizer"></canvas>
         <div class="player-content">
-            <div class="player-left" style="display:flex; align-items:center; gap:10px; width:250px;">
-                <div id="p-art" style="width:50px; height:50px; border-radius:8px; background:#333; background-size:cover;"></div>
-                <div>
-                    <div id="p-title" style="font-weight:bold; font-size:14px;">اختر أغنية</div>
-                    <div id="p-desc" style="font-size:11px; color:#aaa;">...</div>
+            <div class="player-left" style="display:flex; align-items:center; gap:15px; width:280px;">
+                <div id="p-art" style="width:60px; height:60px; border-radius:12px; background:#333; background-size:cover; box-shadow:0 0 10px rgba(0,0,0,0.5);"></div>
+                <div style="overflow:hidden;">
+                    <div id="p-title" style="font-weight:bold; font-size:15px; white-space:nowrap; text-shadow:0 1px 2px black;">اختر أغنية</div>
+                    <div id="p-desc">...</div>
                 </div>
             </div>
+
             <div style="flex:1; display:flex; flex-direction:column; align-items:center;">
-                <div style="display:flex; align-items:center; margin-bottom:5px;">
+                <div style="display:flex; align-items:center; margin-bottom:8px;">
                     <button class="ctrl-btn" onclick="prev()"><i class="fas fa-step-backward"></i></button>
                     <div class="play-btn-main" onclick="togglePlay()"><i id="play-icon" class="fas fa-play"></i></div>
                     <button class="ctrl-btn" onclick="next()"><i class="fas fa-step-forward"></i></button>
                 </div>
-                <div style="width:100%; max-width:400px; height:4px; background:#333; cursor:pointer;" onclick="seek(event)">
-                    <div id="prog-fill" style="width:0%; height:100%; background:var(--primary); position:relative;"></div>
+                <div style="width:100%; max-width:450px; height:5px; background:rgba(255,255,255,0.1); border-radius:5px; cursor:pointer; overflow:hidden;" onclick="seek(event)">
+                    <div id="prog-fill" style="width:0%; height:100%; background:var(--primary); position:relative; box-shadow:0 0 10px var(--primary);"></div>
                 </div>
             </div>
+
             <div class="player-right" style="width:200px; text-align:left;">
-                <input type="range" style="width:80px;" min="0" max="1" step="0.1" oninput="audio.volume=this.value">
+                <i class="fas fa-volume-up" style="color:#aaa; margin-left:5px;"></i>
+                <input type="range" style="width:80px; accent-color:var(--primary);" min="0" max="1" step="0.1" oninput="audio.volume=this.value">
             </div>
         </div>
     </div>
 
     <div id="admin-panel" class="admin-modal">
-        <div class="admin-header" style="padding:15px; background:#111; display:flex; justify-content:space-between; border-bottom:1px solid #333;">
-            <b style="color:var(--primary)">لوحة التحكم</b>
-            <button onclick="document.getElementById('admin-panel').style.display='none'" style="background:none; border:none; color:white;">✕</button>
+        <div class="admin-header">
+            <b style="color:var(--primary); font-size:20px;">لوحة التحكم <i class="fas fa-user-shield"></i></b>
+            <button onclick="document.getElementById('admin-panel').style.display='none'" style="background:none; border:none; color:white; font-size:20px; cursor:pointer;">✕</button>
         </div>
         <div class="admin-body">
             <div class="admin-nav">
@@ -298,13 +336,16 @@
                     <div id="inbox-list"></div>
                 </div>
                 <div id="adm-music" class="section">
-                    <h3>إضافة موسيقى</h3>
-                    <input id="add-folder" class="inp" placeholder="اسم المجلد (مثال: شعبي، رومانسي)">
-                    <input id="add-title" class="inp" placeholder="اسم الأغنية">
-                    <input id="add-url" class="inp" placeholder="رابط الصوت (URL)">
-                    <input id="add-img" class="inp" placeholder="رابط الصورة (URL)">
-                    <button onclick="addSong()" class="btn-glow">حفظ</button>
-                    <div id="adm-music-list" style="margin-top:20px;"></div>
+                    <h3>إدارة الموسيقى</h3>
+                    <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:10px; margin-bottom:20px;">
+                        <input id="add-folder" class="inp" placeholder="اسم المجلد (مثال: شعبي، رومانسي)">
+                        <input id="add-title" class="inp" placeholder="اسم الأغنية">
+                        <input id="add-url" class="inp" placeholder="رابط الصوت (MP3 URL)">
+                        <input id="add-img" class="inp" placeholder="رابط الصورة (Image URL)">
+                        <button onclick="addSong()" class="btn-glow" style="font-size:13px;">إضافة للمكتبة</button>
+                    </div>
+                    <h4 style="color:#888;">الأغاني الحالية (اضغط ★ لجعلها الافتتاحية)</h4>
+                    <div id="adm-music-list"></div>
                 </div>
                 <div id="adm-pages" class="section">
                     <h3>منشئ الصفحات</h3>
@@ -316,17 +357,20 @@
                     <div id="adm-pages-list" style="margin-top:20px;"></div>
                 </div>
                 <div id="adm-settings" class="section">
-                    <h3>الإعدادات</h3>
-                    <label>نص الترحيب:</label>
-                    <textarea id="set-welcome" class="inp"></textarea>
+                    <h3>الإعدادات العامة</h3>
+                    <label style="color:#aaa; font-size:13px;">رسالة الترحيب:</label>
+                    <textarea id="set-welcome" class="inp" rows="3"></textarea>
                     
-                    <div style="margin-top:20px; padding:15px; background:rgba(255,215,0,0.1); border-radius:10px;">
-                        <label style="color:var(--gold);">✨ الوضع الثابت (خلفية ثابتة)</label>
-                        <input type="checkbox" id="set-hero-active"> تفعيل الخلفية الثابتة
-                        <input id="set-hero-img" class="inp" placeholder="رابط الصورة الثابتة" style="margin-top:10px;">
+                    <div style="margin-top:20px; padding:20px; background:rgba(255, 215, 0, 0.08); border-radius:12px; border:1px solid rgba(255,215,0,0.2);">
+                        <label style="color:var(--gold); font-weight:bold; font-size:15px;">✨ الوضع الثابت (خلفية ثابتة)</label>
+                        <div style="margin:10px 0; display:flex; gap:10px; align-items:center;">
+                            <input type="checkbox" id="set-hero-active" style="width:20px; height:20px;"> 
+                            <span style="font-size:13px;">تفعيل الخلفية الثابتة (تجاهل صور الأغاني)</span>
+                        </div>
+                        <input id="set-hero-img" class="inp" placeholder="رابط الصورة الثابتة">
                     </div>
                     
-                    <button onclick="saveSettings()" class="btn-glow" style="margin-top:15px;">حفظ الإعدادات</button>
+                    <button onclick="saveSettings()" class="btn-glow" style="margin-top:20px; width:100%;">حفظ الإعدادات</button>
                 </div>
             </div>
         </div>
@@ -359,9 +403,9 @@
         let songs = [], folders = {}, playlist = [], pIndex = 0;
         let isAdmin = false;
         let isCustomMode = false;
+        let defaultSongId = null;
         const audio = document.getElementById('audio-player');
         
-        // --- Fix: No CrossOrigin restriction (Fixes "counting but no sound") ---
         audio.removeAttribute('crossorigin');
         
         const fallbackImages = [
@@ -369,8 +413,7 @@
             "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=1920"
         ];
 
-        // --- SAFE VISUALIZER (Simulation) ---
-        // This ensures the visualizer looks active without blocking audio via CORS
+        // --- Visualizer Simulation ---
         let canvas, canvasCtx, visInterval;
         function initVisualizer() {
             canvas = document.getElementById('visualizer');
@@ -378,7 +421,6 @@
             canvasCtx = canvas.getContext('2d');
             startFakeVis();
         }
-
         function startFakeVis() {
             if(visInterval) cancelAnimationFrame(visInterval);
             const draw = () => {
@@ -386,12 +428,10 @@
                     canvas.width = canvas.parentElement.clientWidth;
                     canvas.height = canvas.parentElement.clientHeight;
                     canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
-                    
-                    const bars = 50;
-                    const w = canvas.width / bars;
+                    const bars = 60; const w = canvas.width / bars;
                     for(let i=0; i<bars; i++) {
-                        const h = Math.random() * (canvas.height * 0.8);
-                        canvasCtx.fillStyle = `rgba(0, 242, 255, 0.4)`;
+                        const h = Math.random() * (canvas.height * 0.6);
+                        canvasCtx.fillStyle = `rgba(0, 242, 255, 0.3)`;
                         canvasCtx.fillRect(i * w, canvas.height - h, w - 2, h);
                     }
                 }
@@ -410,7 +450,7 @@
         });
 
         function loadGeneralData() {
-            // --- Music Loading (Universal URL Support) ---
+            // --- Music Loading ---
             db.ref('music').on('value', snap => {
                 songs = []; folders = {};
                 snap.forEach(c => {
@@ -420,7 +460,6 @@
                         name: val.name,
                         folder: val.folder || "منوعات",
                         image: val.image || val.img,
-                        // Fix: Support all key variations
                         url: val.url || val.link || val.audio 
                     };
                     songs.push(s);
@@ -428,34 +467,45 @@
                     folders[s.folder].push(s);
                 });
                 renderFolders();
+                checkDefaultSong(); // Check if we need to auto-load
                 if(isAdmin) renderAdmMusic();
             });
 
-            // --- Settings & Hero Image Logic ---
+            // --- Settings Logic ---
             db.ref('settings').on('value', s => {
                 const val = s.val() || {};
-                document.getElementById('hero-txt').innerText = val.welcome || "Welcome to My World";
                 
-                isCustomMode = val.heroMode || val.showCustomHero; 
+                // 1. Text: Support old and new keys
+                document.getElementById('hero-txt').innerText = val.welcome || val.welcomeMsg || "Welcome to AHMED PULSE";
                 
-                // Logic: If custom mode is ON, show custom image. 
-                // If OFF, we rely on song image (handled in playSong).
+                // 2. Default Song ID
+                defaultSongId = val.defaultSongId;
+
+                // 3. Hero Mode Logic
+                isCustomMode = (val.heroMode === true); 
+                
                 if(isCustomMode) {
-                    setBg(val.heroImg || val.customHeroImage || fallbackImages[0]);
-                } else if (!audio.src || audio.paused) {
-                    // Initial load if nothing playing
                     setBg(val.heroImg || fallbackImages[0]);
+                } else {
+                    // If disabled, try to show current song art, else fallback
+                    if(audio.src && !audio.paused && playlist[pIndex]) {
+                        setBg(playlist[pIndex].image);
+                    } else {
+                         // Only show fallback if no song is playing
+                         if(!audio.src) setBg(fallbackImages[0]);
+                    }
                 }
 
-                // Sync Admin UI
+                // 4. Sync Admin UI
                 if(isAdmin) {
-                    if(document.getElementById('set-welcome')) document.getElementById('set-welcome').value = val.welcome||"";
+                    if(document.getElementById('set-welcome')) document.getElementById('set-welcome').value = val.welcome || val.welcomeMsg || "";
                     if(document.getElementById('set-hero-active')) document.getElementById('set-hero-active').checked = isCustomMode;
-                    if(document.getElementById('set-hero-img')) document.getElementById('set-hero-img').value = val.heroImg || val.customHeroImage ||"";
+                    if(document.getElementById('set-hero-img')) document.getElementById('set-hero-img').value = val.heroImg || "";
+                    renderAdmMusic();
                 }
             });
 
-            // Dynamic Pages (Bonus Feature)
+            // Dynamic Pages
             db.ref('custom_pages').on('value', s => {
                 document.querySelectorAll('.dyn').forEach(e=>e.remove());
                 const admL = document.getElementById('adm-pages-list');
@@ -487,7 +537,23 @@
             });
         }
 
-        // --- Diary Logic (Compatibility Mode) ---
+        // --- Default Song Logic ---
+        function checkDefaultSong() {
+            if(!audio.src && defaultSongId && songs.length > 0) {
+                const song = songs.find(s => s.k === defaultSongId);
+                if(song) {
+                    document.getElementById('p-title').innerText = song.name;
+                    document.getElementById('p-desc').innerText = song.folder;
+                    document.getElementById('p-art').style.backgroundImage = `url('${song.image}')`;
+                    audio.src = song.url;
+                    if(!isCustomMode) setBg(song.image);
+                    playlist = folders[song.folder] || songs;
+                    pIndex = playlist.findIndex(s => s.k === song.k);
+                }
+            }
+        }
+
+        // --- Diary Logic ---
         function initDiarySystem() {
             const feed = document.getElementById('diary-feed');
             const ref = db.ref('diaries').limitToLast(50);
@@ -497,7 +563,7 @@
                 if(spinner) spinner.remove();
                 const postData = {k: snapshot.key, ...snapshot.val()};
                 const postEl = createPostElement(postData);
-                feed.prepend(postEl); // Newest on top
+                feed.prepend(postEl); 
             });
 
             ref.on('child_changed', snapshot => {
@@ -515,10 +581,7 @@
 
             ref.on('child_removed', snapshot => {
                 const el = document.getElementById('post-' + snapshot.key);
-                if(el) {
-                    el.style.transform = 'scale(0)';
-                    setTimeout(() => el.remove(), 200);
-                }
+                if(el) { el.style.transform = 'scale(0)'; setTimeout(() => el.remove(), 200); }
             });
         }
 
@@ -526,7 +589,6 @@
             const div = document.createElement('div');
             div.className = `diary-post ${post.verified ? 'admin-post' : ''}`;
             div.id = 'post-' + post.k;
-            
             const badge = post.verified ? '<i class="fas fa-check-circle verified"></i>' : '';
             const commentsCount = post.comments ? Object.keys(post.comments).length : 0;
             const likesCount = post.likes || 0;
@@ -546,8 +608,6 @@
             }
 
             const delBtn = isAdmin ? `<button onclick="db.ref('diaries/${post.k}').remove()" style="margin-right:auto; color:#ff4444; background:none; border:none; cursor:pointer;">✕</button>` : '';
-
-            // Fix: Check 'text' AND 'msg'
             const contentText = post.text || post.msg || "";
 
             div.innerHTML = `
@@ -560,63 +620,56 @@
                     ${delBtn}
                 </div>
                 <div class="post-body">${escapeHtml(contentText)}</div>
-                
                 <div class="post-stats">
                     <span><i class="fas fa-thumbs-up" style="color:var(--primary)"></i> ${likesCount}</span>
                     <span>${commentsCount} تعليق</span>
                 </div>
-
                 <div class="post-actions">
                     <button class="action-btn" onclick="likePost('${post.k}')"><i class="far fa-thumbs-up"></i> أعجبني</button>
                     <button class="action-btn" onclick="toggleComments('${post.k}')"><i class="far fa-comment"></i> تعليق</button>
                 </div>
-                
                 <div id="comments-${post.k}" class="comments-section">
                     <div id="list-${post.k}">${commentsHTML}</div>
                     <div class="comment-inp-group">
                         <input id="inp-c-${post.k}" class="inp" placeholder="اكتب تعليقاً..." style="margin:0; padding:8px; font-size:12px;">
                         <button onclick="postComment('${post.k}')" class="btn-glow" style="padding:8px 15px; font-size:12px;">نشر</button>
                     </div>
-                </div>
-            `;
+                </div>`;
             return div;
         }
 
-        // --- Diary Actions ---
         function likePost(key) { db.ref(`diaries/${key}/likes`).transaction(likes => (likes || 0) + 1); }
-        function toggleComments(key) {
-            const el = document.querySelector(`#post-${key} .comments-section`);
-            if(el) el.classList.toggle('open');
-        }
+        function toggleComments(key) { document.querySelector(`#post-${key} .comments-section`).classList.toggle('open'); }
         function postComment(key) {
             const inp = document.getElementById(`inp-c-${key}`);
-            const txt = inp.value;
-            if(!txt) return;
-            const name = isAdmin ? "Admin" : "زائر";
-            db.ref(`diaries/${key}/comments`).push({ name: name, text: txt, time: Date.now() });
+            if(!inp.value) return;
+            db.ref(`diaries/${key}/comments`).push({ name: isAdmin ? "Admin" : "زائر", text: inp.value, time: Date.now() });
             inp.value = "";
         }
         function postDiary() {
             const n = document.getElementById('d-name').value || "مجهول";
             const m = document.getElementById('d-msg').value;
-            if(!m) return alert("اكتب شيئاً للنشر!");
+            if(!m) return alert("اكتب شيئاً!");
             const ver = (isAdmin && confirm("نشر كمسؤول؟"));
             db.ref('diaries').push({
                 name: ver ? "AHMED PULSE" : n,
-                text: m, msg: m, verified: ver, // Save both text/msg
+                text: m, msg: m, verified: ver, 
                 date: new Date().toLocaleDateString('ar-EG'), likes: 0
             });
             document.getElementById('d-msg').value = "";
-            alert("تم النشر بنجاح!");
+            alert("تم النشر!");
         }
 
-        // --- Navigation ---
+        // --- Navigation & UI ---
         function nav(id) {
             document.querySelectorAll('.section').forEach(e=>e.classList.remove('active'));
             document.querySelectorAll('.nav-btn, .mob-chip').forEach(e=>e.classList.remove('active'));
-            const t = document.getElementById('view-'+id);
-            if(t) t.classList.add('active');
+            document.getElementById('view-'+id).classList.add('active');
             document.querySelectorAll(`[onclick="nav('${id}')"]`).forEach(b=>b.classList.add('active'));
+            
+            // Toggle Dark Mode for BG only when NOT in Home
+            if(id === 'home') document.body.classList.remove('dark-mode');
+            else document.body.classList.add('dark-mode');
         }
 
         function setBg(url) {
@@ -628,7 +681,7 @@
             }
         }
 
-        // --- Music Logic ---
+        // --- Music Player Logic ---
         function renderFolders() {
             const c = document.getElementById('folders-container');
             c.innerHTML = "";
@@ -671,7 +724,6 @@
             document.getElementById('p-art').style.backgroundImage = `url('${s.image}')`;
             document.getElementById('play-icon').className = "fas fa-pause";
             
-            // Background Image Logic: Only change if Custom Mode is OFF
             if(!isCustomMode && s.image) {
                 setBg(s.image);
             }
@@ -695,37 +747,26 @@
             audio.currentTime = (e.offsetX / e.target.offsetWidth) * audio.duration;
         }
 
-        // --- Admin & Utils ---
-        function sendMsg() {
-            const n = document.getElementById('c-name').value;
-            const m = document.getElementById('c-msg').value;
-            if(m) {
-                db.ref('inbox').push({name:n, msg:m});
-                alert("تم الإرسال!");
-                document.getElementById('c-msg').value = "";
-            }
-        }
+        // --- Admin Functions ---
         function openAdmin() {
             if(isAdmin) document.getElementById('admin-panel').style.display='flex';
             else auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(r=>{
-                if(r.user.email!==ADMIN_EMAIL) { 
-                    auth.signOut(); 
-                    alert("عذراً، هذا القسم للمسؤول فقط."); 
-                } else {
-                    document.getElementById('admin-panel').style.display='flex';
-                }
-            }).catch(e => alert("خطأ في تسجيل الدخول: " + e.message));
+                if(r.user.email!==ADMIN_EMAIL) { auth.signOut(); alert("للمسؤول فقط."); } 
+                else { document.getElementById('admin-panel').style.display='flex'; }
+            }).catch(e => alert(e.message));
         }
         function initAdmin() {
             db.ref('inbox').on('value', s=>{
                 const l=document.getElementById('inbox-list'); l.innerHTML="";
-                s.forEach(c=>{ l.innerHTML+=`<div style="background:#222; padding:10px; margin-bottom:5px;">${escapeHtml(c.val().msg)} <button style="color:red" onclick="db.ref('inbox/${c.key}').remove()">X</button></div>` });
+                s.forEach(c=>{ l.innerHTML+=`<div style="background:#222; padding:10px; margin-bottom:5px; border-radius:5px;">${escapeHtml(c.val().msg)} <button style="color:red; float:left;" onclick="db.ref('inbox/${c.key}').remove()">✕</button></div>` });
             });
         }
         function admTab(t) {
             document.querySelectorAll('.adm-content .section').forEach(e=>e.classList.remove('active'));
             document.getElementById('adm-'+t).classList.add('active');
         }
+        
+        // Music Management & Star Logic
         function addSong() {
             db.ref('music').push({
                 folder: document.getElementById('add-folder').value,
@@ -736,17 +777,35 @@
             alert("تم الحفظ");
         }
         function renderAdmMusic() {
-            const l = document.getElementById('adm-music-list'); l.innerHTML="";
-            songs.forEach(s=>{ l.innerHTML+=`<div style="padding:5px; background:#222; margin-bottom:5px; display:flex; justify-content:space-between;">${s.name} <button style="color:red" onclick="db.ref('music/${s.k}').remove()">X</button></div>` });
+            const l = document.getElementById('adm-music-list'); 
+            if(!l) return;
+            l.innerHTML="";
+            songs.forEach(s => { 
+                const isDef = (s.k === defaultSongId);
+                l.innerHTML += `
+                <div class="adm-list-item ${isDef ? 'active-default' : ''}">
+                    <span>${s.name} (${s.folder})</span> 
+                    <div>
+                        <button onclick="setDefaultSong('${s.k}')" style="color:${isDef?'var(--gold)':'#555'}; background:none; border:none; cursor:pointer; font-size:18px;">★</button>
+                        <button style="color:red; background:none; border:none; cursor:pointer; margin-right:10px;" onclick="db.ref('music/${s.k}').remove()">✕</button>
+                    </div>
+                </div>`; 
+            });
         }
+        window.setDefaultSong = function(id) {
+            db.ref('settings').update({ defaultSongId: id });
+        };
+
+        // Correct Settings Save (Boolean Fix)
         function saveSettings() {
             db.ref('settings').update({
                 welcome: document.getElementById('set-welcome').value,
                 heroMode: document.getElementById('set-hero-active').checked,
                 heroImg: document.getElementById('set-hero-img').value
             });
-            alert("تم حفظ الإعدادات");
+            alert("تم حفظ الإعدادات!");
         }
+
         function savePage() {
             const id = document.getElementById('page-id').value;
             if(id) db.ref('custom_pages/'+id).set({
@@ -754,11 +813,15 @@
                 icon: document.getElementById('page-icon').value,
                 content: document.getElementById('page-content').value
             });
-            alert("تم نشر الصفحة");
+            alert("تم النشر");
+        }
+        function sendMsg() {
+            const n = document.getElementById('c-name').value;
+            const m = document.getElementById('c-msg').value;
+            if(m) { db.ref('inbox').push({name:n, msg:m}); alert("تم الإرسال!"); document.getElementById('c-msg').value = ""; }
         }
         function escapeHtml(text) { return text ? String(text).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#039;'}[m])) : ''; }
 
     </script>
 </body>
 </html>
-
