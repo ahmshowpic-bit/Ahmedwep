@@ -480,6 +480,9 @@
                 
                 // 2. Default Song ID
                 defaultSongId = val.defaultSongId;
+                
+                // --- FIX: Trigger check here as well in case settings load after music ---
+                checkDefaultSong(); 
 
                 // 3. Hero Mode Logic
                 isCustomMode = (val.heroMode === true); 
@@ -539,14 +542,22 @@
 
         // --- Default Song Logic ---
         function checkDefaultSong() {
+            // Only set if player is empty, we have a default ID, and songs are loaded
             if(!audio.src && defaultSongId && songs.length > 0) {
                 const song = songs.find(s => s.k === defaultSongId);
                 if(song) {
+                    // Update Player UI
                     document.getElementById('p-title').innerText = song.name;
                     document.getElementById('p-desc').innerText = song.folder;
                     document.getElementById('p-art').style.backgroundImage = `url('${song.image}')`;
+                    
+                    // Set Source (Ready to play)
                     audio.src = song.url;
+                    
+                    // Update Background if not in "Fixed Mode"
                     if(!isCustomMode) setBg(song.image);
+                    
+                    // Update Playlist Context
                     playlist = folders[song.folder] || songs;
                     pIndex = playlist.findIndex(s => s.k === song.k);
                 }
