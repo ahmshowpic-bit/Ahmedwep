@@ -29,30 +29,34 @@
             transition: background 0.5s;
         }
 
-        /* --- نظام الخلفيات الجديد --- */
+        /* --- تنبيهات الشبكة الجديدة --- */
+        #net-status {
+            position: fixed; top: 0; left: 0; right: 0;
+            background: rgba(255, 0, 85, 0.9);
+            color: white; text-align: center; padding: 5px; font-size: 12px;
+            z-index: 9999; display: none; font-weight: bold;
+        }
+        #net-status.weak { background: rgba(255, 166, 0, 0.9); color: black; }
+
+        /* --- نظام الخلفيات --- */
         .bg-layer {
             position: fixed; inset: 0; z-index: -2;
             width: 100%; height: 100%;
             transition: opacity 1s ease;
         }
-
-        /* 1. للصورة */
         #dynamic-bg-img {
             background-size: cover; background-position: center; background-repeat: no-repeat;
             opacity: 1; 
         }
-
-        /* 2. للفيديو */
         #dynamic-bg-video {
-            object-fit: cover;
-            display: none; /* مخفي افتراضياً */
+            object-fit: cover; display: none;
         }
 
-        /* أنماط العرض للصورة */
+        /* أنماط العرض */
         .fit-cover { background-size: cover !important; }
         .fit-contain { background-size: contain !important; background-color: #000; }
 
-        /* أنماط الحركة (Animations) */
+        /* أنماط الحركة */
         @keyframes kf-zoom-in { 0% { transform: scale(1); } 100% { transform: scale(1.15); } }
         @keyframes kf-zoom-out { 0% { transform: scale(1.15); } 100% { transform: scale(1); } }
         @keyframes kf-pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
@@ -62,7 +66,6 @@
         .anim-zoom-out { animation: kf-zoom-out 20s infinite alternate linear; }
         .anim-pulse { animation: kf-pulse 10s infinite ease-in-out; }
 
-        /* تظليل الخلفية */
         .overlay { 
             position: fixed; inset: 0; z-index: -1;
             background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 40%);
@@ -70,10 +73,9 @@
         }
         body.dark-mode .overlay { background: rgba(0,0,0,0.7); }
 
-        /* --- التخطيط العام --- */
+        /* --- التخطيط --- */
         .layout { display: flex; height: calc(100% - var(--player-h)); position: relative; }
         
-        /* القائمة الجانبية */
         .sidebar {
             width: var(--sidebar-w); 
             background: var(--glass-bg);
@@ -100,7 +102,6 @@
         .nav-btn:hover, .nav-btn.active { background: rgba(0, 242, 255, 0.15); color: white; }
         .nav-btn.active { border-right: 4px solid var(--primary); }
         
-        /* المحتوى */
         .content { 
             flex: 1; padding: 20px; overflow-y: auto; position: relative; scroll-behavior: smooth; 
             padding-bottom: 150px;
@@ -130,14 +131,9 @@
         .avatar { width: 45px; height: 45px; background: #333; border-radius: 50%; display: grid; place-items: center; font-weight: bold; color: #fff; font-size: 18px; }
         .admin-post .avatar { background: var(--gold); color: #000; }
         .post-body { padding: 15px; font-size: 15px; line-height: 1.6; color: #eee; white-space: pre-wrap; word-wrap: break-word; }
-        .post-stats { padding: 8px 15px; font-size: 12px; color: #aaa; display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .post-actions { padding: 5px; display: flex; }
         .action-btn { background: none; border: none; color: #aaa; cursor: pointer; flex: 1; font-size: 14px; padding: 10px; border-radius: 8px; transition: 0.2s; }
         .action-btn:hover { background: rgba(255,255,255,0.05); color: white; }
-        .comments-section { padding: 15px; background: rgba(0,0,0,0.3); display: none; border-radius: 0 0 15px 15px; }
-        .comments-section.open { display: block; }
-        .comment-item { display: flex; gap: 10px; margin-bottom: 12px; font-size: 13px; align-items: flex-start; }
-        .comment-bubble { background: #3a3b3c; padding: 8px 14px; border-radius: 18px; color: #ddd; flex: 1; }
 
         /* المشغل */
         .music-bar {
@@ -168,7 +164,7 @@
         .btn-glow { background: var(--primary); color: #000; border: none; padding: 10px 25px; border-radius: 25px; font-weight: bold; cursor: pointer; box-shadow: 0 0 15px rgba(0, 242, 255, 0.2); transition: 0.3s; }
         .btn-glow:hover { box-shadow: 0 0 25px rgba(0, 242, 255, 0.5); transform: translateY(-2px); }
 
-        /* تخصيص قائمة الأغاني في الأدمن */
+        /* Admin List Items */
         .adm-list-item { 
             display: flex; justify-content: space-between; align-items: center; 
             padding: 10px; border-bottom: 1px solid #333; 
@@ -203,8 +199,10 @@
 </head>
 <body>
 
+    <div id="net-status"></div>
+
     <div id="dynamic-bg-img" class="bg-layer"></div>
-    <video id="dynamic-bg-video" class="bg-layer" loop muted playsinline></video>
+    <video id="dynamic-bg-video" class="bg-layer" loop muted playsinline onerror="handleVideoError()"></video>
     
     <div class="overlay"></div>
 
@@ -326,7 +324,12 @@
                 <div id="adm-music" class="section">
                     <h3>إدارة الموسيقى</h3>
                     <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:10px; margin-bottom:20px;">
-                        <input id="add-folder" class="inp" placeholder="اسم المجلد">
+                        
+                        <label style="color:#aaa; font-size:12px;">اختر المجلد:</label>
+                        <select id="folder-select" class="inp" onchange="toggleFolderInput()">
+                            <option value="new">++ مجلد جديد ++</option>
+                        </select>
+                        <input id="new-folder-input" class="inp" placeholder="اكتب اسم المجلد الجديد هنا" style="display:block;">
                         <input id="add-title" class="inp" placeholder="اسم الأغنية">
                         <input id="add-url" class="inp" placeholder="رابط الصوت (MP3 URL)">
                         <input id="add-img" class="inp" placeholder="رابط الصورة (Image URL)">
@@ -395,7 +398,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 
     <script>
-        // --- Firebase Config (نفس بياناتك) ---
+        // --- Firebase Config ---
         const firebaseConfig = {
             apiKey: "AIzaSyCUK7SXiX_uBObNqWjM5u-eKUKkCTwCJKc",
             authDomain: "mypersonalapp-2f2cc.firebaseapp.com",
@@ -419,13 +422,62 @@
         // Settings Vars
         let isHeroMode = false;
         let heroUrl = "";
-        let heroType = "image"; // image or video
-        let bgFit = "cover"; // cover or contain
-        let animType = "static"; // static, zoom-in, zoom-out
+        let heroType = "image"; 
+        let bgFit = "cover"; 
+        let animType = "static"; 
 
         const audio = document.getElementById('audio-player');
         audio.removeAttribute('crossorigin');
         
+        // --- Smart Network Logic ---
+        function getNetworkStatus() {
+            // كشف السرعة التقريبي إذا كان المتصفح يدعمه
+            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            if (connection) {
+                // إذا كان وضع توفير البيانات مفعلاً أو السرعة أقل من 1.5 ميجا
+                if (connection.saveData === true || (connection.downlink && connection.downlink < 1.5)) {
+                    return 'slow';
+                }
+            }
+            return 'good';
+        }
+
+        // مراقبة حالة الاتصال (أونلاين/أوفلاين)
+        window.addEventListener('offline', () => updateNetAlert(false));
+        window.addEventListener('online', () => updateNetAlert(true));
+
+        function updateNetAlert(isOnline) {
+            const el = document.getElementById('net-status');
+            if(!isOnline) {
+                el.style.display = 'block';
+                el.className = '';
+                el.innerText = '⚠️ انقطع الاتصال بالإنترنت. بعض الميزات قد لا تعمل.';
+            } else {
+                // فحص جودة الاتصال عند العودة
+                const quality = getNetworkStatus();
+                if(quality === 'slow') {
+                    el.style.display = 'block';
+                    el.className = 'weak';
+                    el.innerText = '⚡ الاتصال بطيء. تم تقليل الجودة تلقائياً.';
+                    setTimeout(() => el.style.display='none', 5000);
+                } else {
+                    el.style.display = 'none';
+                }
+            }
+        }
+
+        // إصلاح ذاتي للفيديو المكسور
+        function handleVideoError() {
+            console.log("Video Error: Switching to Image Fallback");
+            const bgImg = document.getElementById('dynamic-bg-img');
+            const bgVid = document.getElementById('dynamic-bg-video');
+            bgVid.style.display = 'none';
+            bgImg.style.opacity = '1';
+            // وضع صورة افتراضية
+            bgImg.style.backgroundImage = `url('https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=1920')`;
+        }
+        // ---------------------------
+
         // --- Visualizer ---
         let canvas, canvasCtx, visInterval;
         function initVisualizer() {
@@ -460,6 +512,7 @@
             loadGeneralData();
             initDiarySystem();
             initVisualizer();
+            updateNetAlert(navigator.onLine); // فحص أولي
         });
 
         function loadGeneralData() {
@@ -481,16 +534,18 @@
                 });
                 renderFolders();
                 checkDefaultSong(); 
-                if(isAdmin) renderAdmMusic();
+                if(isAdmin) {
+                    renderAdmMusic();
+                    updateAdminFolderSelect();
+                }
             });
 
-            // Settings Listener
+            // Settings
             db.ref('settings').on('value', s => {
                 const val = s.val() || {};
                 
                 document.getElementById('hero-txt').innerText = val.welcome || "Welcome";
                 
-                // تحديث المتغيرات
                 defaultSongId = val.defaultSongId;
                 isHeroMode = (val.heroMode === true);
                 heroUrl = val.heroImg || "";
@@ -498,10 +553,9 @@
                 bgFit = val.bgFit || "cover";
                 animType = val.animType || "static";
 
-                checkDefaultSong(); // Check default song settings
-                updateBackgroundState(); // Refresh background based on new settings
+                checkDefaultSong(); 
+                updateBackgroundState();
 
-                // Sync Admin UI Fields
                 if(isAdmin) {
                     if(document.getElementById('set-welcome')) document.getElementById('set-welcome').value = val.welcome || "";
                     if(document.getElementById('set-hero-active')) document.getElementById('set-hero-active').checked = isHeroMode;
@@ -510,8 +564,6 @@
                     if(document.getElementById('set-hero-type')) document.getElementById('set-hero-type').value = heroType;
                     if(document.getElementById('set-bg-fit')) document.getElementById('set-bg-fit').value = bgFit;
                     if(document.getElementById('set-anim-type')) document.getElementById('set-anim-type').value = animType;
-
-                    // *** FIX: Re-render Music list to show the star update immediately ***
                     renderAdmMusic();
                 }
             });
@@ -541,26 +593,35 @@
             });
         }
 
-        // --- Background Logic (Updated) ---
+        // --- Background Logic (SMART) ---
         function updateBackgroundState() {
             let targetUrl = "";
             let targetType = "image";
 
             if (isHeroMode) {
-                // الوضع الثابت (Hero Mode)
                 targetUrl = heroUrl;
                 targetType = heroType;
             } else {
-                // وضع الموسيقى (تلقائي)
-                // *** FIX: Remove !audio.paused check so background shows even if song is default/paused ***
                 if (audio.src && playlist[pIndex]) {
                     targetUrl = playlist[pIndex].image;
                 }
                 targetType = "image"; 
             }
-
-            // Fallback
             if (!targetUrl) targetUrl = "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=1920";
+            
+            // --- Smart Check: If net is slow, force IMAGE mode ---
+            const netStatus = getNetworkStatus();
+            if (netStatus === 'slow' && targetType === 'video') {
+                console.log("Slow network detected: Forcing Image Mode");
+                targetType = 'image';
+                // إذا كان الرابط فيديو، استخدم صورة افتراضية أو صورة الأغنية بدلاً منه
+                if(targetUrl.endsWith('.mp4') || targetUrl.endsWith('.webm')) {
+                    targetUrl = "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=1920"; 
+                }
+                // إظهار تنبيه
+                updateNetAlert(true);
+            }
+            // ----------------------------------------------------
 
             applyBackground(targetUrl, targetType);
         }
@@ -575,8 +636,11 @@
             if (type === 'video') {
                 bgImg.style.opacity = '0';
                 bgVid.style.display = 'block';
-                bgVid.src = url;
-                bgVid.play().catch(e=>console.log("Autoplay blocked"));
+                // منع إعادة التحميل إذا كان نفس الفيديو يعمل
+                if(bgVid.src !== url) {
+                    bgVid.src = url;
+                    bgVid.play().catch(e=>console.log("Autoplay blocked/Interrupted"));
+                }
                 bgVid.style.objectFit = (bgFit === 'contain') ? 'contain' : 'cover';
             } else {
                 bgVid.style.display = 'none';
@@ -584,6 +648,7 @@
                 bgImg.style.opacity = '1';
                 bgImg.style.backgroundImage = `url('${url}')`;
                 bgImg.classList.add(bgFit === 'contain' ? 'fit-contain' : 'fit-cover');
+                bgImg.classList.remove('anim-zoom-in', 'anim-zoom-out', 'anim-pulse', 'anim-static');
                 
                 if(animType === 'zoom-in') bgImg.classList.add('anim-zoom-in');
                 else if(animType === 'zoom-out') bgImg.classList.add('anim-zoom-out');
@@ -594,7 +659,6 @@
 
         // --- Song Logic ---
         function checkDefaultSong() {
-            // Load default only if no song is currently loaded
             if(!audio.src && defaultSongId && songs.length > 0) {
                 const song = songs.find(s => s.k === defaultSongId);
                 if(song) {
@@ -602,11 +666,8 @@
                     document.getElementById('p-desc').innerText = song.folder;
                     document.getElementById('p-art').style.backgroundImage = `url('${song.image}')`;
                     audio.src = song.url;
-                    
                     playlist = folders[song.folder] || songs;
                     pIndex = playlist.findIndex(s => s.k === song.k);
-                    
-                    // Force update background immediately
                     updateBackgroundState();
                 }
             }
@@ -616,15 +677,12 @@
             pIndex = i;
             const s = playlist[pIndex];
             if(!s.url) return;
-            
             audio.src = s.url;
             audio.play().catch(e => console.log(e));
-            
             document.getElementById('p-title').innerText = s.name;
             document.getElementById('p-desc').innerText = s.folder;
             document.getElementById('p-art').style.backgroundImage = `url('${s.image}')`;
             document.getElementById('play-icon').className = "fas fa-pause";
-            
             updateBackgroundState();
         }
 
@@ -639,6 +697,10 @@
         function prev() { if(playlist.length) playSong((pIndex-1+playlist.length)%playlist.length); }
         
         audio.ontimeupdate = () => { if(audio.duration) document.getElementById('prog-fill').style.width = ((audio.currentTime/audio.duration)*100)+"%"; };
+        // --- AUTO PLAY NEXT SONG ---
+        audio.onended = () => { next(); }; 
+        // ---------------------------
+
         function seek(e) { if(audio.duration) audio.currentTime = (e.offsetX / e.target.offsetWidth) * audio.duration; }
 
         // --- UI & Admin ---
@@ -670,7 +732,7 @@
             alert("تم حفظ الإعدادات!");
         }
 
-        // --- Functions (Diary, Music Add, etc) ---
+        // --- Diary & Utils ---
         function initDiarySystem() {
             const feed = document.getElementById('diary-feed');
             const ref = db.ref('diaries').limitToLast(50);
@@ -702,26 +764,55 @@
             db.ref('inbox').on('value', s=>{ const l=document.getElementById('inbox-list'); l.innerHTML=""; s.forEach(c=>{ l.innerHTML+=`<div style="background:#222; padding:10px; margin-bottom:5px;">${escapeHtml(c.val().msg)} <button style="color:red" onclick="db.ref('inbox/${c.key}').remove()">✕</button></div>`; }); });
         }
         function admTab(t) { document.querySelectorAll('.adm-content .section').forEach(e=>e.classList.remove('active')); document.getElementById('adm-'+t).classList.add('active'); }
-        function addSong() {
-            db.ref('music').push({
-                folder: document.getElementById('add-folder').value, name: document.getElementById('add-title').value,
-                url: document.getElementById('add-url').value, image: document.getElementById('add-img').value
-            }); alert("تم");
+        
+        // --- NEW ADMIN FOLDER LOGIC ---
+        function updateAdminFolderSelect() {
+            const sel = document.getElementById('folder-select');
+            if(!sel) return;
+            let html = '<option value="new">++ مجلد جديد ++</option>';
+            Object.keys(folders).forEach(f => {
+                html += `<option value="${f}">${f}</option>`;
+            });
+            sel.innerHTML = html;
         }
 
-        // *** FIX: Admin Music Render with Active Star Logic ***
+        function toggleFolderInput() {
+            const sel = document.getElementById('folder-select');
+            const inp = document.getElementById('new-folder-input');
+            if(sel.value === 'new') inp.style.display = 'block';
+            else inp.style.display = 'none';
+        }
+
+        function addSong() {
+            const sel = document.getElementById('folder-select');
+            const inp = document.getElementById('new-folder-input');
+            
+            let finalFolder = "";
+            if(sel.value === 'new') finalFolder = inp.value;
+            else finalFolder = sel.value;
+
+            if(!finalFolder) return alert("الرجاء اختيار مجلد أو كتابة اسم جديد");
+
+            db.ref('music').push({
+                folder: finalFolder, 
+                name: document.getElementById('add-title').value,
+                url: document.getElementById('add-url').value, 
+                image: document.getElementById('add-img').value
+            }); 
+            alert("تمت الإضافة");
+        }
+        // ------------------------------
+
         function renderAdmMusic() {
             const l = document.getElementById('adm-music-list'); 
             if(!l) return; 
             l.innerHTML = "";
             songs.forEach(s => { 
                 const isDefault = (s.k === defaultSongId);
-                // تنسيق النجمة بناءً على ما إذا كانت مفعلة أم لا
                 const starClass = isDefault ? 'star-active' : 'star-inactive';
-                
                 l.innerHTML += `
                     <div class="adm-list-item">
-                        <span>${s.name}</span>
+                        <span>${s.name} (${s.folder})</span>
                         <div>
                             <button class="adm-btn-icon ${starClass}" onclick="setDefaultSong('${s.k}')" title="تعيين كافتراضي">
                                 <i class="fas fa-star"></i>
@@ -734,19 +825,8 @@
                 `; 
             });
         }
-        
-        function setDefaultSong(id) {
-            // إذا ضغطنا على نفس الأغنية، يمكننا إلغاء التعيين (اختياري)
-            // هنا سنقوم فقط بتعيينها
-            db.ref('settings').update({defaultSongId: id});
-        }
-        
-        function deleteSong(id) {
-            if(confirm('حذف هذه الأغنية؟')) {
-                db.ref('music/'+id).remove();
-            }
-        }
-
+        function setDefaultSong(id) { db.ref('settings').update({defaultSongId: id}); }
+        function deleteSong(id) { if(confirm('حذف هذه الأغنية؟')) db.ref('music/'+id).remove(); }
         function savePage() {
             const id=document.getElementById('page-id').value;
             if(id) db.ref('custom_pages/'+id).set({title:document.getElementById('page-title').value, icon:document.getElementById('page-icon').value, content:document.getElementById('page-content').value});
