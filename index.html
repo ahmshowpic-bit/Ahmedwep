@@ -168,6 +168,18 @@
         .btn-glow { background: var(--primary); color: #000; border: none; padding: 10px 25px; border-radius: 25px; font-weight: bold; cursor: pointer; box-shadow: 0 0 15px rgba(0, 242, 255, 0.2); transition: 0.3s; }
         .btn-glow:hover { box-shadow: 0 0 25px rgba(0, 242, 255, 0.5); transform: translateY(-2px); }
 
+        /* تخصيص قائمة الأغاني في الأدمن */
+        .adm-list-item { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 10px; border-bottom: 1px solid #333; 
+            background: rgba(255,255,255,0.03); margin-bottom: 5px; border-radius: 6px;
+        }
+        .adm-list-item:hover { background: rgba(255,255,255,0.07); }
+        .adm-btn-icon { background: none; border: none; font-size: 18px; cursor: pointer; padding: 5px 10px; transition: 0.2s; }
+        .star-active { color: var(--gold) !important; text-shadow: 0 0 10px var(--gold); transform: scale(1.2); }
+        .star-inactive { color: #555; }
+        .star-inactive:hover { color: #888; }
+
         /* Mobile */
         .mob-nav { display: none; }
         @media (max-width: 768px) {
@@ -321,7 +333,7 @@
                         <button onclick="addSong()" class="btn-glow" style="font-size:13px;">إضافة للمكتبة</button>
                     </div>
                     <h4 style="color:#888;">الأغاني الحالية</h4>
-                    <div id="adm-music-list"></div>
+                    <div id="adm-music-list" style="max-height: 400px; overflow-y: auto;"></div>
                 </div>
                 <div id="adm-pages" class="section">
                     <h3>منشئ الصفحات</h3>
@@ -472,33 +484,35 @@
                 if(isAdmin) renderAdmMusic();
             });
 
-            // Settings (Updated Logic)
+            // Settings Listener
             db.ref('settings').on('value', s => {
                 const val = s.val() || {};
                 
                 document.getElementById('hero-txt').innerText = val.welcome || "Welcome";
+                
+                // تحديث المتغيرات
                 defaultSongId = val.defaultSongId;
-                checkDefaultSong();
-
-                // New Settings Variables
                 isHeroMode = (val.heroMode === true);
                 heroUrl = val.heroImg || "";
                 heroType = val.heroType || "image";
                 bgFit = val.bgFit || "cover";
                 animType = val.animType || "static";
 
-                updateBackgroundState();
+                checkDefaultSong(); // Check default song settings
+                updateBackgroundState(); // Refresh background based on new settings
 
-                // Sync Admin UI
+                // Sync Admin UI Fields
                 if(isAdmin) {
                     if(document.getElementById('set-welcome')) document.getElementById('set-welcome').value = val.welcome || "";
                     if(document.getElementById('set-hero-active')) document.getElementById('set-hero-active').checked = isHeroMode;
                     if(document.getElementById('set-hero-img')) document.getElementById('set-hero-img').value = heroUrl;
                     
-                    // New fields
                     if(document.getElementById('set-hero-type')) document.getElementById('set-hero-type').value = heroType;
                     if(document.getElementById('set-bg-fit')) document.getElementById('set-bg-fit').value = bgFit;
                     if(document.getElementById('set-anim-type')) document.getElementById('set-anim-type').value = animType;
+
+                    // *** FIX: Re-render Music list to show the star update immediately ***
+                    renderAdmMusic();
                 }
             });
 
@@ -527,20 +541,19 @@
             });
         }
 
-        // --- Background Logic (New) ---
+        // --- Background Logic (Updated) ---
         function updateBackgroundState() {
-            // Determine what to show
             let targetUrl = "";
-            let targetType = "image"; // default
+            let targetType = "image";
 
             if (isHeroMode) {
-                // Fixed Mode
+                // الوضع الثابت (Hero Mode)
                 targetUrl = heroUrl;
                 targetType = heroType;
             } else {
-                // Music Mode (Default to image unless user explicitly set video in music?)
-                // Currently only image support for songs, so we treat songs as images.
-                if (audio.src && !audio.paused && playlist[pIndex]) {
+                // وضع الموسيقى (تلقائي)
+                // *** FIX: Remove !audio.paused check so background shows even if song is default/paused ***
+                if (audio.src && playlist[pIndex]) {
                     targetUrl = playlist[pIndex].image;
                 }
                 targetType = "image"; 
@@ -556,31 +569,22 @@
             const bgImg = document.getElementById('dynamic-bg-img');
             const bgVid = document.getElementById('dynamic-bg-video');
 
-            // Reset Animation Classes
             bgImg.className = "bg-layer";
             bgVid.className = "bg-layer";
 
             if (type === 'video') {
-                // Show Video, Hide Image
                 bgImg.style.opacity = '0';
                 bgVid.style.display = 'block';
                 bgVid.src = url;
                 bgVid.play().catch(e=>console.log("Autoplay blocked"));
-                
-                // Videos are usually "Cover" only, but we can add fit options if needed.
                 bgVid.style.objectFit = (bgFit === 'contain') ? 'contain' : 'cover';
-
             } else {
-                // Show Image, Hide Video
                 bgVid.style.display = 'none';
                 bgVid.pause();
                 bgImg.style.opacity = '1';
                 bgImg.style.backgroundImage = `url('${url}')`;
-                
-                // Apply Fit Mode
                 bgImg.classList.add(bgFit === 'contain' ? 'fit-contain' : 'fit-cover');
                 
-                // Apply Animation (Only if Image)
                 if(animType === 'zoom-in') bgImg.classList.add('anim-zoom-in');
                 else if(animType === 'zoom-out') bgImg.classList.add('anim-zoom-out');
                 else if(animType === 'pulse') bgImg.classList.add('anim-pulse');
@@ -590,6 +594,7 @@
 
         // --- Song Logic ---
         function checkDefaultSong() {
+            // Load default only if no song is currently loaded
             if(!audio.src && defaultSongId && songs.length > 0) {
                 const song = songs.find(s => s.k === defaultSongId);
                 if(song) {
@@ -601,7 +606,8 @@
                     playlist = folders[song.folder] || songs;
                     pIndex = playlist.findIndex(s => s.k === song.k);
                     
-                    updateBackgroundState(); // Initial BG set
+                    // Force update background immediately
+                    updateBackgroundState();
                 }
             }
         }
@@ -652,13 +658,11 @@
             }).catch(e => alert(e.message));
         }
 
-        // --- Save Settings (Updated) ---
         function saveSettings() {
             db.ref('settings').update({
                 welcome: document.getElementById('set-welcome').value,
                 heroMode: document.getElementById('set-hero-active').checked,
                 heroImg: document.getElementById('set-hero-img').value,
-                // New Fields
                 heroType: document.getElementById('set-hero-type').value,
                 bgFit: document.getElementById('set-bg-fit').value,
                 animType: document.getElementById('set-anim-type').value
@@ -666,7 +670,7 @@
             alert("تم حفظ الإعدادات!");
         }
 
-        // --- Existing Functions (Diary, Music Add, etc) ---
+        // --- Functions (Diary, Music Add, etc) ---
         function initDiarySystem() {
             const feed = document.getElementById('diary-feed');
             const ref = db.ref('diaries').limitToLast(50);
@@ -704,10 +708,45 @@
                 url: document.getElementById('add-url').value, image: document.getElementById('add-img').value
             }); alert("تم");
         }
+
+        // *** FIX: Admin Music Render with Active Star Logic ***
         function renderAdmMusic() {
-            const l=document.getElementById('adm-music-list'); if(!l)return; l.innerHTML="";
-            songs.forEach(s=>{ l.innerHTML+=`<div class="adm-list-item"><span>${s.name}</span><div><button onclick="db.ref('settings').update({defaultSongId:'${s.k}'})">★</button><button onclick="db.ref('music/${s.k}').remove()" style="color:red">✕</button></div></div>`; });
+            const l = document.getElementById('adm-music-list'); 
+            if(!l) return; 
+            l.innerHTML = "";
+            songs.forEach(s => { 
+                const isDefault = (s.k === defaultSongId);
+                // تنسيق النجمة بناءً على ما إذا كانت مفعلة أم لا
+                const starClass = isDefault ? 'star-active' : 'star-inactive';
+                
+                l.innerHTML += `
+                    <div class="adm-list-item">
+                        <span>${s.name}</span>
+                        <div>
+                            <button class="adm-btn-icon ${starClass}" onclick="setDefaultSong('${s.k}')" title="تعيين كافتراضي">
+                                <i class="fas fa-star"></i>
+                            </button>
+                            <button class="adm-btn-icon" onclick="deleteSong('${s.k}')" style="color:#ff5555" title="حذف">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `; 
+            });
         }
+        
+        function setDefaultSong(id) {
+            // إذا ضغطنا على نفس الأغنية، يمكننا إلغاء التعيين (اختياري)
+            // هنا سنقوم فقط بتعيينها
+            db.ref('settings').update({defaultSongId: id});
+        }
+        
+        function deleteSong(id) {
+            if(confirm('حذف هذه الأغنية؟')) {
+                db.ref('music/'+id).remove();
+            }
+        }
+
         function savePage() {
             const id=document.getElementById('page-id').value;
             if(id) db.ref('custom_pages/'+id).set({title:document.getElementById('page-title').value, icon:document.getElementById('page-icon').value, content:document.getElementById('page-content').value});
