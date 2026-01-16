@@ -10,6 +10,7 @@
     <style>
         :root {
             --primary: #00f2ff;
+            --primary-dim: rgba(0, 242, 255, 0.2);
             --secondary: #bd00ff;
             --gold: #ffd700;
             --bg-deep: #050508;
@@ -126,48 +127,34 @@
         .diary-post { background: rgba(30,30,35,0.7); backdrop-filter: blur(10px); border-radius: 15px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1); }
         .diary-post.admin-post { border: 1px solid var(--gold); background: rgba(255, 215, 0, 0.1); }
 
-        /* --- 🎵 المشغل الحلقي المتصل (The True Liquid Loop) 🎵 --- */
+        /* --- 🎵 المشغل (الحلقة المتصلة - تصميم خيطي) 🎵 --- */
         .music-bar {
-            position: fixed; 
-            bottom: 30px; 
-            right: calc(var(--sidebar-w) + 30px); 
-            left: 30px;
+            position: fixed; bottom: 30px; 
+            right: calc(var(--sidebar-w) + 30px); left: 30px;
             height: 90px;
             background: #000;
             border-radius: 50px; 
             display: flex; align-items: center; justify-content: space-between; 
-            padding: 0 35px; 
-            z-index: 100;
+            padding: 0 35px; z-index: 100;
             box-shadow: 0 20px 60px rgba(0,0,0,0.9);
-            overflow: hidden; /* يقص الدائرة العملاقة لتظهر كإطار فقط */
+            overflow: hidden; 
         }
 
-        /* الطبقة الدوارة العملاقة (The Giant Spinner)
-           هذه هي الحيلة: نجعل الخلفية أكبر بكثير من المشغل وتدور حول مركزها.
-           بما أن المشغل يغطي الوسط، تظهر فقط الحواف كأنها متصلة.
-        */
+        /* الطبقة الدوارة العملاقة (لضمان الاتصال) */
         .music-bar::before {
             content: '';
             position: absolute;
-            width: 200vw; /* عرض ضخم جداً */
-            height: 200vw; /* ارتفاع ضخم جداً */
-            left: 50%; top: 50%; /* التمركز */
-            transform: translate(-50%, -50%); /* ضبط التمركز */
+            width: 200vw; height: 200vw; /* حجم ضخم لتغطية كل الحواف */
+            left: 50%; top: 50%; 
+            transform: translate(-50%, -50%);
             
-            /* تدرج لوني مخروطي (مثل الكعكة) يغطي 360 درجة */
+            /* تدرج لوني حلقي كامل (Spectrum) */
             background: conic-gradient(
-                #ff0000, 
-                #ff00dd, 
-                #0000ff, 
-                #00ffff, 
-                #00ff00, 
-                #ffff00, 
-                #ff0000 /* نعود للأحمر لتكون الحلقة مغلقة تماماً */
+                #ff0000, #ff00dd, #0000ff, #00ffff, #00ff00, #ffff00, #ff0000
             );
             
-            /* الحركة: دوران القرص العملاق */
             animation: spin-giant 4s linear infinite;
-            animation-play-state: paused; /* ثابت عند التوقف */
+            animation-play-state: paused;
             z-index: -2;
         }
         
@@ -175,14 +162,13 @@
             animation-play-state: running;
         }
 
-        /* الطبقة الداخلية السوداء (Mask) لتحديد سمك الخيط */
+        /* الطبقة الداخلية السوداء (Mask) */
         .music-bar::after {
             content: '';
             position: absolute;
-            /* هذا الرقم يحدد سمك الخيط الملون */
-            inset: 1.5px; 
-            background: #0f0f13; /* لون جسم المشغل الداخلي */
-            border-radius: 48.5px; /* يتبع شكل الحواف */
+            inset: 1.5px; /* سمك الخيط */
+            background: #0f0f13; 
+            border-radius: 48.5px; 
             z-index: -1;
         }
 
@@ -229,7 +215,7 @@
         .player-right { flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 10px; position: relative; z-index: 2; }
         .vol-slider { width: 100px; accent-color: var(--primary); height: 4px; border-radius: 5px; }
 
-        /* --- Mobile --- */
+        /* --- تحسينات الموبايل (إصلاح التداخل) --- */
         .mob-nav-bottom { display: none; }
         @media (max-width: 768px) {
             .sidebar { display: none; }
@@ -245,21 +231,42 @@
             
             .content { padding: 15px; padding-bottom: calc(110px + var(--nav-mobile-h)); }
 
+            /* إصلاح المشغل للموبايل لمنع التداخل */
             .music-bar { 
                 bottom: calc(var(--nav-mobile-h) + 15px); 
-                /* إعادة ضبط العرض للموبايل */
-                left: 15px; right: 15px; 
-                width: auto;
-                height: 80px; padding: 0 15px; border-radius: 40px;
+                left: 10px; right: 10px; width: auto;
+                height: 85px; /* زيادة بسيطة */
+                padding: 0 15px; border-radius: 40px;
+                /* التأكد من توزيع العناصر بشكل صحيح */
+                justify-content: space-between;
             }
             .player-left { flex: 0 0 auto; gap: 10px; }
             #p-art { width: 50px; height: 50px; }
-            .player-center { flex: 1; align-items: flex-end; margin-right: 10px; }
-            .prog-wrapper { position: absolute; bottom: 5px; left: 20px; right: 20px; width: auto; max-width: none; padding: 0; }
+            
+            /* منطقة الوسط (الأزرار والشريط) في عمود */
+            .player-center { 
+                flex: 1; 
+                flex-direction: column; /* ترتيب عمودي لمنع التداخل */
+                align-items: center; 
+                justify-content: center;
+                margin-left: 10px; margin-right: 10px;
+                gap: 5px; /* مسافة بين الأزرار والشريط */
+            }
+            
+            .ctrl-grp { gap: 15px; margin-bottom: 2px; }
+            .play-btn-main { width: 38px; height: 38px; font-size: 16px; }
+            .ctrl-btn { font-size: 18px; }
+
+            /* إصلاح شريط التقدم ليكون أسفل الأزرار بوضوح */
+            .prog-wrapper { 
+                width: 100%; 
+                padding: 5px 0; /* منطقة لمس أفضل */
+                position: relative; /* إرجاعه للتدفق الطبيعي */
+                bottom: auto; left: auto; right: auto;
+            }
             .prog-bg { height: 4px; }
-            .ctrl-grp { gap: 15px; }
+            
             .player-right { display: none; } 
-            .play-btn-main { width: 45px; height: 45px; font-size: 18px; }
             #p-desc { display: none; }
         }
 
