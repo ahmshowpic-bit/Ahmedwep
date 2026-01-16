@@ -10,18 +10,18 @@
     <style>
         :root {
             --primary: #00f2ff;
-            --primary-dim: rgba(0, 242, 255, 0.1);
+            --primary-dim: rgba(0, 242, 255, 0.2);
             --secondary: #bd00ff;
             --gold: #ffd700;
             --bg-deep: #050508;
             --text-main: #ffffff;
-            --text-muted: #a0a0a0;
+            --text-muted: #e0e0e0; /* تفتيح النص */
             
             --sidebar-w: 260px;
             --nav-mobile-h: 70px;
             
             --glass-bg: rgba(20, 20, 25, 0.85);
-            --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.15);
             --blur: blur(20px);
         }
 
@@ -31,18 +31,19 @@
             margin: 0; font-family: 'Tajawal', sans-serif;
             background-color: var(--bg-deep); color: var(--text-main); 
             height: 100vh; overflow: hidden; display: flex; flex-direction: column;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8); /* ظل للنص ليظهر فوق الصور الزاهية */
         }
 
         /* --- الخلفيات وتأثيراتها --- */
         .bg-layer { position: fixed; inset: 0; z-index: -2; width: 100%; height: 100%; transition: all 0.5s ease; }
         #dynamic-bg-img { background-size: cover; background-position: center; }
         #dynamic-bg-video { object-fit: cover; display: none; }
-        .overlay { position: fixed; inset: 0; z-index: -1; background: radial-gradient(circle at center, transparent 0%, #000 110%); pointer-events: none; }
+        .overlay { position: fixed; inset: 0; z-index: -1; background: radial-gradient(circle at center, transparent 0%, #000 130%); pointer-events: none; }
         
-        /* فلاتر الخلفية (يتم التحكم بها من الأدمن) */
+        /* فلاتر الخلفية - تم التعديل لتكون زاهية */
+        .mode-vivid { filter: brightness(0.7) contrast(1.1); } /* الوضع الافتراضي الجديد */
         .mode-dark { filter: brightness(0.3); }
-        .mode-clear { filter: brightness(1) contrast(1.1); }
-        .mode-blur { filter: blur(20px) brightness(0.7) saturate(1.2); transform: scale(1.1); }
+        .mode-blur { filter: blur(20px) brightness(0.7); transform: scale(1.1); }
 
         /* Animation Utility */
         .fit-cover { background-size: cover !important; }
@@ -67,12 +68,13 @@
             background: linear-gradient(135deg, #fff 0%, var(--primary) 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             letter-spacing: 1px;
+            text-shadow: none; /* إزالة ظل النص من اللوجو للحفاظ على التدرج */
         }
         
         /* Visitor Counter Badge */
         .visitor-box {
-            background: linear-gradient(90deg, rgba(0, 242, 255, 0.05), transparent); 
-            border-right: 2px solid var(--primary);
+            background: linear-gradient(90deg, rgba(0, 242, 255, 0.1), transparent); 
+            border-right: 3px solid var(--primary);
             padding: 10px 15px; border-radius: 8px; margin-bottom: 30px; 
             display: flex; align-items: center; gap: 15px;
             transition: 0.3s;
@@ -83,7 +85,7 @@
             padding: 16px 20px; border-radius: 16px; cursor: pointer; color: var(--text-muted); transition: 0.3s;
             display: flex; align-items: center; gap: 18px; font-weight: 500; font-size: 16px; margin-bottom: 8px;
         }
-        .nav-btn:hover { color: #fff; background: rgba(255,255,255,0.05); transform: translateX(-5px); }
+        .nav-btn:hover { color: #fff; background: rgba(255,255,255,0.1); transform: translateX(-5px); }
         .nav-btn.active { 
             background: linear-gradient(90deg, var(--primary-dim) 0%, transparent 100%);
             color: var(--primary); border-right: 3px solid var(--primary);
@@ -98,76 +100,83 @@
         /* --- Components --- */
         #hero-txt {
             font-size: clamp(3rem, 5vw, 6rem); margin: 0; font-weight: 900; line-height:1.1;
-            background: linear-gradient(to bottom, #fff 30%, #999); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            background: linear-gradient(to bottom, #fff 30%, #ccc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            text-shadow: 0 10px 40px rgba(0,0,0,0.6);
         }
 
         .folder-card { 
-            background: rgba(255,255,255,0.03); padding: 25px; border-radius: 20px; text-align: center; cursor: pointer; 
-            border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; position: relative; overflow: hidden;
+            background: rgba(255,255,255,0.1); padding: 25px; border-radius: 20px; text-align: center; cursor: pointer; 
+            border: 1px solid rgba(255,255,255,0.15); transition: 0.3s; position: relative; overflow: hidden;
+            backdrop-filter: blur(5px);
         }
-        .folder-card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 5px 20px rgba(0,242,255,0.1); }
+        .folder-card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 5px 20px rgba(0,242,255,0.2); }
         .folder-card i { font-size: 40px; margin-bottom: 15px; color: var(--gold); }
         .folders-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
 
         .song-row {
             display: flex; align-items: center; gap: 15px; padding: 12px; border-radius: 12px; margin-bottom: 5px;
-            background: rgba(255,255,255,0.02); transition: 0.2s; cursor: pointer; border: 1px solid transparent;
+            background: rgba(255,255,255,0.05); transition: 0.2s; cursor: pointer; border: 1px solid transparent;
         }
-        .song-row:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.1); }
+        .song-row:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.2); }
         .song-img { width: 50px; height: 50px; border-radius: 10px; background-size: cover; background-position: center; }
 
         .inp, textarea.inp, select.inp { 
-            width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); 
+            width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); 
             color: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; font-family: inherit; transition: 0.3s;
         }
-        .inp:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-dim); }
+        .inp:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-dim); background: rgba(0,0,0,0.7); }
         
         .btn-glow { 
             background: linear-gradient(135deg, var(--primary), var(--secondary)); 
             color: #fff; border: none; padding: 12px 30px; border-radius: 50px; 
-            font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 242, 255, 0.3); transition: 0.3s;
+            font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 242, 255, 0.3); transition: 0.3s; text-shadow: none;
         }
         .btn-glow:hover { transform: scale(1.05); box-shadow: 0 6px 25px rgba(0, 242, 255, 0.5); }
 
-        .diary-post { background: rgba(30,30,35,0.6); backdrop-filter: blur(10px); border-radius: 15px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05); }
-        .diary-post.admin-post { border: 1px solid var(--gold); background: rgba(255, 215, 0, 0.05); }
+        .diary-post { background: rgba(30,30,35,0.7); backdrop-filter: blur(10px); border-radius: 15px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1); }
+        .diary-post.admin-post { border: 1px solid var(--gold); background: rgba(255, 215, 0, 0.1); }
 
-        /* --- THE ALIVE MUSIC PLAYER (Connected Loop Effect) --- */
+        /* --- THE ALIVE MUSIC PLAYER (Connected Loop + Pause Logic) --- */
         .music-bar {
             position: fixed; bottom: 20px; left: 20px; right: 20px; height: 90px;
-            background: rgba(10, 10, 14, 0.95); /* خلفية غامقة لتباين الألوان */
+            background: rgba(10, 10, 14, 0.95); 
             border-radius: 20px;
             display: flex; align-items: center; justify-content: space-between; 
             padding: 0 25px; z-index: 100;
             box-shadow: 0 20px 50px rgba(0,0,0,0.8);
             overflow: hidden;
+            /* بوردر شفاف ليسمح بظهور الحركة خلفه */
             border: 1px solid rgba(255,255,255,0.05);
         }
 
-        /* طبقة الحركة (The Train) */
+        /* طبقة الحركة (السلسلة المتصلة) */
         .music-bar::before {
             content: '';
             position: absolute;
             top: -50%; left: -50%; width: 200%; height: 200%;
-            /* التدرج اللوني الذي يشكل القطار المتصل */
+            /* تدرج كامل لعمل حلقة متصلة */
             background: conic-gradient(
-                transparent 0deg, 
-                transparent 270deg, 
-                var(--primary) 310deg, 
-                var(--secondary) 340deg, 
-                var(--gold) 360deg
+                var(--primary), 
+                var(--secondary), 
+                var(--gold), 
+                var(--primary) /* إعادة اللون الأول لإغلاق الحلقة */
             );
             animation: border-rotate 4s linear infinite;
+            animation-play-state: paused; /* متوقف افتراضياً */
             z-index: -2;
         }
+        
+        /* تفعيل الحركة عند إضافة كلاس playing */
+        .playing .music-bar::before {
+            animation-play-state: running;
+        }
 
-        /* الطبقة الداخلية لإظهار الحدود فقط */
+        /* الطبقة الداخلية السوداء */
         .music-bar::after {
             content: '';
             position: absolute;
-            inset: 2px; /* سمك الشريط المضئ */
-            background: #0f0f13; /* لون جسم المشغل */
+            inset: 3px; /* سمك الشريط الملون */
+            background: #0f0f13; 
             border-radius: 18px;
             z-index: -1;
         }
@@ -176,7 +185,6 @@
             100% { transform: rotate(360deg); }
         }
         
-        /* عناصر المشغل */
         .player-left { display: flex; align-items: center; gap: 15px; width: 30%; position: relative; z-index: 2; }
         #p-art { 
             width: 55px; height: 55px; border-radius: 15px; background-color: #222; 
@@ -222,7 +230,7 @@
                 border-top: 1px solid rgba(255,255,255,0.1); z-index: 200;
                 padding-bottom: env(safe-area-inset-bottom);
             }
-            .mob-nav-item { display: flex; flex-direction: column; align-items: center; color: #666; font-size: 10px; flex: 1; transition:0.2s; }
+            .mob-nav-item { display: flex; flex-direction: column; align-items: center; color: #aaa; font-size: 10px; flex: 1; transition:0.2s; }
             .mob-nav-item.active { color: var(--primary); transform: translateY(-5px); }
             
             .content { padding: 15px; padding-bottom: calc(100px + var(--nav-mobile-h)); }
@@ -276,7 +284,7 @@
             </div>
             
             <div style="margin-top:auto; text-align:center;">
-                <button onclick="openAdmin()" style="background:transparent; border:none; color:rgba(255,255,255,0.1); font-size:18px; cursor:pointer; transition:0.3s;">
+                <button onclick="openAdmin()" style="background:transparent; border:none; color:rgba(255,255,255,0.3); font-size:18px; cursor:pointer; transition:0.3s;">
                     <i class="fas fa-cog"></i>
                 </button>
             </div>
@@ -286,7 +294,7 @@
             <div id="view-home" class="section active">
                 <div style="min-height: 60vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
                     <h1 id="hero-txt">...</h1>
-                    <p style="color:var(--text-muted); margin-top:10px; font-size:18px;">مرحباً بك في عالمي الخاص</p>
+                    <p style="color:var(--text-main); margin-top:10px; font-size:18px; text-shadow:0 0 10px #000;">مرحباً بك في عالمي الخاص</p>
                     
                     <div id="visitor-badge-mobile" class="visitor-box" style="margin-top:30px; display:none; min-width:200px; justify-content:center;">
                         <i class="fas fa-eye"></i> الزيارات: <span id="visitor-count-mobile" class="visitor-num">...</span>
@@ -301,7 +309,7 @@
                 </div>
                 <div id="folders-view"><div class="folders-grid" id="folders-container"></div></div>
                 <div id="songs-view" style="display:none;">
-                    <button onclick="showFolders()" style="background:none; border:none; color:var(--text-muted); font-size:16px; margin-bottom:20px; cursor:pointer; display:flex; align-items:center; gap:10px;">
+                    <button onclick="showFolders()" style="background:none; border:none; color:var(--text-main); font-size:16px; margin-bottom:20px; cursor:pointer; display:flex; align-items:center; gap:10px;">
                         <i class="fas fa-arrow-right"></i> رجوع
                     </button>
                     <h3 id="current-folder-title" style="color:var(--primary); margin-bottom:20px;"></h3>
@@ -311,7 +319,7 @@
 
             <div id="view-diaries" class="section">
                 <h2 style="margin-bottom:20px;">المجتمع</h2>
-                <div class="diary-input-area" style="background:rgba(30,30,35,0.5); padding:20px; border-radius:20px; margin-bottom:20px;">
+                <div class="diary-input-area" style="background:rgba(30,30,35,0.8); padding:20px; border-radius:20px; margin-bottom:20px;">
                     <input id="d-name" class="inp" placeholder="اسمك المستعار" maxlength="20">
                     <textarea id="d-msg" class="inp" rows="3" placeholder="شاركنا أفكارك..."></textarea>
                     <button onclick="postDiary()" class="btn-glow">نشر <i class="fas fa-paper-plane"></i></button>
@@ -403,6 +411,7 @@
                             <input id="add-img" class="inp" placeholder="رابط الغلاف (صورة)">
                             <button onclick="addSong()" class="btn-glow" style="width:100%">إضافة</button>
                         </div>
+                        <h4 style="color:#888;">الأغاني الحالية</h4>
                         <div id="adm-music-list" style="max-height: 300px; overflow-y: auto;"></div>
                     </div>
 
@@ -420,12 +429,12 @@
                         <h3>إعدادات الموقع</h3>
                         
                         <div style="padding:20px; background:rgba(189, 0, 255, 0.05); border-radius:15px; border:1px solid var(--secondary); margin-bottom:20px;">
-                            <h4 style="margin-top:0; color:var(--secondary);"><i class="fas fa-eye"></i> المظهر البصري (Global Visuals)</h4>
+                            <h4 style="margin-top:0; color:var(--secondary);"><i class="fas fa-eye"></i> المظهر البصري</h4>
                             <label style="color:#ccc; display:block; margin-bottom:10px;">اختر نمط الخلفية الذي سيراه جميع الزوار:</label>
                             <select id="set-bg-filter" class="inp">
-                                <option value="mode-dark">غامق (Dark Mode) - الافتراضي</option>
-                                <option value="mode-clear">واضح (Clear) - ألوان حقيقية</option>
-                                <option value="mode-blur">ضبابي (Blur) - زجاجي</option>
+                                <option value="mode-vivid">واضح وزاهي (Vivid) - الافتراضي الجديد</option>
+                                <option value="mode-dark">غامق (Dark Mode)</option>
+                                <option value="mode-blur">ضبابي (Blur)</option>
                             </select>
                         </div>
 
@@ -498,14 +507,11 @@
             initVisitorCounter(); 
         });
 
-        // --- Visitor Counter Logic (Fixed) ---
+        // --- Visitor Counter ---
         function initVisitorCounter() {
             const visitRef = db.ref('settings/visitorCount');
-            // التأكد من أن الزيادة تحدث مرة واحدة فقط للجلسة
             if(!sessionStorage.getItem('visited')) {
-                visitRef.transaction(current => {
-                    return (current || 0) + 1;
-                });
+                visitRef.transaction(current => (current || 0) + 1);
                 sessionStorage.setItem('visited', 'true');
             }
         }
@@ -513,21 +519,15 @@
         function updateVisitorDisplay(count, show) {
             const deskBadge = document.getElementById('visitor-badge-desktop');
             const mobBadge = document.getElementById('visitor-badge-mobile');
-            const countDesk = document.getElementById('visitor-count-desktop');
-            const countMob = document.getElementById('visitor-count-mobile');
             const admCount = document.getElementById('adm-total-visits');
 
-            // تحديث الأرقام
             const displayCount = count || 0;
             if(admCount) admCount.innerText = displayCount;
-            countDesk.innerText = displayCount;
-            countMob.innerText = displayCount;
+            document.getElementById('visitor-count-desktop').innerText = displayCount;
+            document.getElementById('visitor-count-mobile').innerText = displayCount;
 
-            // التحكم في الظهور (الأدمن يرى دائماً)
             if (show === true || isAdmin) {
-                // نستخدم flex لأنه محدد في CSS بـ display: flex
                 deskBadge.style.display = 'flex';
-                // في الموبايل نظهره فقط إذا كانت الشاشة صغيرة
                 if(window.innerWidth <= 768) mobBadge.style.display = 'flex';
             } else {
                 deskBadge.style.display = 'none';
@@ -535,7 +535,7 @@
             }
         }
 
-        // --- Background Logic (Global Mode) ---
+        // --- Background Logic ---
         function applyBackground(sets) {
             const bgImg = document.getElementById('dynamic-bg-img');
             const bgVid = document.getElementById('dynamic-bg-video');
@@ -548,10 +548,12 @@
             }
             if (!url) url = "https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=1920";
 
-            // تطبيق فلتر المظهر (Visual Mode)
-            bgImg.className = "bg-layer"; // Reset classes
+            // إزالة الكلاسات السابقة
+            bgImg.className = "bg-layer"; 
+            
+            // تطبيق الفلتر (الافتراضي Vivid إذا لم يحدد)
             if(sets.bgFilter) bgImg.classList.add(sets.bgFilter);
-            else bgImg.classList.add('mode-dark'); // Default
+            else bgImg.classList.add('mode-vivid'); 
 
             if (type === 'video') {
                 bgImg.style.opacity = '0'; bgVid.style.display = 'block'; bgVid.src = url;
@@ -561,7 +563,6 @@
                 bgVid.style.display = 'none'; bgVid.pause(); bgImg.style.opacity = '1';
                 bgImg.style.backgroundImage = `url('${url}')`;
                 
-                // تطبيق أنيميشن الخلفية
                 bgImg.classList.add(sets.bgFit === 'contain' ? 'fit-contain' : 'fit-cover');
                 if(sets.animType === 'zoom-in') bgImg.classList.add('anim-zoom-in');
                 else if(sets.animType === 'pulse') bgImg.classList.add('anim-pulse');
@@ -576,16 +577,19 @@
                 
                 document.getElementById('hero-txt').innerText = settingsData.welcome || "Welcome";
                 
-                // تطبيق الخلفية والفلتر
+                // تحديث الخلفية والفلتر
                 applyBackground(settingsData);
-
                 // تحديث الزوار
                 updateVisitorDisplay(settingsData.visitorCount, settingsData.showVisitorCount);
 
+                // **تحديث النجمة (الأغنية الافتراضية)**
                 defaultSongId = settingsData.defaultSongId;
                 checkDefaultSong();
+                
+                // إذا كنا في وضع الأدمن، يجب إعادة رسم القائمة لتحديث مكان النجمة فوراً
+                if(isAdmin) renderAdmMusic();
 
-                // مزامنة لوحة التحكم
+                // مزامنة حقول الإدخال في الأدمن
                 if(isAdmin) {
                     if(document.getElementById('set-welcome')) document.getElementById('set-welcome').value = settingsData.welcome || "";
                     if(document.getElementById('set-hero-active')) document.getElementById('set-hero-active').checked = settingsData.heroMode;
@@ -594,8 +598,7 @@
                     if(document.getElementById('set-bg-fit')) document.getElementById('set-bg-fit').value = settingsData.bgFit || "cover";
                     if(document.getElementById('set-anim-type')) document.getElementById('set-anim-type').value = settingsData.animType || "static";
                     if(document.getElementById('set-show-visitors')) document.getElementById('set-show-visitors').checked = settingsData.showVisitorCount;
-                    // مزامنة قائمة اختيار الفلتر
-                    if(document.getElementById('set-bg-filter')) document.getElementById('set-bg-filter').value = settingsData.bgFilter || "mode-dark";
+                    if(document.getElementById('set-bg-filter')) document.getElementById('set-bg-filter').value = settingsData.bgFilter || "mode-vivid";
                 }
             });
 
@@ -692,7 +695,10 @@
                 document.getElementById('prog-fill').style.width = pct + "%";
             }
         };
-        audio.onended = next;
+        audio.onended = () => {
+            document.body.classList.remove('playing'); // Stop animation on end
+            next();
+        };
 
         function seek(e) { 
             if(!audio.duration) return;
@@ -731,7 +737,7 @@
                 bgFit: document.getElementById('set-bg-fit').value,
                 animType: document.getElementById('set-anim-type').value,
                 showVisitorCount: document.getElementById('set-show-visitors').checked,
-                bgFilter: document.getElementById('set-bg-filter').value // حفظ الفلتر
+                bgFilter: document.getElementById('set-bg-filter').value
             });
             alert("تم حفظ الإعدادات!");
         }
@@ -789,10 +795,21 @@
         function renderAdmMusic() {
             const l = document.getElementById('adm-music-list'); if(!l) return; l.innerHTML = "";
             songs.forEach(s => { 
-                l.innerHTML += `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #333;"><span>${s.name}</span><div><button onclick="setDefaultSong('${s.k}')" style="color:${(s.k===defaultSongId)?'gold':'#555'}"><i class="fas fa-star"></i></button><button onclick="deleteSong('${s.k}')" style="color:#f55"><i class="fas fa-trash"></i></button></div></div>`; 
+                const isDefault = (s.k === defaultSongId);
+                l.innerHTML += `
+                    <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #333;">
+                        <span>${s.name} <small style="color:#666">(${s.folder})</small></span>
+                        <div>
+                            <button onclick="setDefaultSong('${s.k}')" style="background:none; border:none; cursor:pointer; color:${isDefault?'gold':'#555'}"><i class="fas fa-star"></i></button>
+                            <button onclick="deleteSong('${s.k}')" style="background:none; border:none; cursor:pointer; color:#ff5555"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>`; 
             });
         }
-        function setDefaultSong(id) { db.ref('settings').update({defaultSongId: id}); }
+        function setDefaultSong(id) { 
+            db.ref('settings').update({defaultSongId: id}); 
+            // التحديث الفوري للواجهة سيتم عبر Listener الإعدادات
+        }
         function deleteSong(id) { if(confirm('حذف؟')) db.ref('music/'+id).remove(); }
         function savePage() { const id=document.getElementById('page-id').value; if(id) db.ref('custom_pages/'+id).set({title:document.getElementById('page-title').value, icon:document.getElementById('page-icon').value, content:document.getElementById('page-content').value}); alert("تم"); }
         function sendMsg() { const n=document.getElementById('c-name').value, m=document.getElementById('c-msg').value; if(m){db.ref('inbox').push({name:n, msg:m}); alert("تم الإرسال");} }
