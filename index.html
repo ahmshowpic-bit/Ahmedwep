@@ -2,272 +2,335 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>AHMED PULSE | ULTIMATE</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     
     <style>
         :root {
             --primary: #00f2ff;
-            --secondary: #ff0055;
+            --primary-dim: rgba(0, 242, 255, 0.1);
+            --secondary: #bd00ff;
             --gold: #ffd700;
             --bg-deep: #050508;
-            --glass-bg: rgba(20, 20, 30, 0.85);
-            --card-bg: rgba(30, 30, 40, 0.95);
+            --text-main: #ffffff;
+            --text-muted: #a0a0a0;
+            
             --sidebar-w: 260px;
-            --player-h: 100px;
+            --nav-mobile-h: 70px;
+            
+            --glass-bg: rgba(20, 20, 25, 0.85);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+            --blur: blur(20px);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; user-select: none; }
         
         body {
-            margin: 0;
-            font-family: 'Tajawal', sans-serif;
-            background-color: var(--bg-deep); color: #fff; 
-            height: 100vh; overflow: hidden;
-            transition: background 0.5s;
+            margin: 0; font-family: 'Tajawal', sans-serif;
+            background-color: var(--bg-deep); color: var(--text-main); 
+            height: 100vh; overflow: hidden; display: flex; flex-direction: column;
         }
 
-        /* --- تنبيهات الشبكة الجديدة --- */
-        #net-status {
-            position: fixed; top: 0; left: 0; right: 0;
-            background: rgba(255, 0, 85, 0.9);
-            color: white; text-align: center; padding: 5px; font-size: 12px;
-            z-index: 9999; display: none; font-weight: bold;
-        }
-        #net-status.weak { background: rgba(255, 166, 0, 0.9); color: black; }
+        /* --- الخلفيات وتأثيراتها --- */
+        .bg-layer { position: fixed; inset: 0; z-index: -2; width: 100%; height: 100%; transition: all 0.5s ease; }
+        #dynamic-bg-img { background-size: cover; background-position: center; }
+        #dynamic-bg-video { object-fit: cover; display: none; }
+        .overlay { position: fixed; inset: 0; z-index: -1; background: radial-gradient(circle at center, transparent 0%, #000 110%); pointer-events: none; }
+        
+        /* فلاتر الخلفية (يتم التحكم بها من الأدمن) */
+        .mode-dark { filter: brightness(0.3); }
+        .mode-clear { filter: brightness(1) contrast(1.1); }
+        .mode-blur { filter: blur(20px) brightness(0.7) saturate(1.2); transform: scale(1.1); }
 
-        /* --- نظام الخلفيات --- */
-        .bg-layer {
-            position: fixed; inset: 0; z-index: -2;
-            width: 100%; height: 100%;
-            transition: opacity 1s ease;
-        }
-        #dynamic-bg-img {
-            background-size: cover; background-position: center; background-repeat: no-repeat;
-            opacity: 1; 
-        }
-        #dynamic-bg-video {
-            object-fit: cover; display: none;
-        }
-
-        /* أنماط العرض */
+        /* Animation Utility */
         .fit-cover { background-size: cover !important; }
         .fit-contain { background-size: contain !important; background-color: #000; }
-
-        /* أنماط الحركة */
         @keyframes kf-zoom-in { 0% { transform: scale(1); } 100% { transform: scale(1.15); } }
-        @keyframes kf-zoom-out { 0% { transform: scale(1.15); } 100% { transform: scale(1); } }
-        @keyframes kf-pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-
-        .anim-static { transform: scale(1); }
+        @keyframes kf-pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
         .anim-zoom-in { animation: kf-zoom-in 20s infinite alternate linear; }
-        .anim-zoom-out { animation: kf-zoom-out 20s infinite alternate linear; }
         .anim-pulse { animation: kf-pulse 10s infinite ease-in-out; }
+        .anim-static { transform: scale(1); }
 
-        .overlay { 
-            position: fixed; inset: 0; z-index: -1;
-            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 40%);
-            pointer-events: none;
-        }
-        body.dark-mode .overlay { background: rgba(0,0,0,0.7); }
-
-        /* --- التخطيط --- */
-        .layout { display: flex; height: calc(100% - var(--player-h)); position: relative; }
+        /* --- Layout --- */
+        .layout { display: flex; flex: 1; height: 100%; position: relative; overflow: hidden; }
         
+        /* Sidebar */
         .sidebar {
-            width: var(--sidebar-w); 
-            background: var(--glass-bg);
-            border-left: 1px solid rgba(255,255,255,0.1);
-            display: flex; flex-direction: column; padding: 30px 20px;
-            z-index: 20; flex-shrink: 0;
-            backdrop-filter: blur(15px);
+            width: var(--sidebar-w); background: var(--glass-bg); backdrop-filter: var(--blur);
+            border-left: var(--glass-border); display: flex; flex-direction: column; padding: 40px 25px;
+            z-index: 50; flex-shrink: 0;
         }
         .brand { 
-            font-size: 26px; font-weight: 900; margin-bottom: 40px; 
-            background: linear-gradient(to right, #fff, var(--primary));
+            font-size: 28px; font-weight: 900; margin-bottom: 20px; 
+            background: linear-gradient(135deg, #fff 0%, var(--primary) 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             letter-spacing: 1px;
-            text-shadow: 0 0 20px rgba(0, 242, 255, 0.5);
         }
-        .brand span { color: var(--primary); }
         
+        /* Visitor Counter Badge */
+        .visitor-box {
+            background: linear-gradient(90deg, rgba(0, 242, 255, 0.05), transparent); 
+            border-right: 2px solid var(--primary);
+            padding: 10px 15px; border-radius: 8px; margin-bottom: 30px; 
+            display: flex; align-items: center; gap: 15px;
+            transition: 0.3s;
+        }
+        .visitor-num { font-family: monospace; font-size: 16px; color: #fff; font-weight: bold; text-shadow: 0 0 10px var(--primary); }
+
         .nav-btn {
-            padding: 14px 18px; margin-bottom: 8px; border-radius: 12px;
-            cursor: pointer; color: #ccc; transition: 0.2s;
-            display: flex; align-items: center; gap: 15px; font-weight: bold;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+            padding: 16px 20px; border-radius: 16px; cursor: pointer; color: var(--text-muted); transition: 0.3s;
+            display: flex; align-items: center; gap: 18px; font-weight: 500; font-size: 16px; margin-bottom: 8px;
         }
-        .nav-btn:hover, .nav-btn.active { background: rgba(0, 242, 255, 0.15); color: white; }
-        .nav-btn.active { border-right: 4px solid var(--primary); }
-        
-        .content { 
-            flex: 1; padding: 20px; overflow-y: auto; position: relative; scroll-behavior: smooth; 
-            padding-bottom: 150px;
+        .nav-btn:hover { color: #fff; background: rgba(255,255,255,0.05); transform: translateX(-5px); }
+        .nav-btn.active { 
+            background: linear-gradient(90deg, var(--primary-dim) 0%, transparent 100%);
+            color: var(--primary); border-right: 3px solid var(--primary);
         }
-        .content::-webkit-scrollbar { width: 5px; }
-        .content::-webkit-scrollbar-thumb { background: #555; border-radius: 10px; }
 
-        .section { display: none; animation: fadeIn 0.4s ease-out; }
+        /* Content Area */
+        .content { flex: 1; padding: 30px; overflow-y: auto; position: relative; scroll-behavior: smooth; padding-bottom: 140px; }
+        .section { display: none; animation: fadeIn 0.4s ease; max-width: 1000px; margin: 0 auto; }
         .section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* --- Components --- */
         #hero-txt {
-            font-size: clamp(2.5rem, 6vw, 4.5rem); margin: 0; font-weight: 900; line-height:1.4;
-            text-shadow: 0 4px 10px rgba(0,0,0,1), 0 0 20px rgba(0,0,0,0.8), 0 0 40px rgba(0,0,0,0.5);
+            font-size: clamp(3rem, 5vw, 6rem); margin: 0; font-weight: 900; line-height:1.1;
+            background: linear-gradient(to bottom, #fff 30%, #999); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        /* اليوميات */
-        .diary-input-area { background: var(--card-bg); padding: 20px; border-radius: 15px; margin-bottom: 30px; border: 1px solid #444; }
-        .diary-feed { display: flex; flex-direction: column; gap: 20px; width: 100%; max-width: 800px; margin: 0 auto; }
-        .diary-post {
-            background: var(--card-bg); border-radius: 15px;
-            display: flex; flex-direction: column;
-            border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 4px 15px rgba(0,0,0,0.5); width: 100%;
+        .folder-card { 
+            background: rgba(255,255,255,0.03); padding: 25px; border-radius: 20px; text-align: center; cursor: pointer; 
+            border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; position: relative; overflow: hidden;
         }
-        .diary-post.admin-post { border: 1px solid var(--gold); box-shadow: 0 0 15px rgba(255, 215, 0, 0.15); }
-        .post-header { padding: 15px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .avatar { width: 45px; height: 45px; background: #333; border-radius: 50%; display: grid; place-items: center; font-weight: bold; color: #fff; font-size: 18px; }
-        .admin-post .avatar { background: var(--gold); color: #000; }
-        .post-body { padding: 15px; font-size: 15px; line-height: 1.6; color: #eee; white-space: pre-wrap; word-wrap: break-word; }
-        .post-actions { padding: 5px; display: flex; }
-        .action-btn { background: none; border: none; color: #aaa; cursor: pointer; flex: 1; font-size: 14px; padding: 10px; border-radius: 8px; transition: 0.2s; }
-        .action-btn:hover { background: rgba(255,255,255,0.05); color: white; }
+        .folder-card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 5px 20px rgba(0,242,255,0.1); }
+        .folder-card i { font-size: 40px; margin-bottom: 15px; color: var(--gold); }
+        .folders-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
 
-        /* المشغل */
+        .song-row {
+            display: flex; align-items: center; gap: 15px; padding: 12px; border-radius: 12px; margin-bottom: 5px;
+            background: rgba(255,255,255,0.02); transition: 0.2s; cursor: pointer; border: 1px solid transparent;
+        }
+        .song-row:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.1); }
+        .song-img { width: 50px; height: 50px; border-radius: 10px; background-size: cover; background-position: center; }
+
+        .inp, textarea.inp, select.inp { 
+            width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); 
+            color: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; font-family: inherit; transition: 0.3s;
+        }
+        .inp:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-dim); }
+        
+        .btn-glow { 
+            background: linear-gradient(135deg, var(--primary), var(--secondary)); 
+            color: #fff; border: none; padding: 12px 30px; border-radius: 50px; 
+            font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 242, 255, 0.3); transition: 0.3s;
+        }
+        .btn-glow:hover { transform: scale(1.05); box-shadow: 0 6px 25px rgba(0, 242, 255, 0.5); }
+
+        .diary-post { background: rgba(30,30,35,0.6); backdrop-filter: blur(10px); border-radius: 15px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05); }
+        .diary-post.admin-post { border: 1px solid var(--gold); background: rgba(255, 215, 0, 0.05); }
+
+        /* --- THE ALIVE MUSIC PLAYER (Connected Loop Effect) --- */
         .music-bar {
-            position: fixed; bottom: 0; left: 0; right: 0; height: var(--player-h);
-            background: rgba(10, 10, 15, 0.95); backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255,255,255,0.1);
-            display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 100;
+            position: fixed; bottom: 20px; left: 20px; right: 20px; height: 90px;
+            background: rgba(10, 10, 14, 0.95); /* خلفية غامقة لتباين الألوان */
+            border-radius: 20px;
+            display: flex; align-items: center; justify-content: space-between; 
+            padding: 0 25px; z-index: 100;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.05);
         }
-        #visualizer { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.4; pointer-events: none; }
-        .player-content { position: relative; z-index: 1; display: flex; width: 100%; align-items: center; justify-content: space-between; }
-        .play-btn-main { width: 55px; height: 55px; background: white; color: black; border-radius: 50%; display: grid; place-items: center; font-size: 22px; cursor: pointer; transition: 0.2s; box-shadow: 0 0 15px rgba(255,255,255,0.2); }
-        .play-btn-main:hover { transform: scale(1.1); box-shadow: 0 0 25px var(--primary); background: var(--primary); }
-        .ctrl-btn { color: white; background: none; border: none; font-size: 24px; cursor: pointer; margin: 0 15px; transition: 0.2s; }
-        .ctrl-btn:hover { color: var(--primary); }
-        #p-desc { font-size: 12px; color: var(--gold) !important; background: rgba(0,0,0,0.7); padding: 2px 8px; border-radius: 4px; display: inline-block; margin-top: 4px; font-weight: bold; }
 
-        /* Admin & Inputs */
-        .admin-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 200; display: none; flex-direction: column; backdrop-filter: blur(5px); }
-        .admin-header { padding: 20px; background: rgba(20,20,20,0.95); border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
-        .admin-body { display: flex; height: 100%; overflow: hidden; }
-        .admin-nav { width: 220px; background: rgba(10,10,10,0.5); padding: 20px; border-left: 1px solid #333; }
-        .adm-content { flex: 1; padding: 30px; overflow-y: auto; }
-        
-        .inp, select.inp { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid #444; color: white; padding: 12px; border-radius: 8px; margin-bottom: 10px; outline: none; transition: 0.3s; }
-        .inp:focus { border-color: var(--primary); background: rgba(255,255,255,0.1); }
-        select.inp option { background: #222; color: white; }
-        
-        .btn-glow { background: var(--primary); color: #000; border: none; padding: 10px 25px; border-radius: 25px; font-weight: bold; cursor: pointer; box-shadow: 0 0 15px rgba(0, 242, 255, 0.2); transition: 0.3s; }
-        .btn-glow:hover { box-shadow: 0 0 25px rgba(0, 242, 255, 0.5); transform: translateY(-2px); }
-
-        /* Admin List Items */
-        .adm-list-item { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 10px; border-bottom: 1px solid #333; 
-            background: rgba(255,255,255,0.03); margin-bottom: 5px; border-radius: 6px;
+        /* طبقة الحركة (The Train) */
+        .music-bar::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            /* التدرج اللوني الذي يشكل القطار المتصل */
+            background: conic-gradient(
+                transparent 0deg, 
+                transparent 270deg, 
+                var(--primary) 310deg, 
+                var(--secondary) 340deg, 
+                var(--gold) 360deg
+            );
+            animation: border-rotate 4s linear infinite;
+            z-index: -2;
         }
-        .adm-list-item:hover { background: rgba(255,255,255,0.07); }
-        .adm-btn-icon { background: none; border: none; font-size: 18px; cursor: pointer; padding: 5px 10px; transition: 0.2s; }
-        .star-active { color: var(--gold) !important; text-shadow: 0 0 10px var(--gold); transform: scale(1.2); }
-        .star-inactive { color: #555; }
-        .star-inactive:hover { color: #888; }
 
-        /* Mobile */
-        .mob-nav { display: none; }
+        /* الطبقة الداخلية لإظهار الحدود فقط */
+        .music-bar::after {
+            content: '';
+            position: absolute;
+            inset: 2px; /* سمك الشريط المضئ */
+            background: #0f0f13; /* لون جسم المشغل */
+            border-radius: 18px;
+            z-index: -1;
+        }
+
+        @keyframes border-rotate {
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* عناصر المشغل */
+        .player-left { display: flex; align-items: center; gap: 15px; width: 30%; position: relative; z-index: 2; }
+        #p-art { 
+            width: 55px; height: 55px; border-radius: 15px; background-color: #222; 
+            background-size: cover; box-shadow: 0 5px 15px rgba(0,0,0,0.4); 
+            transition: 0.5s;
+        }
+        .playing #p-art { transform: scale(1.1) rotate(5deg); box-shadow: 0 0 20px var(--primary); }
+
+        .player-center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; position: relative; z-index: 2; }
+        .ctrl-grp { display: flex; align-items: center; gap: 25px; }
+        
+        .play-btn-main { 
+            width: 50px; height: 50px; border-radius: 50%;
+            background: #fff; color: #000;
+            display: grid; place-items: center; font-size: 18px; cursor: pointer;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3); transition: 0.3s;
+        }
+        .play-btn-main:hover { transform: scale(1.1); box-shadow: 0 0 30px var(--primary); background: var(--primary); }
+        
+        .ctrl-btn { color: #888; background: none; border: none; font-size: 20px; cursor: pointer; transition: 0.2s; }
+        .ctrl-btn:hover { color: #fff; transform: scale(1.2); text-shadow: 0 0 10px #fff; }
+
+        .prog-wrapper { width: 100%; max-width: 400px; padding: 10px 0; cursor: pointer; display: flex; align-items: center; }
+        .prog-bg { width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 10px; position: relative; overflow: hidden; }
+        #prog-fill { 
+            position: absolute; top: 0; right: 0; bottom: 0; width: 0%; 
+            background: linear-gradient(90deg, var(--secondary), var(--primary)); 
+            border-radius: 10px; box-shadow: 0 0 15px var(--primary);
+        }
+        .prog-wrapper:hover .prog-bg { height: 6px; }
+
+        .player-right { width: 20%; display: flex; justify-content: flex-end; align-items: center; gap: 10px; position: relative; z-index: 2; }
+        .vol-slider { width: 80px; accent-color: var(--primary); height: 3px; }
+
+        /* --- Mobile Responsiveness --- */
+        .mob-nav-bottom { display: none; }
         @media (max-width: 768px) {
             .sidebar { display: none; }
-            .mob-nav { display: flex; gap: 10px; overflow-x: auto; padding: 12px; background: rgba(15,15,20,0.95); position: sticky; top: 0; z-index: 50; border-bottom: 1px solid #333; }
-            .mob-chip { white-space: nowrap; padding: 8px 16px; background: #333; border-radius: 20px; font-size: 13px; color: #ccc; }
-            .mob-chip.active { background: var(--primary); color: black; font-weight: bold; }
-            .content { padding: 10px; padding-bottom: 130px; }
-            .music-bar { height: 130px; padding: 10px; flex-direction: column; justify-content: center; }
-            .player-content { flex-direction: column; gap: 8px; width: 100%; }
-            .player-left { width: 100%; justify-content: flex-start; }
-            .player-right { display: none; }
-            .admin-body { flex-direction: column; }
-            .admin-nav { width: 100%; height: auto; display: flex; overflow-x: auto; padding: 10px; }
+            .mob-nav-bottom {
+                display: flex; justify-content: space-around; align-items: center;
+                position: fixed; bottom: 0; left: 0; width: 100%; height: var(--nav-mobile-h);
+                background: rgba(10, 10, 15, 0.95); backdrop-filter: blur(20px);
+                border-top: 1px solid rgba(255,255,255,0.1); z-index: 200;
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+            .mob-nav-item { display: flex; flex-direction: column; align-items: center; color: #666; font-size: 10px; flex: 1; transition:0.2s; }
+            .mob-nav-item.active { color: var(--primary); transform: translateY(-5px); }
+            
+            .content { padding: 15px; padding-bottom: calc(100px + var(--nav-mobile-h)); }
+
+            .music-bar { 
+                bottom: calc(var(--nav-mobile-h) + 10px); left: 10px; right: 10px; 
+                height: 75px; padding: 0 15px; border-radius: 18px;
+            }
+            .player-left { width: auto; flex: 1; }
+            .player-center { flex: 0; align-items: flex-end; }
+            .prog-wrapper { position: absolute; bottom: 0; left: 10px; right: 10px; width: auto; max-width: none; padding: 0; height: 3px; }
+            .prog-bg { height: 3px; border-radius: 0; }
+            .ctrl-grp { gap: 15px; }
+            .player-right { display: none; } 
+            .play-btn-main { width: 40px; height: 40px; font-size: 16px; }
         }
-        
-        .folders-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
-        .folder-card { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; text-align: center; cursor: pointer; border: 1px solid transparent; transition: 0.2s; backdrop-filter: blur(5px); }
-        .folder-card:hover { border-color: var(--primary); background: rgba(255,255,255,0.1); transform: translateY(-5px); }
+
+        /* Admin Modal */
+        .admin-modal { position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); display: none; align-items: center; justify-content: center; animation: fadeIn 0.3s; }
+        .admin-box { width: 95%; max-width: 900px; height: 85vh; background: #111; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 0 50px rgba(0,0,0,0.8); }
+        .admin-header { padding: 20px; border-bottom: 1px solid #333; display:flex; justify-content:space-between; align-items:center; background: #15151a; }
+        .admin-body { display: flex; flex: 1; overflow: hidden; }
+        .admin-nav { width: 200px; background: #0a0a0c; padding: 20px; display: flex; flex-direction: column; gap: 5px; border-left: 1px solid #333; }
+        .adm-content { flex: 1; padding: 30px; overflow-y: auto; background: #111; }
+        @media (max-width: 768px) { .admin-body { flex-direction: column; } .admin-nav { width: 100%; flex-direction: row; height: auto; padding: 10px; overflow-x: auto; border-left:none; border-bottom:1px solid #333; } }
     </style>
 </head>
 <body>
 
-    <div id="net-status"></div>
-
     <div id="dynamic-bg-img" class="bg-layer"></div>
-    <video id="dynamic-bg-video" class="bg-layer" loop muted playsinline onerror="handleVideoError()"></video>
-    
+    <video id="dynamic-bg-video" class="bg-layer" loop muted playsinline></video>
     <div class="overlay"></div>
 
     <div class="layout">
         <nav class="sidebar">
             <div class="brand">AHMED <span>PULSE</span></div>
+            
+            <div id="visitor-badge-desktop" class="visitor-box">
+                <i class="fas fa-eye" style="color:var(--primary); font-size:20px;"></i> 
+                <div>
+                    <div style="font-size:10px; color:#aaa;">إجمالي الزيارات</div>
+                    <span id="visitor-count-desktop" class="visitor-num">...</span>
+                </div>
+            </div>
+
             <div class="nav-items-container" id="sidebar-items">
                 <div class="nav-btn active" onclick="nav('home')"><i class="fas fa-home"></i> الرئيسية</div>
                 <div class="nav-btn" onclick="nav('music')"><i class="fas fa-music"></i> الموسيقى</div>
                 <div class="nav-btn" onclick="nav('diaries')"><i class="fas fa-users"></i> المجتمع</div>
                 <div class="nav-btn" onclick="nav('contact')"><i class="fas fa-envelope"></i> تواصل معي</div>
             </div>
+            
             <div style="margin-top:auto; text-align:center;">
-                <button onclick="openAdmin()" style="background:none; border:none; color:#ddd; cursor:pointer; font-size:14px; text-shadow:0 1px 2px #000;"><i class="fas fa-cog"></i> لوحة التحكم</button>
+                <button onclick="openAdmin()" style="background:transparent; border:none; color:rgba(255,255,255,0.1); font-size:18px; cursor:pointer; transition:0.3s;">
+                    <i class="fas fa-cog"></i>
+                </button>
             </div>
         </nav>
 
         <main class="content">
-            <div class="mob-nav" id="mob-nav-items">
-                <div class="mob-chip active" onclick="nav('home')">الرئيسية</div>
-                <div class="mob-chip" onclick="nav('music')">الموسيقى</div>
-                <div class="mob-chip" onclick="nav('diaries')">المجتمع</div>
-                <div class="mob-chip" onclick="nav('contact')">اتصل</div>
-            </div>
-
             <div id="view-home" class="section active">
-                <div style="height: 60vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                <div style="min-height: 60vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
                     <h1 id="hero-txt">...</h1>
-                </div>
-            </div>
-
-            <div id="view-music" class="section">
-                <h2 style="text-shadow: 0 2px 5px #000;">المكتبة الصوتية</h2>
-                <div id="folders-view">
-                    <div class="folders-grid" id="folders-container"></div>
-                </div>
-                <div id="songs-view" style="display:none;">
-                    <button onclick="showFolders()" style="background:none; border:none; color:var(--primary); font-size:16px; margin-bottom:15px; cursor:pointer; font-weight:bold; text-shadow: 0 1px 2px #000;">
-                        <i class="fas fa-arrow-right"></i> رجوع للمجلدات
-                    </button>
-                    <h3 id="current-folder-title" style="color:#ddd; text-shadow: 0 1px 2px #000;"></h3>
-                    <div id="songs-container" style="display:flex; flex-direction:column; gap:10px;"></div>
-                </div>
-            </div>
-
-            <div id="view-diaries" class="section">
-                <h2 style="text-shadow: 0 2px 5px #000;">مجتمع اليوميات</h2>
-                <div class="diary-input-area">
-                    <input id="d-name" class="inp" placeholder="اسمك (اختياري)" maxlength="20">
-                    <textarea id="d-msg" class="inp" rows="3" placeholder="بم تفكر اليوم؟"></textarea>
-                    <button onclick="postDiary()" class="btn-glow" style="width:100%;">نشر <i class="fas fa-paper-plane"></i></button>
-                </div>
-                <div id="diary-feed" class="diary-feed">
-                    <div id="loading-spinner" style="text-align:center; color:#ccc; padding:20px;">
-                        <i class="fas fa-circle-notch fa-spin"></i> جاري تحميل المنشورات...
+                    <p style="color:var(--text-muted); margin-top:10px; font-size:18px;">مرحباً بك في عالمي الخاص</p>
+                    
+                    <div id="visitor-badge-mobile" class="visitor-box" style="margin-top:30px; display:none; min-width:200px; justify-content:center;">
+                        <i class="fas fa-eye"></i> الزيارات: <span id="visitor-count-mobile" class="visitor-num">...</span>
                     </div>
                 </div>
             </div>
 
+            <div id="view-music" class="section">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <h2 style="font-size:28px; margin:0;">المكتبة الصوتية</h2>
+                    <i class="fas fa-headphones-alt" style="font-size:24px; color:var(--primary);"></i>
+                </div>
+                <div id="folders-view"><div class="folders-grid" id="folders-container"></div></div>
+                <div id="songs-view" style="display:none;">
+                    <button onclick="showFolders()" style="background:none; border:none; color:var(--text-muted); font-size:16px; margin-bottom:20px; cursor:pointer; display:flex; align-items:center; gap:10px;">
+                        <i class="fas fa-arrow-right"></i> رجوع
+                    </button>
+                    <h3 id="current-folder-title" style="color:var(--primary); margin-bottom:20px;"></h3>
+                    <div id="songs-container" style="display:flex; flex-direction:column; gap:8px;"></div>
+                </div>
+            </div>
+
+            <div id="view-diaries" class="section">
+                <h2 style="margin-bottom:20px;">المجتمع</h2>
+                <div class="diary-input-area" style="background:rgba(30,30,35,0.5); padding:20px; border-radius:20px; margin-bottom:20px;">
+                    <input id="d-name" class="inp" placeholder="اسمك المستعار" maxlength="20">
+                    <textarea id="d-msg" class="inp" rows="3" placeholder="شاركنا أفكارك..."></textarea>
+                    <button onclick="postDiary()" class="btn-glow">نشر <i class="fas fa-paper-plane"></i></button>
+                </div>
+                <div id="diary-feed">
+                    <div id="loading-spinner" style="text-align:center; color:#ccc; padding:30px;"><i class="fas fa-circle-notch fa-spin fa-2x"></i></div>
+                </div>
+            </div>
+
             <div id="view-contact" class="section">
-                <div style="max-width:500px; margin:auto; background:var(--card-bg); padding:30px; border-radius:15px; border:1px solid #444;">
-                    <h2 style="text-align:center; border:none;">راسلني</h2>
+                <div style="max-width:600px; margin:auto; background:var(--glass-bg); backdrop-filter:blur(20px); padding:40px; border-radius:30px; border:1px solid rgba(255,255,255,0.05);">
+                    <h2 style="text-align:center; margin-bottom:30px; color:var(--primary);">راسلني</h2>
                     <input id="c-name" class="inp" placeholder="الاسم">
-                    <textarea id="c-msg" class="inp" rows="4" placeholder="رسالتك..."></textarea>
+                    <textarea id="c-msg" class="inp" rows="5" placeholder="الرسالة..."></textarea>
                     <button onclick="sendMsg()" class="btn-glow" style="width:100%">إرسال</button>
+                    
+                    <div style="margin-top: 50px; text-align: center; opacity: 0.05; transition: opacity 0.4s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.05">
+                        <i onclick="openAdmin()" class="fas fa-fingerprint" style="cursor: pointer; font-size: 30px; color: #fff;"></i>
+                    </div>
                 </div>
             </div>
 
@@ -275,117 +338,121 @@
         </main>
     </div>
 
+    <div class="mob-nav-bottom" id="mob-nav-items">
+        <div class="mob-nav-item active" onclick="nav('home')"><i class="fas fa-home"></i><span>الرئيسية</span></div>
+        <div class="mob-nav-item" onclick="nav('music')"><i class="fas fa-music"></i><span>موسيقى</span></div>
+        <div class="mob-nav-item" onclick="nav('diaries')"><i class="fas fa-users"></i><span>المجتمع</span></div>
+        <div class="mob-nav-item" onclick="nav('contact')"><i class="fas fa-envelope"></i><span>اتصل</span></div>
+    </div>
+
     <div class="music-bar">
-        <canvas id="visualizer"></canvas>
-        <div class="player-content">
-            <div class="player-left" style="display:flex; align-items:center; gap:15px; width:280px;">
-                <div id="p-art" style="width:60px; height:60px; border-radius:12px; background:#333; background-size:cover; box-shadow:0 0 10px rgba(0,0,0,0.5);"></div>
-                <div style="overflow:hidden;">
-                    <div id="p-title" style="font-weight:bold; font-size:15px; white-space:nowrap; text-shadow:0 1px 2px black;">اختر أغنية</div>
-                    <div id="p-desc">...</div>
-                </div>
+        <div class="player-left">
+            <div id="p-art"></div>
+            <div style="overflow:hidden; display:flex; flex-direction:column; justify-content:center;">
+                <div id="p-title" style="font-weight:bold; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">اختر أغنية</div>
+                <div id="p-desc" style="font-size:12px; color:var(--text-muted);">...</div>
             </div>
+        </div>
 
-            <div style="flex:1; display:flex; flex-direction:column; align-items:center;">
-                <div style="display:flex; align-items:center; margin-bottom:8px;">
-                    <button class="ctrl-btn" onclick="prev()"><i class="fas fa-step-backward"></i></button>
-                    <div class="play-btn-main" onclick="togglePlay()"><i id="play-icon" class="fas fa-play"></i></div>
-                    <button class="ctrl-btn" onclick="next()"><i class="fas fa-step-forward"></i></button>
-                </div>
-                <div style="width:100%; max-width:450px; height:5px; background:rgba(255,255,255,0.1); border-radius:5px; cursor:pointer; overflow:hidden;" onclick="seek(event)">
-                    <div id="prog-fill" style="width:0%; height:100%; background:var(--primary); position:relative; box-shadow:0 0 10px var(--primary);"></div>
+        <div class="player-center">
+            <div class="ctrl-grp">
+                <button class="ctrl-btn" onclick="prev()"><i class="fas fa-backward-step"></i></button>
+                <div class="play-btn-main" onclick="togglePlay()">
+                    <i id="play-icon" class="fas fa-play" style="margin-right:-3px;"></i> </div>
+                <button class="ctrl-btn" onclick="next()"><i class="fas fa-forward-step"></i></button>
+            </div>
+            
+            <div class="prog-wrapper" onclick="seek(event)">
+                <div class="prog-bg">
+                    <div id="prog-fill"></div>
                 </div>
             </div>
+        </div>
 
-            <div class="player-right" style="width:200px; text-align:left;">
-                <i class="fas fa-volume-up" style="color:#aaa; margin-left:5px;"></i>
-                <input type="range" style="width:80px; accent-color:var(--primary);" min="0" max="1" step="0.1" oninput="audio.volume=this.value">
-            </div>
+        <div class="player-right">
+            <i class="fas fa-volume-high" style="color:#666; font-size:14px;"></i>
+            <input type="range" class="vol-slider" min="0" max="1" step="0.05" oninput="audio.volume=this.value">
         </div>
     </div>
 
     <div id="admin-panel" class="admin-modal">
-        <div class="admin-header">
-            <b style="color:var(--primary); font-size:20px;">لوحة التحكم <i class="fas fa-user-shield"></i></b>
-            <button onclick="document.getElementById('admin-panel').style.display='none'" style="background:none; border:none; color:white; font-size:20px; cursor:pointer;">✕</button>
-        </div>
-        <div class="admin-body">
-            <div class="admin-nav">
-                <div class="nav-btn active" onclick="admTab('inbox')">الرسائل</div>
-                <div class="nav-btn" onclick="admTab('music')">الموسيقى</div>
-                <div class="nav-btn" onclick="admTab('pages')">الصفحات</div>
-                <div class="nav-btn" onclick="admTab('settings')">الإعدادات</div>
+        <div class="admin-box">
+            <div class="admin-header">
+                <b style="color:var(--primary); font-size:18px;"><i class="fas fa-shield-alt"></i> لوحة التحكم</b>
+                <button onclick="document.getElementById('admin-panel').style.display='none'" style="background:none; border:none; color:white; font-size:24px; cursor:pointer;">&times;</button>
             </div>
-            <div class="adm-content">
-                <div id="adm-inbox" class="section active">
-                    <h3>البريد الوارد</h3>
-                    <div id="inbox-list"></div>
+            <div class="admin-body">
+                <div class="admin-nav">
+                    <div class="nav-btn active" onclick="admTab('inbox')"><i class="fas fa-inbox"></i> البريد</div>
+                    <div class="nav-btn" onclick="admTab('music')"><i class="fas fa-music"></i> الأغاني</div>
+                    <div class="nav-btn" onclick="admTab('pages')"><i class="fas fa-file-code"></i> الصفحات</div>
+                    <div class="nav-btn" onclick="admTab('settings')"><i class="fas fa-sliders-h"></i> الإعدادات</div>
                 </div>
-                <div id="adm-music" class="section">
-                    <h3>إدارة الموسيقى</h3>
-                    <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:10px; margin-bottom:20px;">
-                        
-                        <label style="color:#aaa; font-size:12px;">اختر المجلد:</label>
-                        <select id="folder-select" class="inp" onchange="toggleFolderInput()">
-                            <option value="new">++ مجلد جديد ++</option>
-                        </select>
-                        <input id="new-folder-input" class="inp" placeholder="اكتب اسم المجلد الجديد هنا" style="display:block;">
-                        <input id="add-title" class="inp" placeholder="اسم الأغنية">
-                        <input id="add-url" class="inp" placeholder="رابط الصوت (MP3 URL)">
-                        <input id="add-img" class="inp" placeholder="رابط الصورة (Image URL)">
-                        <button onclick="addSong()" class="btn-glow" style="font-size:13px;">إضافة للمكتبة</button>
-                    </div>
-                    <h4 style="color:#888;">الأغاني الحالية</h4>
-                    <div id="adm-music-list" style="max-height: 400px; overflow-y: auto;"></div>
-                </div>
-                <div id="adm-pages" class="section">
-                    <h3>منشئ الصفحات</h3>
-                    <input id="page-id" class="inp" placeholder="Page ID">
-                    <input id="page-title" class="inp" placeholder="العنوان في القائمة">
-                    <input id="page-icon" class="inp" placeholder="أيقونة (fas fa-star)">
-                    <textarea id="page-content" class="inp" rows="5" placeholder="HTML Content"></textarea>
-                    <button onclick="savePage()" class="btn-glow">نشر الصفحة</button>
-                    <div id="adm-pages-list" style="margin-top:20px;"></div>
-                </div>
-                
-                <div id="adm-settings" class="section">
-                    <h3>الإعدادات والمظهر</h3>
-                    <label style="color:#aaa;">رسالة الترحيب:</label>
-                    <textarea id="set-welcome" class="inp" rows="2"></textarea>
+                <div class="adm-content">
+                    <div id="adm-inbox" class="section active"><h3>البريد الوارد</h3><div id="inbox-list"></div></div>
                     
-                    <div style="margin-top:20px; padding:20px; background:rgba(255, 215, 0, 0.05); border-radius:12px; border:1px solid rgba(255,215,0,0.2);">
-                        <label style="color:var(--gold); font-weight:bold; font-size:15px; display:block; margin-bottom:10px;">✨ التحكم في الخلفية (Hero Mode)</label>
-                        
-                        <div style="margin-bottom:15px; display:flex; gap:10px; align-items:center;">
-                            <input type="checkbox" id="set-hero-active" style="width:20px; height:20px;"> 
-                            <span>تفعيل الخلفية الثابتة (تجاهل صور الأغاني)</span>
+                    <div id="adm-music" class="section">
+                        <h3>إدارة الموسيقى</h3>
+                        <div style="background:#0a0a0c; padding:20px; border-radius:15px; margin-bottom:20px; border:1px solid #333;">
+                            <select id="folder-select" class="inp" onchange="toggleFolderInput()"><option value="new">++ مجلد جديد ++</option></select>
+                            <input id="new-folder-input" class="inp" placeholder="اسم المجلد" style="display:block;">
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                                <input id="add-title" class="inp" placeholder="عنوان الأغنية">
+                                <input id="add-url" class="inp" placeholder="رابط MP3">
+                            </div>
+                            <input id="add-img" class="inp" placeholder="رابط الغلاف (صورة)">
+                            <button onclick="addSong()" class="btn-glow" style="width:100%">إضافة</button>
                         </div>
-                        
-                        <label>رابط الصورة أو الفيديو (MP4):</label>
-                        <input id="set-hero-img" class="inp" placeholder="URL Link">
-                        
-                        <label>نوع الملف:</label>
-                        <select id="set-hero-type" class="inp">
-                            <option value="image">صورة (Image)</option>
-                            <option value="video">فيديو (Video)</option>
-                        </select>
+                        <div id="adm-music-list" style="max-height: 300px; overflow-y: auto;"></div>
+                    </div>
 
-                        <label>طريقة العرض (للصور):</label>
-                        <select id="set-bg-fit" class="inp">
-                            <option value="cover">ملء الشاشة (Cover) - يقص الحواف</option>
-                            <option value="contain">كامل الصورة (Contain) - يظهر كل التفاصيل</option>
-                        </select>
-
-                        <label>الحركة (Animation):</label>
-                        <select id="set-anim-type" class="inp">
-                            <option value="static">ثابت (بدون حركة)</option>
-                            <option value="zoom-in">Zoom In (تكبير للداخل)</option>
-                            <option value="zoom-out">Zoom Out (تكبير للخارج)</option>
-                            <option value="pulse">Pulse (نبض)</option>
-                        </select>
+                    <div id="adm-pages" class="section">
+                        <h3>منشئ الصفحات</h3>
+                        <input id="page-id" class="inp" placeholder="Page ID (English)">
+                        <input id="page-title" class="inp" placeholder="عنوان القائمة">
+                        <input id="page-icon" class="inp" placeholder="fa-icon class">
+                        <textarea id="page-content" class="inp" rows="5" placeholder="HTML Content"></textarea>
+                        <button onclick="savePage()" class="btn-glow">نشر الصفحة</button>
+                        <div id="adm-pages-list" style="margin-top:20px;"></div>
                     </div>
                     
-                    <button onclick="saveSettings()" class="btn-glow" style="margin-top:20px; width:100%;">حفظ كافة الإعدادات</button>
+                    <div id="adm-settings" class="section">
+                        <h3>إعدادات الموقع</h3>
+                        
+                        <div style="padding:20px; background:rgba(189, 0, 255, 0.05); border-radius:15px; border:1px solid var(--secondary); margin-bottom:20px;">
+                            <h4 style="margin-top:0; color:var(--secondary);"><i class="fas fa-eye"></i> المظهر البصري (Global Visuals)</h4>
+                            <label style="color:#ccc; display:block; margin-bottom:10px;">اختر نمط الخلفية الذي سيراه جميع الزوار:</label>
+                            <select id="set-bg-filter" class="inp">
+                                <option value="mode-dark">غامق (Dark Mode) - الافتراضي</option>
+                                <option value="mode-clear">واضح (Clear) - ألوان حقيقية</option>
+                                <option value="mode-blur">ضبابي (Blur) - زجاجي</option>
+                            </select>
+                        </div>
+
+                        <label>رسالة الترحيب:</label>
+                        <textarea id="set-welcome" class="inp" rows="2"></textarea>
+                        
+                        <div style="padding:20px; background:rgba(0, 242, 255, 0.05); border-radius:15px; border:1px solid var(--primary-dim); margin-bottom:20px;">
+                            <h4 style="margin-top:0; color:var(--primary);">📊 الزوار</h4>
+                            <label style="display:flex; align-items:center; cursor:pointer;">
+                                <input type="checkbox" id="set-show-visitors" style="width:20px; height:20px; margin-left:10px;">
+                                عرض عداد الزوار للعامة
+                            </label>
+                            <p style="color:#666; font-size:12px; margin-top:5px;">القراءة الحالية من قاعدة البيانات: <b id="adm-total-visits" style="color:#fff; font-size:16px;">0</b></p>
+                        </div>
+
+                        <div style="padding:20px; background:rgba(255, 215, 0, 0.05); border-radius:15px; border:1px solid rgba(255,215,0,0.2);">
+                            <h4 style="margin-top:0; color:var(--gold);">🎬 الخلفية (Hero)</h4>
+                            <label><input type="checkbox" id="set-hero-active"> تفعيل الخلفية الثابتة</label>
+                            <input id="set-hero-img" class="inp" placeholder="رابط الميديا" style="margin-top:10px;">
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                                <select id="set-hero-type" class="inp"><option value="image">صورة</option><option value="video">فيديو</option></select>
+                                <select id="set-bg-fit" class="inp"><option value="cover">Cover</option><option value="contain">Contain</option></select>
+                            </div>
+                            <select id="set-anim-type" class="inp"><option value="static">ثابت</option><option value="zoom-in">Zoom In</option><option value="pulse">Pulse</option></select>
+                        </div>
+                        <button onclick="saveSettings()" class="btn-glow" style="margin-top:20px; width:100%;">حفظ وتطبيق التغييرات</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -398,7 +465,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 
     <script>
-        // --- Firebase Config ---
         const firebaseConfig = {
             apiKey: "AIzaSyCUK7SXiX_uBObNqWjM5u-eKUKkCTwCJKc",
             authDomain: "mypersonalapp-2f2cc.firebaseapp.com",
@@ -414,161 +480,139 @@
         const auth = firebase.auth();
         const ADMIN_EMAIL = "ahmshowpic@gmail.com";
 
-        // Global Vars
+        // Global Variables
         let songs = [], folders = {}, playlist = [], pIndex = 0;
         let isAdmin = false;
         let defaultSongId = null;
-        
-        // Settings Vars
-        let isHeroMode = false;
-        let heroUrl = "";
-        let heroType = "image"; 
-        let bgFit = "cover"; 
-        let animType = "static"; 
+        let settingsData = {};
 
         const audio = document.getElementById('audio-player');
         audio.removeAttribute('crossorigin');
-        
-        // --- Smart Network Logic ---
-        function getNetworkStatus() {
-            // كشف السرعة التقريبي إذا كان المتصفح يدعمه
-            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-            if (connection) {
-                // إذا كان وضع توفير البيانات مفعلاً أو السرعة أقل من 1.5 ميجا
-                if (connection.saveData === true || (connection.downlink && connection.downlink < 1.5)) {
-                    return 'slow';
-                }
-            }
-            return 'good';
-        }
 
-        // مراقبة حالة الاتصال (أونلاين/أوفلاين)
-        window.addEventListener('offline', () => updateNetAlert(false));
-        window.addEventListener('online', () => updateNetAlert(true));
-
-        function updateNetAlert(isOnline) {
-            const el = document.getElementById('net-status');
-            if(!isOnline) {
-                el.style.display = 'block';
-                el.className = '';
-                el.innerText = '⚠️ انقطع الاتصال بالإنترنت. بعض الميزات قد لا تعمل.';
-            } else {
-                // فحص جودة الاتصال عند العودة
-                const quality = getNetworkStatus();
-                if(quality === 'slow') {
-                    el.style.display = 'block';
-                    el.className = 'weak';
-                    el.innerText = '⚡ الاتصال بطيء. تم تقليل الجودة تلقائياً.';
-                    setTimeout(() => el.style.display='none', 5000);
-                } else {
-                    el.style.display = 'none';
-                }
-            }
-        }
-
-        // إصلاح ذاتي للفيديو المكسور
-        function handleVideoError() {
-            console.log("Video Error: Switching to Image Fallback");
-            const bgImg = document.getElementById('dynamic-bg-img');
-            const bgVid = document.getElementById('dynamic-bg-video');
-            bgVid.style.display = 'none';
-            bgImg.style.opacity = '1';
-            // وضع صورة افتراضية
-            bgImg.style.backgroundImage = `url('https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=1920')`;
-        }
-        // ---------------------------
-
-        // --- Visualizer ---
-        let canvas, canvasCtx, visInterval;
-        function initVisualizer() {
-            canvas = document.getElementById('visualizer');
-            if(!canvas) return;
-            canvasCtx = canvas.getContext('2d');
-            startFakeVis();
-        }
-        function startFakeVis() {
-            if(visInterval) cancelAnimationFrame(visInterval);
-            const draw = () => {
-                if(!audio.paused) {
-                    canvas.width = canvas.parentElement.clientWidth;
-                    canvas.height = canvas.parentElement.clientHeight;
-                    canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
-                    const bars = 60; const w = canvas.width / bars;
-                    for(let i=0; i<bars; i++) {
-                        const h = Math.random() * (canvas.height * 0.6);
-                        canvasCtx.fillStyle = `rgba(0, 242, 255, 0.3)`;
-                        canvasCtx.fillRect(i * w, canvas.height - h, w - 2, h);
-                    }
-                }
-                visInterval = requestAnimationFrame(draw);
-            };
-            draw();
-        }
-
-        // --- Auth & Data ---
+        // --- Auth Listener ---
         auth.onAuthStateChanged(u => {
             isAdmin = (u && u.email === ADMIN_EMAIL);
             if(isAdmin) initAdmin();
             loadGeneralData();
             initDiarySystem();
-            initVisualizer();
-            updateNetAlert(navigator.onLine); // فحص أولي
+            initVisitorCounter(); 
         });
 
+        // --- Visitor Counter Logic (Fixed) ---
+        function initVisitorCounter() {
+            const visitRef = db.ref('settings/visitorCount');
+            // التأكد من أن الزيادة تحدث مرة واحدة فقط للجلسة
+            if(!sessionStorage.getItem('visited')) {
+                visitRef.transaction(current => {
+                    return (current || 0) + 1;
+                });
+                sessionStorage.setItem('visited', 'true');
+            }
+        }
+
+        function updateVisitorDisplay(count, show) {
+            const deskBadge = document.getElementById('visitor-badge-desktop');
+            const mobBadge = document.getElementById('visitor-badge-mobile');
+            const countDesk = document.getElementById('visitor-count-desktop');
+            const countMob = document.getElementById('visitor-count-mobile');
+            const admCount = document.getElementById('adm-total-visits');
+
+            // تحديث الأرقام
+            const displayCount = count || 0;
+            if(admCount) admCount.innerText = displayCount;
+            countDesk.innerText = displayCount;
+            countMob.innerText = displayCount;
+
+            // التحكم في الظهور (الأدمن يرى دائماً)
+            if (show === true || isAdmin) {
+                // نستخدم flex لأنه محدد في CSS بـ display: flex
+                deskBadge.style.display = 'flex';
+                // في الموبايل نظهره فقط إذا كانت الشاشة صغيرة
+                if(window.innerWidth <= 768) mobBadge.style.display = 'flex';
+            } else {
+                deskBadge.style.display = 'none';
+                mobBadge.style.display = 'none';
+            }
+        }
+
+        // --- Background Logic (Global Mode) ---
+        function applyBackground(sets) {
+            const bgImg = document.getElementById('dynamic-bg-img');
+            const bgVid = document.getElementById('dynamic-bg-video');
+            let url = "", type = "image";
+
+            if (sets.heroMode) {
+                url = sets.heroImg; type = sets.heroType;
+            } else if (audio.src && playlist[pIndex]) {
+                url = playlist[pIndex].image;
+            }
+            if (!url) url = "https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=1920";
+
+            // تطبيق فلتر المظهر (Visual Mode)
+            bgImg.className = "bg-layer"; // Reset classes
+            if(sets.bgFilter) bgImg.classList.add(sets.bgFilter);
+            else bgImg.classList.add('mode-dark'); // Default
+
+            if (type === 'video') {
+                bgImg.style.opacity = '0'; bgVid.style.display = 'block'; bgVid.src = url;
+                bgVid.play().catch(()=>{});
+                bgVid.style.objectFit = (sets.bgFit === 'contain') ? 'contain' : 'cover';
+            } else {
+                bgVid.style.display = 'none'; bgVid.pause(); bgImg.style.opacity = '1';
+                bgImg.style.backgroundImage = `url('${url}')`;
+                
+                // تطبيق أنيميشن الخلفية
+                bgImg.classList.add(sets.bgFit === 'contain' ? 'fit-contain' : 'fit-cover');
+                if(sets.animType === 'zoom-in') bgImg.classList.add('anim-zoom-in');
+                else if(sets.animType === 'pulse') bgImg.classList.add('anim-pulse');
+                else bgImg.classList.add('anim-static');
+            }
+        }
+
+        // --- Data Loading ---
         function loadGeneralData() {
-            // Music
+            db.ref('settings').on('value', s => {
+                settingsData = s.val() || {};
+                
+                document.getElementById('hero-txt').innerText = settingsData.welcome || "Welcome";
+                
+                // تطبيق الخلفية والفلتر
+                applyBackground(settingsData);
+
+                // تحديث الزوار
+                updateVisitorDisplay(settingsData.visitorCount, settingsData.showVisitorCount);
+
+                defaultSongId = settingsData.defaultSongId;
+                checkDefaultSong();
+
+                // مزامنة لوحة التحكم
+                if(isAdmin) {
+                    if(document.getElementById('set-welcome')) document.getElementById('set-welcome').value = settingsData.welcome || "";
+                    if(document.getElementById('set-hero-active')) document.getElementById('set-hero-active').checked = settingsData.heroMode;
+                    if(document.getElementById('set-hero-img')) document.getElementById('set-hero-img').value = settingsData.heroImg || "";
+                    if(document.getElementById('set-hero-type')) document.getElementById('set-hero-type').value = settingsData.heroType || "image";
+                    if(document.getElementById('set-bg-fit')) document.getElementById('set-bg-fit').value = settingsData.bgFit || "cover";
+                    if(document.getElementById('set-anim-type')) document.getElementById('set-anim-type').value = settingsData.animType || "static";
+                    if(document.getElementById('set-show-visitors')) document.getElementById('set-show-visitors').checked = settingsData.showVisitorCount;
+                    // مزامنة قائمة اختيار الفلتر
+                    if(document.getElementById('set-bg-filter')) document.getElementById('set-bg-filter').value = settingsData.bgFilter || "mode-dark";
+                }
+            });
+
             db.ref('music').on('value', snap => {
                 songs = []; folders = {};
                 snap.forEach(c => {
                     const val = c.val();
-                    const s = {
-                        k: c.key, 
-                        name: val.name,
-                        folder: val.folder || "منوعات",
-                        image: val.image || val.img,
-                        url: val.url || val.link 
-                    };
+                    const s = { k: c.key, name: val.name, folder: val.folder || "منوعات", image: val.image || val.img, url: val.url || val.link };
                     songs.push(s);
                     if(!folders[s.folder]) folders[s.folder] = [];
                     folders[s.folder].push(s);
                 });
                 renderFolders();
                 checkDefaultSong(); 
-                if(isAdmin) {
-                    renderAdmMusic();
-                    updateAdminFolderSelect();
-                }
+                if(isAdmin) { renderAdmMusic(); updateAdminFolderSelect(); }
             });
 
-            // Settings
-            db.ref('settings').on('value', s => {
-                const val = s.val() || {};
-                
-                document.getElementById('hero-txt').innerText = val.welcome || "Welcome";
-                
-                defaultSongId = val.defaultSongId;
-                isHeroMode = (val.heroMode === true);
-                heroUrl = val.heroImg || "";
-                heroType = val.heroType || "image";
-                bgFit = val.bgFit || "cover";
-                animType = val.animType || "static";
-
-                checkDefaultSong(); 
-                updateBackgroundState();
-
-                if(isAdmin) {
-                    if(document.getElementById('set-welcome')) document.getElementById('set-welcome').value = val.welcome || "";
-                    if(document.getElementById('set-hero-active')) document.getElementById('set-hero-active').checked = isHeroMode;
-                    if(document.getElementById('set-hero-img')) document.getElementById('set-hero-img').value = heroUrl;
-                    
-                    if(document.getElementById('set-hero-type')) document.getElementById('set-hero-type').value = heroType;
-                    if(document.getElementById('set-bg-fit')) document.getElementById('set-bg-fit').value = bgFit;
-                    if(document.getElementById('set-anim-type')) document.getElementById('set-anim-type').value = animType;
-                    renderAdmMusic();
-                }
-            });
-
-            // Pages
             db.ref('custom_pages').on('value', s => {
                 document.querySelectorAll('.dyn').forEach(e=>e.remove());
                 const admL = document.getElementById('adm-pages-list');
@@ -581,11 +625,12 @@
                     document.getElementById('sidebar-items').appendChild(btn);
                     
                     const mb = document.createElement('div');
-                    mb.className = "mob-chip dyn"; mb.innerText = p.title; mb.onclick = () => nav(pid);
+                    mb.className = "mob-nav-item dyn"; mb.innerHTML = `<i class="${p.icon}"></i><span>${p.title}</span>`; mb.onclick = () => nav(pid);
                     document.getElementById('mob-nav-items').appendChild(mb);
                     
                     const sec = document.createElement('div');
-                    sec.className = "section dyn-sec"; sec.id = "view-"+pid; sec.innerHTML = `<h2>${p.title}</h2><div>${p.content}</div>`;
+                    sec.className = "section dyn-sec"; sec.id = "view-"+pid; 
+                    sec.innerHTML = `<h2 style="font-size:28px; margin-bottom:20px;">${p.title}</h2><div style="line-height:1.6;">${p.content}</div>`;
                     document.getElementById('dynamic-pages-container').appendChild(sec);
                     
                     if(admL) admL.innerHTML += `<div>${p.title} <button onclick="db.ref('custom_pages/${pid}').remove()" style="color:red">X</button></div>`;
@@ -593,123 +638,80 @@
             });
         }
 
-        // --- Background Logic (SMART) ---
-        function updateBackgroundState() {
-            let targetUrl = "";
-            let targetType = "image";
-
-            if (isHeroMode) {
-                targetUrl = heroUrl;
-                targetType = heroType;
-            } else {
-                if (audio.src && playlist[pIndex]) {
-                    targetUrl = playlist[pIndex].image;
-                }
-                targetType = "image"; 
-            }
-            if (!targetUrl) targetUrl = "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=1920";
-            
-            // --- Smart Check: If net is slow, force IMAGE mode ---
-            const netStatus = getNetworkStatus();
-            if (netStatus === 'slow' && targetType === 'video') {
-                console.log("Slow network detected: Forcing Image Mode");
-                targetType = 'image';
-                // إذا كان الرابط فيديو، استخدم صورة افتراضية أو صورة الأغنية بدلاً منه
-                if(targetUrl.endsWith('.mp4') || targetUrl.endsWith('.webm')) {
-                    targetUrl = "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=1920"; 
-                }
-                // إظهار تنبيه
-                updateNetAlert(true);
-            }
-            // ----------------------------------------------------
-
-            applyBackground(targetUrl, targetType);
-        }
-
-        function applyBackground(url, type) {
-            const bgImg = document.getElementById('dynamic-bg-img');
-            const bgVid = document.getElementById('dynamic-bg-video');
-
-            bgImg.className = "bg-layer";
-            bgVid.className = "bg-layer";
-
-            if (type === 'video') {
-                bgImg.style.opacity = '0';
-                bgVid.style.display = 'block';
-                // منع إعادة التحميل إذا كان نفس الفيديو يعمل
-                if(bgVid.src !== url) {
-                    bgVid.src = url;
-                    bgVid.play().catch(e=>console.log("Autoplay blocked/Interrupted"));
-                }
-                bgVid.style.objectFit = (bgFit === 'contain') ? 'contain' : 'cover';
-            } else {
-                bgVid.style.display = 'none';
-                bgVid.pause();
-                bgImg.style.opacity = '1';
-                bgImg.style.backgroundImage = `url('${url}')`;
-                bgImg.classList.add(bgFit === 'contain' ? 'fit-contain' : 'fit-cover');
-                bgImg.classList.remove('anim-zoom-in', 'anim-zoom-out', 'anim-pulse', 'anim-static');
-                
-                if(animType === 'zoom-in') bgImg.classList.add('anim-zoom-in');
-                else if(animType === 'zoom-out') bgImg.classList.add('anim-zoom-out');
-                else if(animType === 'pulse') bgImg.classList.add('anim-pulse');
-                else bgImg.classList.add('anim-static');
-            }
-        }
-
-        // --- Song Logic ---
+        // --- Music Player Logic ---
         function checkDefaultSong() {
             if(!audio.src && defaultSongId && songs.length > 0) {
                 const song = songs.find(s => s.k === defaultSongId);
                 if(song) {
-                    document.getElementById('p-title').innerText = song.name;
-                    document.getElementById('p-desc').innerText = song.folder;
-                    document.getElementById('p-art').style.backgroundImage = `url('${song.image}')`;
-                    audio.src = song.url;
                     playlist = folders[song.folder] || songs;
                     pIndex = playlist.findIndex(s => s.k === song.k);
-                    updateBackgroundState();
+                    loadSong(pIndex, false);
                 }
             }
         }
 
-        function playSong(i) {
+        function loadSong(i, autoPlay = true) {
+            if(i < 0 || i >= playlist.length) return;
             pIndex = i;
             const s = playlist[pIndex];
-            if(!s.url) return;
             audio.src = s.url;
-            audio.play().catch(e => console.log(e));
+            
             document.getElementById('p-title').innerText = s.name;
             document.getElementById('p-desc').innerText = s.folder;
-            document.getElementById('p-art').style.backgroundImage = `url('${s.image}')`;
-            document.getElementById('play-icon').className = "fas fa-pause";
-            updateBackgroundState();
+            const art = document.getElementById('p-art');
+            art.style.backgroundImage = `url('${s.image}')`;
+            
+            if(!settingsData.heroMode) applyBackground({heroMode:false});
+
+            if(autoPlay) {
+                audio.play().catch(e => console.log(e));
+                document.body.classList.add('playing');
+                document.getElementById('play-icon').className = "fas fa-pause";
+            }
         }
 
         function togglePlay() {
             if(audio.paused) { 
-                if(audio.src) { audio.play(); document.getElementById('play-icon').className="fas fa-pause"; }
+                if(!audio.src && playlist.length > 0) loadSong(0);
+                else audio.play(); 
+                document.body.classList.add('playing');
+                document.getElementById('play-icon').className = "fas fa-pause"; 
             } else { 
-                audio.pause(); document.getElementById('play-icon').className="fas fa-play"; 
+                audio.pause(); 
+                document.body.classList.remove('playing');
+                document.getElementById('play-icon').className = "fas fa-play"; 
             }
         }
-        function next() { if(playlist.length) playSong((pIndex+1)%playlist.length); }
-        function prev() { if(playlist.length) playSong((pIndex-1+playlist.length)%playlist.length); }
+
+        function next() { if(playlist.length) loadSong((pIndex + 1) % playlist.length); }
+        function prev() { if(playlist.length) loadSong((pIndex - 1 + playlist.length) % playlist.length); }
         
-        audio.ontimeupdate = () => { if(audio.duration) document.getElementById('prog-fill').style.width = ((audio.currentTime/audio.duration)*100)+"%"; };
-        // --- AUTO PLAY NEXT SONG ---
-        audio.onended = () => { next(); }; 
-        // ---------------------------
+        audio.ontimeupdate = () => { 
+            if(audio.duration) {
+                const pct = (audio.currentTime / audio.duration) * 100;
+                document.getElementById('prog-fill').style.width = pct + "%";
+            }
+        };
+        audio.onended = next;
 
-        function seek(e) { if(audio.duration) audio.currentTime = (e.offsetX / e.target.offsetWidth) * audio.duration; }
+        function seek(e) { 
+            if(!audio.duration) return;
+            const wrapper = e.currentTarget; 
+            const rect = wrapper.getBoundingClientRect();
+            const width = rect.width;
+            let clickPos = rect.right - e.clientX; 
+            if (clickPos < 0) clickPos = 0;
+            if (clickPos > width) clickPos = width;
+            const pct = clickPos / width;
+            audio.currentTime = pct * audio.duration;
+        }
 
-        // --- UI & Admin ---
+        // --- UI Navigation ---
         function nav(id) {
             document.querySelectorAll('.section').forEach(e=>e.classList.remove('active'));
-            document.querySelectorAll('.nav-btn, .mob-chip').forEach(e=>e.classList.remove('active'));
+            document.querySelectorAll('.nav-btn, .mob-nav-item').forEach(e=>e.classList.remove('active'));
             document.getElementById('view-'+id).classList.add('active');
             document.querySelectorAll(`[onclick="nav('${id}')"]`).forEach(b=>b.classList.add('active'));
-            if(id === 'home') document.body.classList.remove('dark-mode'); else document.body.classList.add('dark-mode');
         }
 
         function openAdmin() {
@@ -727,12 +729,14 @@
                 heroImg: document.getElementById('set-hero-img').value,
                 heroType: document.getElementById('set-hero-type').value,
                 bgFit: document.getElementById('set-bg-fit').value,
-                animType: document.getElementById('set-anim-type').value
+                animType: document.getElementById('set-anim-type').value,
+                showVisitorCount: document.getElementById('set-show-visitors').checked,
+                bgFilter: document.getElementById('set-bg-filter').value // حفظ الفلتر
             });
             alert("تم حفظ الإعدادات!");
         }
 
-        // --- Diary & Utils ---
+        // --- Diaries ---
         function initDiarySystem() {
             const feed = document.getElementById('diary-feed');
             const ref = db.ref('diaries').limitToLast(50);
@@ -740,107 +744,63 @@
                 if(document.getElementById('loading-spinner')) document.getElementById('loading-spinner').remove();
                 feed.prepend(createPostElement({k: snapshot.key, ...snapshot.val()})); 
             });
-            ref.on('child_changed', snap => {
-                const old = document.getElementById('post-'+snap.key);
-                if(old) feed.replaceChild(createPostElement({k: snap.key, ...snap.val()}), old);
-            });
+            ref.on('child_changed', snap => { const old = document.getElementById('post-'+snap.key); if(old) feed.replaceChild(createPostElement({k: snap.key, ...snap.val()}), old); });
             ref.on('child_removed', snap => { const e=document.getElementById('post-'+snap.key); if(e) e.remove(); });
         }
         function createPostElement(post) {
             const div = document.createElement('div');
             div.className = `diary-post ${post.verified?'admin-post':''}`; div.id='post-'+post.k;
-            const delBtn = isAdmin ? `<button onclick="db.ref('diaries/${post.k}').remove()" style="margin-right:auto; color:red; background:none; border:none;">✕</button>` : '';
-            div.innerHTML = `<div class="post-header"><div class="avatar">${post.name[0]}</div><h4>${escapeHtml(post.name)} ${post.verified?'<i class="fas fa-check-circle verified"></i>':''}</h4>${delBtn}</div><div class="post-body">${escapeHtml(post.text)}</div><div class="post-actions"><button class="action-btn" onclick="db.ref('diaries/${post.k}/likes').transaction(l=>l+1)"><i class="far fa-thumbs-up"></i> ${post.likes||0}</button></div>`;
+            const delBtn = isAdmin ? `<button onclick="db.ref('diaries/${post.k}').remove()" style="margin-right:auto; color:red; background:none; border:none; cursor:pointer;">&times;</button>` : '';
+            div.innerHTML = `
+                <div class="post-header" style="display:flex; align-items:center; gap:12px; padding:15px; background:rgba(0,0,0,0.2);">
+                    <div style="width:40px;height:40px;background:#333;border-radius:50%;display:grid;place-items:center;font-weight:bold;">${post.name[0]}</div>
+                    <div style="flex:1;"><h4 style="margin:0;">${escapeHtml(post.name)} ${post.verified?'<i class="fas fa-check-circle" style="color:var(--primary)"></i>':''}</h4><span style="font-size:11px; color:#aaa;">${post.date||'الآن'}</span></div>
+                    ${delBtn}
+                </div>
+                <div style="padding:15px; color:#eee; line-height:1.6;">${escapeHtml(post.text)}</div>
+                <div style="padding:10px 15px; border-top:1px solid rgba(255,255,255,0.05);">
+                    <button onclick="db.ref('diaries/${post.k}/likes').transaction(l=>l+1)" style="background:none; border:none; color:#888; cursor:pointer;"><i class="far fa-heart"></i> ${post.likes||0}</button>
+                </div>`;
             return div;
         }
         function postDiary() {
-            const n=document.getElementById('d-name').value||"مجهول", m=document.getElementById('d-msg').value;
-            if(!m) return;
+            const n=document.getElementById('d-name').value||"مجهول", m=document.getElementById('d-msg').value; if(!m) return;
             const ver = (isAdmin && confirm("نشر كمسؤول؟"));
             db.ref('diaries').push({name:ver?"AHMED PULSE":n, text:m, verified:ver, date:new Date().toLocaleDateString('ar-EG'), likes:0});
             document.getElementById('d-msg').value="";
         }
+
+        // --- Admin Functions ---
         function initAdmin() {
-            db.ref('inbox').on('value', s=>{ const l=document.getElementById('inbox-list'); l.innerHTML=""; s.forEach(c=>{ l.innerHTML+=`<div style="background:#222; padding:10px; margin-bottom:5px;">${escapeHtml(c.val().msg)} <button style="color:red" onclick="db.ref('inbox/${c.key}').remove()">✕</button></div>`; }); });
+            db.ref('inbox').on('value', s=>{ 
+                const l=document.getElementById('inbox-list'); l.innerHTML=""; 
+                s.forEach(c=>{ l.innerHTML+=`<div style="background:#222; padding:15px; margin-bottom:10px; border-radius:10px;"><b>${escapeHtml(c.val().name)}</b>: ${escapeHtml(c.val().msg)} <button style="float:left; color:red; background:none; border:none; cursor:pointer;" onclick="db.ref('inbox/${c.key}').remove()">حذف</button></div>`; }); 
+            });
         }
         function admTab(t) { document.querySelectorAll('.adm-content .section').forEach(e=>e.classList.remove('active')); document.getElementById('adm-'+t).classList.add('active'); }
-        
-        // --- NEW ADMIN FOLDER LOGIC ---
-        function updateAdminFolderSelect() {
-            const sel = document.getElementById('folder-select');
-            if(!sel) return;
-            let html = '<option value="new">++ مجلد جديد ++</option>';
-            Object.keys(folders).forEach(f => {
-                html += `<option value="${f}">${f}</option>`;
-            });
-            sel.innerHTML = html;
-        }
-
-        function toggleFolderInput() {
-            const sel = document.getElementById('folder-select');
-            const inp = document.getElementById('new-folder-input');
-            if(sel.value === 'new') inp.style.display = 'block';
-            else inp.style.display = 'none';
-        }
-
+        function toggleFolderInput() { const s=document.getElementById('folder-select'); document.getElementById('new-folder-input').style.display=(s.value==='new'?'block':'none'); }
+        function updateAdminFolderSelect() { const s=document.getElementById('folder-select'); let h='<option value="new">++ مجلد جديد ++</option>'; Object.keys(folders).forEach(f=>{h+=`<option value="${f}">${f}</option>`}); s.innerHTML=h; }
         function addSong() {
-            const sel = document.getElementById('folder-select');
-            const inp = document.getElementById('new-folder-input');
-            
-            let finalFolder = "";
-            if(sel.value === 'new') finalFolder = inp.value;
-            else finalFolder = sel.value;
-
-            if(!finalFolder) return alert("الرجاء اختيار مجلد أو كتابة اسم جديد");
-
-            db.ref('music').push({
-                folder: finalFolder, 
-                name: document.getElementById('add-title').value,
-                url: document.getElementById('add-url').value, 
-                image: document.getElementById('add-img').value
-            }); 
-            alert("تمت الإضافة");
+            const f = (document.getElementById('folder-select').value==='new') ? document.getElementById('new-folder-input').value : document.getElementById('folder-select').value;
+            if(!f) return alert("اختر مجلد");
+            db.ref('music').push({ folder: f, name: document.getElementById('add-title').value, url: document.getElementById('add-url').value, image: document.getElementById('add-img').value }); 
+            alert("تم");
         }
-        // ------------------------------
-
         function renderAdmMusic() {
-            const l = document.getElementById('adm-music-list'); 
-            if(!l) return; 
-            l.innerHTML = "";
+            const l = document.getElementById('adm-music-list'); if(!l) return; l.innerHTML = "";
             songs.forEach(s => { 
-                const isDefault = (s.k === defaultSongId);
-                const starClass = isDefault ? 'star-active' : 'star-inactive';
-                l.innerHTML += `
-                    <div class="adm-list-item">
-                        <span>${s.name} (${s.folder})</span>
-                        <div>
-                            <button class="adm-btn-icon ${starClass}" onclick="setDefaultSong('${s.k}')" title="تعيين كافتراضي">
-                                <i class="fas fa-star"></i>
-                            </button>
-                            <button class="adm-btn-icon" onclick="deleteSong('${s.k}')" style="color:#ff5555" title="حذف">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                `; 
+                l.innerHTML += `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #333;"><span>${s.name}</span><div><button onclick="setDefaultSong('${s.k}')" style="color:${(s.k===defaultSongId)?'gold':'#555'}"><i class="fas fa-star"></i></button><button onclick="deleteSong('${s.k}')" style="color:#f55"><i class="fas fa-trash"></i></button></div></div>`; 
             });
         }
         function setDefaultSong(id) { db.ref('settings').update({defaultSongId: id}); }
-        function deleteSong(id) { if(confirm('حذف هذه الأغنية؟')) db.ref('music/'+id).remove(); }
-        function savePage() {
-            const id=document.getElementById('page-id').value;
-            if(id) db.ref('custom_pages/'+id).set({title:document.getElementById('page-title').value, icon:document.getElementById('page-icon').value, content:document.getElementById('page-content').value});
-            alert("تم");
-        }
-        function sendMsg() { const n=document.getElementById('c-name').value, m=document.getElementById('c-msg').value; if(m){db.ref('inbox').push({name:n, msg:m}); alert("تم");} }
-        function renderFolders() {
-            const c=document.getElementById('folders-container'); c.innerHTML="";
-            Object.keys(folders).forEach(f=>{ c.innerHTML+=`<div class="folder-card" onclick="openFolder('${f}')"><i class="fas fa-folder" style="font-size:40px; color:var(--gold)"></i><div>${f}</div></div>`; });
-        }
-        function openFolder(f) { document.getElementById('folders-view').style.display='none'; document.getElementById('songs-view').style.display='block'; document.getElementById('current-folder-title').innerText=f; const c=document.getElementById('songs-container'); c.innerHTML=""; playlist=folders[f]; playlist.forEach((s,i)=>{ c.innerHTML+=`<div onclick="playSong(${i})" style="display:flex; gap:10px; padding:10px; cursor:pointer;"><div style="width:40px; height:40px; background:url('${s.image}') center/cover;"></div><div>${s.name}</div></div>`; }); }
+        function deleteSong(id) { if(confirm('حذف؟')) db.ref('music/'+id).remove(); }
+        function savePage() { const id=document.getElementById('page-id').value; if(id) db.ref('custom_pages/'+id).set({title:document.getElementById('page-title').value, icon:document.getElementById('page-icon').value, content:document.getElementById('page-content').value}); alert("تم"); }
+        function sendMsg() { const n=document.getElementById('c-name').value, m=document.getElementById('c-msg').value; if(m){db.ref('inbox').push({name:n, msg:m}); alert("تم الإرسال");} }
+        
+        function renderFolders() { const c=document.getElementById('folders-container'); c.innerHTML=""; Object.keys(folders).forEach(f=>{ c.innerHTML+=`<div class="folder-card" onclick="openFolder('${f}')"><i class="fas fa-compact-disc fa-spin"></i><div>${f}</div><small>${folders[f].length} أغاني</small></div>`; }); }
+        function openFolder(f) { document.getElementById('folders-view').style.display='none'; document.getElementById('songs-view').style.display='block'; document.getElementById('current-folder-title').innerText=f; const c=document.getElementById('songs-container'); c.innerHTML=""; playlist=folders[f]; playlist.forEach((s,i)=>{ c.innerHTML+=`<div class="song-row" onclick="loadSong(${i})"><div class="song-img" style="background-image:url('${s.image}')"></div><div style="flex:1;"><b>${s.name}</b><br><small>تشغيل</small></div></div>`; }); }
         function showFolders() { document.getElementById('songs-view').style.display='none'; document.getElementById('folders-view').style.display='grid'; }
         function escapeHtml(t) { return t?String(t).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#039;'}[m])):''; }
-
     </script>
 </body>
 </html>
