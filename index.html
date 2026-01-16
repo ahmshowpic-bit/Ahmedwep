@@ -89,10 +89,22 @@
         .section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* --- إصلاح مشكلة قص النص العربي --- */
         #hero-txt {
-            font-size: clamp(3rem, 5vw, 6rem); margin: 0; font-weight: 900; line-height:1.1;
-            background: linear-gradient(to bottom, #fff 30%, #ccc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            font-size: clamp(3rem, 5vw, 6rem); 
+            margin: 0; 
+            font-weight: 900; 
+            line-height: 1.4; /* زيادة الارتفاع لمنع القص */
+            background: linear-gradient(to bottom, #fff 30%, #ccc); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent;
             text-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            padding: 10px; /* مسافة أمان للحروف */
+            padding-right: 5px; 
+            padding-left: 5px;
+            min-height: 1.5em; /* ارتفاع محجوز حتى لو النص فارغ */
+            display: inline-block; /* لضمان احتواء البادينج */
+            max-width: 100%;
         }
 
         .folder-card { 
@@ -140,43 +152,17 @@
             overflow: hidden; 
         }
 
-        /* الطبقة الدوارة العملاقة (لضمان الاتصال) */
         .music-bar::before {
-            content: '';
-            position: absolute;
-            width: 200vw; height: 200vw; /* حجم ضخم لتغطية كل الحواف */
-            left: 50%; top: 50%; 
-            transform: translate(-50%, -50%);
-            
-            /* تدرج لوني حلقي كامل (Spectrum) */
-            background: conic-gradient(
-                #ff0000, #ff00dd, #0000ff, #00ffff, #00ff00, #ffff00, #ff0000
-            );
-            
-            animation: spin-giant 4s linear infinite;
-            animation-play-state: paused;
-            z-index: -2;
+            content: ''; position: absolute; width: 200vw; height: 200vw;
+            left: 50%; top: 50%; transform: translate(-50%, -50%);
+            background: conic-gradient(#ff0000, #ff00dd, #0000ff, #00ffff, #00ff00, #ffff00, #ff0000);
+            animation: spin-giant 4s linear infinite; animation-play-state: paused; z-index: -2;
         }
-        
-        .playing .music-bar::before {
-            animation-play-state: running;
-        }
+        .playing .music-bar::before { animation-play-state: running; }
+        .music-bar::after { content: ''; position: absolute; inset: 1.5px; background: #0f0f13; border-radius: 48.5px; z-index: -1; }
 
-        /* الطبقة الداخلية السوداء (Mask) */
-        .music-bar::after {
-            content: '';
-            position: absolute;
-            inset: 1.5px; /* سمك الخيط */
-            background: #0f0f13; 
-            border-radius: 48.5px; 
-            z-index: -1;
-        }
-
-        @keyframes spin-giant {
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
-        }
+        @keyframes spin-giant { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
         
-        /* عناصر المشغل */
         .player-left { display: flex; align-items: center; gap: 20px; flex: 1; position: relative; z-index: 2; }
         
         #p-art { 
@@ -188,7 +174,6 @@
         .playing #p-art { transform: rotate(10deg) scale(1.1); box-shadow: 0 5px 25px var(--primary-dim); }
 
         .player-center { flex: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; position: relative; z-index: 2; }
-        
         .ctrl-grp { display: flex; align-items: center; gap: 30px; }
         
         .play-btn-main { 
@@ -215,7 +200,7 @@
         .player-right { flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 10px; position: relative; z-index: 2; }
         .vol-slider { width: 100px; accent-color: var(--primary); height: 4px; border-radius: 5px; }
 
-        /* --- تحسينات الموبايل (إصلاح التداخل) --- */
+        /* --- تحسينات الموبايل --- */
         .mob-nav-bottom { display: none; }
         @media (max-width: 768px) {
             .sidebar { display: none; }
@@ -231,39 +216,19 @@
             
             .content { padding: 15px; padding-bottom: calc(110px + var(--nav-mobile-h)); }
 
-            /* إصلاح المشغل للموبايل لمنع التداخل */
             .music-bar { 
-                bottom: calc(var(--nav-mobile-h) + 15px); 
-                left: 10px; right: 10px; width: auto;
-                height: 85px; /* زيادة بسيطة */
-                padding: 0 15px; border-radius: 40px;
-                /* التأكد من توزيع العناصر بشكل صحيح */
-                justify-content: space-between;
+                bottom: calc(var(--nav-mobile-h) + 15px); left: 10px; right: 10px; width: auto;
+                height: 85px; padding: 0 15px; border-radius: 40px; justify-content: space-between;
             }
             .player-left { flex: 0 0 auto; gap: 10px; }
             #p-art { width: 50px; height: 50px; }
             
-            /* منطقة الوسط (الأزرار والشريط) في عمود */
-            .player-center { 
-                flex: 1; 
-                flex-direction: column; /* ترتيب عمودي لمنع التداخل */
-                align-items: center; 
-                justify-content: center;
-                margin-left: 10px; margin-right: 10px;
-                gap: 5px; /* مسافة بين الأزرار والشريط */
-            }
-            
+            .player-center { flex: 1; flex-direction: column; align-items: center; justify-content: center; margin: 0 10px; gap: 5px; }
             .ctrl-grp { gap: 15px; margin-bottom: 2px; }
             .play-btn-main { width: 38px; height: 38px; font-size: 16px; }
             .ctrl-btn { font-size: 18px; }
 
-            /* إصلاح شريط التقدم ليكون أسفل الأزرار بوضوح */
-            .prog-wrapper { 
-                width: 100%; 
-                padding: 5px 0; /* منطقة لمس أفضل */
-                position: relative; /* إرجاعه للتدفق الطبيعي */
-                bottom: auto; left: auto; right: auto;
-            }
+            .prog-wrapper { width: 100%; padding: 5px 0; position: relative; bottom: auto; left: auto; right: auto; }
             .prog-bg { height: 4px; }
             
             .player-right { display: none; } 
@@ -315,8 +280,7 @@
         <main class="content">
             <div id="view-home" class="section active">
                 <div style="min-height: 60vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-                    <h1 id="hero-txt">...</h1>
-                    <p style="color:var(--text-main); margin-top:10px; font-size:18px; text-shadow:0 0 10px #000;">مرحباً بك في عالمي الخاص</p>
+                    <h1 id="hero-txt"></h1> <p style="color:var(--text-main); margin-top:10px; font-size:18px; text-shadow:0 0 10px #000;">مرحباً بك في عالمي الخاص</p>
                     
                     <div id="visitor-badge-mobile" class="visitor-box" style="margin-top:30px; display:none; min-width:200px; justify-content:center;">
                         <i class="fas fa-eye"></i> الزيارات: <span id="visitor-count-mobile" class="visitor-num">...</span>
@@ -452,16 +416,15 @@
                         
                         <div style="padding:20px; background:rgba(189, 0, 255, 0.05); border-radius:15px; border:1px solid var(--secondary); margin-bottom:20px;">
                             <h4 style="margin-top:0; color:var(--secondary);"><i class="fas fa-eye"></i> المظهر البصري</h4>
-                            <label style="color:#ccc; display:block; margin-bottom:10px;">اختر نمط الخلفية الذي سيراه جميع الزوار:</label>
                             <select id="set-bg-filter" class="inp">
-                                <option value="mode-vivid">واضح وزاهي (Vivid) - الافتراضي الجديد</option>
+                                <option value="mode-vivid">واضح وزاهي (Vivid)</option>
                                 <option value="mode-dark">غامق (Dark Mode)</option>
                                 <option value="mode-blur">ضبابي (Blur)</option>
                             </select>
                         </div>
 
-                        <label>رسالة الترحيب:</label>
-                        <textarea id="set-welcome" class="inp" rows="2"></textarea>
+                        <label>رسالة الترحيب (اتركها فارغة لإخفائها):</label>
+                        <textarea id="set-welcome" class="inp" rows="2" placeholder="اكتب رسالة ترحيب أو اتركها فارغة"></textarea>
                         
                         <div style="padding:20px; background:rgba(0, 242, 255, 0.05); border-radius:15px; border:1px solid var(--primary-dim); margin-bottom:20px;">
                             <h4 style="margin-top:0; color:var(--primary);">📊 الزوار</h4>
@@ -469,7 +432,7 @@
                                 <input type="checkbox" id="set-show-visitors" style="width:20px; height:20px; margin-left:10px;">
                                 عرض عداد الزوار للعامة
                             </label>
-                            <p style="color:#666; font-size:12px; margin-top:5px;">القراءة الحالية من قاعدة البيانات: <b id="adm-total-visits" style="color:#fff; font-size:16px;">0</b></p>
+                            <p style="color:#666; font-size:12px; margin-top:5px;">القراءة الحالية: <b id="adm-total-visits" style="color:#fff; font-size:16px;">0</b></p>
                         </div>
 
                         <div style="padding:20px; background:rgba(255, 215, 0, 0.05); border-radius:15px; border:1px solid rgba(255,215,0,0.2);">
@@ -515,6 +478,9 @@
         let isAdmin = false;
         let defaultSongId = null;
         let settingsData = {};
+        
+        // Variable to prevent multiple listeners and speed up loading
+        let listenersActive = false;
 
         const audio = document.getElementById('audio-player');
         audio.removeAttribute('crossorigin');
@@ -522,8 +488,13 @@
         auth.onAuthStateChanged(u => {
             isAdmin = (u && u.email === ADMIN_EMAIL);
             if(isAdmin) initAdmin();
-            loadGeneralData();
-            initDiarySystem();
+            
+            // Only attach data listeners once to prevent sync issues and improve performance
+            if (!listenersActive) {
+                loadGeneralData();
+                initDiarySystem();
+                listenersActive = true;
+            }
             initVisitorCounter(); 
         });
 
@@ -587,7 +558,10 @@
         function loadGeneralData() {
             db.ref('settings').on('value', s => {
                 settingsData = s.val() || {};
-                document.getElementById('hero-txt').innerText = settingsData.welcome || "Welcome";
+                // Fix: Only show text if it exists, otherwise empty string (no "Welcome" default)
+                const wText = settingsData.welcome;
+                document.getElementById('hero-txt').innerText = (wText !== undefined && wText !== null) ? wText : "";
+                
                 applyBackground(settingsData);
                 updateVisitorDisplay(settingsData.visitorCount, settingsData.showVisitorCount);
                 defaultSongId = settingsData.defaultSongId;
