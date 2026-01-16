@@ -10,18 +10,16 @@
     <style>
         :root {
             --primary: #00f2ff;
-            --primary-dim: rgba(0, 242, 255, 0.2);
             --secondary: #bd00ff;
             --gold: #ffd700;
             --bg-deep: #050508;
             --text-main: #ffffff;
-            --text-muted: #e0e0e0; /* تفتيح النص */
+            --text-muted: #e0e0e0;
             
             --sidebar-w: 260px;
             --nav-mobile-h: 70px;
             
             --glass-bg: rgba(20, 20, 25, 0.85);
-            --glass-border: 1px solid rgba(255, 255, 255, 0.15);
             --blur: blur(20px);
         }
 
@@ -31,47 +29,41 @@
             margin: 0; font-family: 'Tajawal', sans-serif;
             background-color: var(--bg-deep); color: var(--text-main); 
             height: 100vh; overflow: hidden; display: flex; flex-direction: column;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8); /* ظل للنص ليظهر فوق الصور الزاهية */
+            text-shadow: 0 2px 5px rgba(0,0,0,0.9);
         }
 
-        /* --- الخلفيات وتأثيراتها --- */
+        /* --- الخلفيات --- */
         .bg-layer { position: fixed; inset: 0; z-index: -2; width: 100%; height: 100%; transition: all 0.5s ease; }
         #dynamic-bg-img { background-size: cover; background-position: center; }
         #dynamic-bg-video { object-fit: cover; display: none; }
-        .overlay { position: fixed; inset: 0; z-index: -1; background: radial-gradient(circle at center, transparent 0%, #000 130%); pointer-events: none; }
+        .overlay { position: fixed; inset: 0; z-index: -1; background: radial-gradient(circle at center, transparent 0%, #000 120%); pointer-events: none; }
         
-        /* فلاتر الخلفية - تم التعديل لتكون زاهية */
-        .mode-vivid { filter: brightness(0.7) contrast(1.1); } /* الوضع الافتراضي الجديد */
+        .mode-vivid { filter: brightness(0.85) contrast(1.15) saturate(1.1); } 
         .mode-dark { filter: brightness(0.3); }
         .mode-blur { filter: blur(20px) brightness(0.7); transform: scale(1.1); }
 
-        /* Animation Utility */
         .fit-cover { background-size: cover !important; }
         .fit-contain { background-size: contain !important; background-color: #000; }
+        
         @keyframes kf-zoom-in { 0% { transform: scale(1); } 100% { transform: scale(1.15); } }
-        @keyframes kf-pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
         .anim-zoom-in { animation: kf-zoom-in 20s infinite alternate linear; }
-        .anim-pulse { animation: kf-pulse 10s infinite ease-in-out; }
         .anim-static { transform: scale(1); }
 
-        /* --- Layout --- */
+        /* --- الهيكلة --- */
         .layout { display: flex; flex: 1; height: 100%; position: relative; overflow: hidden; }
         
-        /* Sidebar */
         .sidebar {
             width: var(--sidebar-w); background: var(--glass-bg); backdrop-filter: var(--blur);
-            border-left: var(--glass-border); display: flex; flex-direction: column; padding: 40px 25px;
+            border-left: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; padding: 40px 25px;
             z-index: 50; flex-shrink: 0;
         }
         .brand { 
             font-size: 28px; font-weight: 900; margin-bottom: 20px; 
             background: linear-gradient(135deg, #fff 0%, var(--primary) 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            letter-spacing: 1px;
-            text-shadow: none; /* إزالة ظل النص من اللوجو للحفاظ على التدرج */
+            letter-spacing: 1px; text-shadow: none; 
         }
         
-        /* Visitor Counter Badge */
         .visitor-box {
             background: linear-gradient(90deg, rgba(0, 242, 255, 0.1), transparent); 
             border-right: 3px solid var(--primary);
@@ -87,17 +79,15 @@
         }
         .nav-btn:hover { color: #fff; background: rgba(255,255,255,0.1); transform: translateX(-5px); }
         .nav-btn.active { 
-            background: linear-gradient(90deg, var(--primary-dim) 0%, transparent 100%);
+            background: linear-gradient(90deg, rgba(0, 242, 255, 0.15) 0%, transparent 100%);
             color: var(--primary); border-right: 3px solid var(--primary);
         }
 
-        /* Content Area */
         .content { flex: 1; padding: 30px; overflow-y: auto; position: relative; scroll-behavior: smooth; padding-bottom: 140px; }
         .section { display: none; animation: fadeIn 0.4s ease; max-width: 1000px; margin: 0 auto; }
         .section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- Components --- */
         #hero-txt {
             font-size: clamp(3rem, 5vw, 6rem); margin: 0; font-weight: 900; line-height:1.1;
             background: linear-gradient(to bottom, #fff 30%, #ccc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
@@ -124,7 +114,7 @@
             width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); 
             color: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; font-family: inherit; transition: 0.3s;
         }
-        .inp:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-dim); background: rgba(0,0,0,0.7); }
+        .inp:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(0, 242, 255, 0.2); background: rgba(0,0,0,0.7); }
         
         .btn-glow { 
             background: linear-gradient(135deg, var(--primary), var(--secondary)); 
@@ -136,79 +126,99 @@
         .diary-post { background: rgba(30,30,35,0.7); backdrop-filter: blur(10px); border-radius: 15px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1); }
         .diary-post.admin-post { border: 1px solid var(--gold); background: rgba(255, 215, 0, 0.1); }
 
-        /* --- THE ALIVE MUSIC PLAYER (Connected Loop + Pause Logic) --- */
+        /* --- 🎵 المشغل الحلقي المتصل (The True Liquid Loop) 🎵 --- */
         .music-bar {
-            position: fixed; bottom: 20px; left: 20px; right: 20px; height: 90px;
-            background: rgba(10, 10, 14, 0.95); 
-            border-radius: 20px;
+            position: fixed; 
+            bottom: 30px; 
+            right: calc(var(--sidebar-w) + 30px); 
+            left: 30px;
+            height: 90px;
+            background: #000;
+            border-radius: 50px; 
             display: flex; align-items: center; justify-content: space-between; 
-            padding: 0 25px; z-index: 100;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-            overflow: hidden;
-            /* بوردر شفاف ليسمح بظهور الحركة خلفه */
-            border: 1px solid rgba(255,255,255,0.05);
+            padding: 0 35px; 
+            z-index: 100;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.9);
+            overflow: hidden; /* يقص الدائرة العملاقة لتظهر كإطار فقط */
         }
 
-        /* طبقة الحركة (السلسلة المتصلة) */
+        /* الطبقة الدوارة العملاقة (The Giant Spinner)
+           هذه هي الحيلة: نجعل الخلفية أكبر بكثير من المشغل وتدور حول مركزها.
+           بما أن المشغل يغطي الوسط، تظهر فقط الحواف كأنها متصلة.
+        */
         .music-bar::before {
             content: '';
             position: absolute;
-            top: -50%; left: -50%; width: 200%; height: 200%;
-            /* تدرج كامل لعمل حلقة متصلة */
+            width: 200vw; /* عرض ضخم جداً */
+            height: 200vw; /* ارتفاع ضخم جداً */
+            left: 50%; top: 50%; /* التمركز */
+            transform: translate(-50%, -50%); /* ضبط التمركز */
+            
+            /* تدرج لوني مخروطي (مثل الكعكة) يغطي 360 درجة */
             background: conic-gradient(
-                var(--primary), 
-                var(--secondary), 
-                var(--gold), 
-                var(--primary) /* إعادة اللون الأول لإغلاق الحلقة */
+                #ff0000, 
+                #ff00dd, 
+                #0000ff, 
+                #00ffff, 
+                #00ff00, 
+                #ffff00, 
+                #ff0000 /* نعود للأحمر لتكون الحلقة مغلقة تماماً */
             );
-            animation: border-rotate 4s linear infinite;
-            animation-play-state: paused; /* متوقف افتراضياً */
+            
+            /* الحركة: دوران القرص العملاق */
+            animation: spin-giant 4s linear infinite;
+            animation-play-state: paused; /* ثابت عند التوقف */
             z-index: -2;
         }
         
-        /* تفعيل الحركة عند إضافة كلاس playing */
         .playing .music-bar::before {
             animation-play-state: running;
         }
 
-        /* الطبقة الداخلية السوداء */
+        /* الطبقة الداخلية السوداء (Mask) لتحديد سمك الخيط */
         .music-bar::after {
             content: '';
             position: absolute;
-            inset: 3px; /* سمك الشريط الملون */
-            background: #0f0f13; 
-            border-radius: 18px;
+            /* هذا الرقم يحدد سمك الخيط الملون */
+            inset: 1.5px; 
+            background: #0f0f13; /* لون جسم المشغل الداخلي */
+            border-radius: 48.5px; /* يتبع شكل الحواف */
             z-index: -1;
         }
 
-        @keyframes border-rotate {
-            100% { transform: rotate(360deg); }
+        @keyframes spin-giant {
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
         }
         
-        .player-left { display: flex; align-items: center; gap: 15px; width: 30%; position: relative; z-index: 2; }
+        /* عناصر المشغل */
+        .player-left { display: flex; align-items: center; gap: 20px; flex: 1; position: relative; z-index: 2; }
+        
         #p-art { 
-            width: 55px; height: 55px; border-radius: 15px; background-color: #222; 
-            background-size: cover; box-shadow: 0 5px 15px rgba(0,0,0,0.4); 
-            transition: 0.5s;
+            width: 65px; height: 65px; border-radius: 15px; background-color: #222; 
+            background-size: cover; box-shadow: 0 5px 15px rgba(0,0,0,0.5); 
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .playing #p-art { transform: scale(1.1) rotate(5deg); box-shadow: 0 0 20px var(--primary); }
+        .playing #p-art { transform: rotate(10deg) scale(1.1); box-shadow: 0 5px 25px var(--primary-dim); }
 
-        .player-center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; position: relative; z-index: 2; }
-        .ctrl-grp { display: flex; align-items: center; gap: 25px; }
+        .player-center { flex: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; position: relative; z-index: 2; }
+        
+        .ctrl-grp { display: flex; align-items: center; gap: 30px; }
         
         .play-btn-main { 
-            width: 50px; height: 50px; border-radius: 50%;
+            width: 55px; height: 55px; border-radius: 50%;
             background: #fff; color: #000;
-            display: grid; place-items: center; font-size: 18px; cursor: pointer;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3); transition: 0.3s;
+            display: grid; place-items: center; font-size: 22px; cursor: pointer;
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.4); transition: 0.3s;
         }
-        .play-btn-main:hover { transform: scale(1.1); box-shadow: 0 0 30px var(--primary); background: var(--primary); }
+        .play-btn-main:hover { transform: scale(1.1); box-shadow: 0 0 35px var(--primary); background: var(--primary); }
+        .play-btn-main i { margin-left: 2px; }
         
-        .ctrl-btn { color: #888; background: none; border: none; font-size: 20px; cursor: pointer; transition: 0.2s; }
-        .ctrl-btn:hover { color: #fff; transform: scale(1.2); text-shadow: 0 0 10px #fff; }
+        .ctrl-btn { color: #aaa; background: none; border: none; font-size: 24px; cursor: pointer; transition: 0.2s; }
+        .ctrl-btn:hover { color: #fff; transform: scale(1.2); }
 
         .prog-wrapper { width: 100%; max-width: 400px; padding: 10px 0; cursor: pointer; display: flex; align-items: center; }
-        .prog-bg { width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 10px; position: relative; overflow: hidden; }
+        .prog-bg { width: 100%; height: 4px; background: rgba(255,255,255,0.15); border-radius: 10px; position: relative; overflow: hidden; }
         #prog-fill { 
             position: absolute; top: 0; right: 0; bottom: 0; width: 0%; 
             background: linear-gradient(90deg, var(--secondary), var(--primary)); 
@@ -216,10 +226,10 @@
         }
         .prog-wrapper:hover .prog-bg { height: 6px; }
 
-        .player-right { width: 20%; display: flex; justify-content: flex-end; align-items: center; gap: 10px; position: relative; z-index: 2; }
-        .vol-slider { width: 80px; accent-color: var(--primary); height: 3px; }
+        .player-right { flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 10px; position: relative; z-index: 2; }
+        .vol-slider { width: 100px; accent-color: var(--primary); height: 4px; border-radius: 5px; }
 
-        /* --- Mobile Responsiveness --- */
+        /* --- Mobile --- */
         .mob-nav-bottom { display: none; }
         @media (max-width: 768px) {
             .sidebar { display: none; }
@@ -233,19 +243,24 @@
             .mob-nav-item { display: flex; flex-direction: column; align-items: center; color: #aaa; font-size: 10px; flex: 1; transition:0.2s; }
             .mob-nav-item.active { color: var(--primary); transform: translateY(-5px); }
             
-            .content { padding: 15px; padding-bottom: calc(100px + var(--nav-mobile-h)); }
+            .content { padding: 15px; padding-bottom: calc(110px + var(--nav-mobile-h)); }
 
             .music-bar { 
-                bottom: calc(var(--nav-mobile-h) + 10px); left: 10px; right: 10px; 
-                height: 75px; padding: 0 15px; border-radius: 18px;
+                bottom: calc(var(--nav-mobile-h) + 15px); 
+                /* إعادة ضبط العرض للموبايل */
+                left: 15px; right: 15px; 
+                width: auto;
+                height: 80px; padding: 0 15px; border-radius: 40px;
             }
-            .player-left { width: auto; flex: 1; }
-            .player-center { flex: 0; align-items: flex-end; }
-            .prog-wrapper { position: absolute; bottom: 0; left: 10px; right: 10px; width: auto; max-width: none; padding: 0; height: 3px; }
-            .prog-bg { height: 3px; border-radius: 0; }
+            .player-left { flex: 0 0 auto; gap: 10px; }
+            #p-art { width: 50px; height: 50px; }
+            .player-center { flex: 1; align-items: flex-end; margin-right: 10px; }
+            .prog-wrapper { position: absolute; bottom: 5px; left: 20px; right: 20px; width: auto; max-width: none; padding: 0; }
+            .prog-bg { height: 4px; }
             .ctrl-grp { gap: 15px; }
             .player-right { display: none; } 
-            .play-btn-main { width: 40px; height: 40px; font-size: 16px; }
+            .play-btn-main { width: 45px; height: 45px; font-size: 18px; }
+            #p-desc { display: none; }
         }
 
         /* Admin Modal */
@@ -353,11 +368,11 @@
         <div class="mob-nav-item" onclick="nav('contact')"><i class="fas fa-envelope"></i><span>اتصل</span></div>
     </div>
 
-    <div class="music-bar">
+    <div class="music-bar" id="music-player-bar">
         <div class="player-left">
             <div id="p-art"></div>
             <div style="overflow:hidden; display:flex; flex-direction:column; justify-content:center;">
-                <div id="p-title" style="font-weight:bold; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">اختر أغنية</div>
+                <div id="p-title" style="font-weight:bold; font-size:16px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">اختر أغنية</div>
                 <div id="p-desc" style="font-size:12px; color:var(--text-muted);">...</div>
             </div>
         </div>
@@ -489,7 +504,6 @@
         const auth = firebase.auth();
         const ADMIN_EMAIL = "ahmshowpic@gmail.com";
 
-        // Global Variables
         let songs = [], folders = {}, playlist = [], pIndex = 0;
         let isAdmin = false;
         let defaultSongId = null;
@@ -498,7 +512,6 @@
         const audio = document.getElementById('audio-player');
         audio.removeAttribute('crossorigin');
 
-        // --- Auth Listener ---
         auth.onAuthStateChanged(u => {
             isAdmin = (u && u.email === ADMIN_EMAIL);
             if(isAdmin) initAdmin();
@@ -507,7 +520,6 @@
             initVisitorCounter(); 
         });
 
-        // --- Visitor Counter ---
         function initVisitorCounter() {
             const visitRef = db.ref('settings/visitorCount');
             if(!sessionStorage.getItem('visited')) {
@@ -535,7 +547,6 @@
             }
         }
 
-        // --- Background Logic ---
         function applyBackground(sets) {
             const bgImg = document.getElementById('dynamic-bg-img');
             const bgVid = document.getElementById('dynamic-bg-video');
@@ -548,10 +559,7 @@
             }
             if (!url) url = "https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=1920";
 
-            // إزالة الكلاسات السابقة
             bgImg.className = "bg-layer"; 
-            
-            // تطبيق الفلتر (الافتراضي Vivid إذا لم يحدد)
             if(sets.bgFilter) bgImg.classList.add(sets.bgFilter);
             else bgImg.classList.add('mode-vivid'); 
 
@@ -562,7 +570,6 @@
             } else {
                 bgVid.style.display = 'none'; bgVid.pause(); bgImg.style.opacity = '1';
                 bgImg.style.backgroundImage = `url('${url}')`;
-                
                 bgImg.classList.add(sets.bgFit === 'contain' ? 'fit-contain' : 'fit-cover');
                 if(sets.animType === 'zoom-in') bgImg.classList.add('anim-zoom-in');
                 else if(sets.animType === 'pulse') bgImg.classList.add('anim-pulse');
@@ -570,26 +577,17 @@
             }
         }
 
-        // --- Data Loading ---
         function loadGeneralData() {
             db.ref('settings').on('value', s => {
                 settingsData = s.val() || {};
-                
                 document.getElementById('hero-txt').innerText = settingsData.welcome || "Welcome";
-                
-                // تحديث الخلفية والفلتر
                 applyBackground(settingsData);
-                // تحديث الزوار
                 updateVisitorDisplay(settingsData.visitorCount, settingsData.showVisitorCount);
-
-                // **تحديث النجمة (الأغنية الافتراضية)**
                 defaultSongId = settingsData.defaultSongId;
                 checkDefaultSong();
                 
-                // إذا كنا في وضع الأدمن، يجب إعادة رسم القائمة لتحديث مكان النجمة فوراً
                 if(isAdmin) renderAdmMusic();
 
-                // مزامنة حقول الإدخال في الأدمن
                 if(isAdmin) {
                     if(document.getElementById('set-welcome')) document.getElementById('set-welcome').value = settingsData.welcome || "";
                     if(document.getElementById('set-hero-active')) document.getElementById('set-hero-active').checked = settingsData.heroMode;
@@ -626,22 +624,18 @@
                     const btn = document.createElement('div');
                     btn.className = "nav-btn dyn"; btn.innerHTML = `<i class="${p.icon}"></i> ${p.title}`; btn.onclick = () => nav(pid);
                     document.getElementById('sidebar-items').appendChild(btn);
-                    
                     const mb = document.createElement('div');
                     mb.className = "mob-nav-item dyn"; mb.innerHTML = `<i class="${p.icon}"></i><span>${p.title}</span>`; mb.onclick = () => nav(pid);
                     document.getElementById('mob-nav-items').appendChild(mb);
-                    
                     const sec = document.createElement('div');
                     sec.className = "section dyn-sec"; sec.id = "view-"+pid; 
                     sec.innerHTML = `<h2 style="font-size:28px; margin-bottom:20px;">${p.title}</h2><div style="line-height:1.6;">${p.content}</div>`;
                     document.getElementById('dynamic-pages-container').appendChild(sec);
-                    
                     if(admL) admL.innerHTML += `<div>${p.title} <button onclick="db.ref('custom_pages/${pid}').remove()" style="color:red">X</button></div>`;
                 });
             });
         }
 
-        // --- Music Player Logic ---
         function checkDefaultSong() {
             if(!audio.src && defaultSongId && songs.length > 0) {
                 const song = songs.find(s => s.k === defaultSongId);
@@ -658,18 +652,14 @@
             pIndex = i;
             const s = playlist[pIndex];
             audio.src = s.url;
-            
             document.getElementById('p-title').innerText = s.name;
             document.getElementById('p-desc').innerText = s.folder;
             const art = document.getElementById('p-art');
             art.style.backgroundImage = `url('${s.image}')`;
-            
             if(!settingsData.heroMode) applyBackground({heroMode:false});
-
             if(autoPlay) {
                 audio.play().catch(e => console.log(e));
-                document.body.classList.add('playing');
-                document.getElementById('play-icon').className = "fas fa-pause";
+                togglePlayState(true);
             }
         }
 
@@ -677,12 +667,22 @@
             if(audio.paused) { 
                 if(!audio.src && playlist.length > 0) loadSong(0);
                 else audio.play(); 
-                document.body.classList.add('playing');
-                document.getElementById('play-icon').className = "fas fa-pause"; 
+                togglePlayState(true);
             } else { 
                 audio.pause(); 
-                document.body.classList.remove('playing');
-                document.getElementById('play-icon').className = "fas fa-play"; 
+                togglePlayState(false);
+            }
+        }
+
+        function togglePlayState(isPlaying) {
+            const body = document.body;
+            const playIcon = document.getElementById('play-icon');
+            if(isPlaying) {
+                body.classList.add('playing');
+                playIcon.className = "fas fa-pause";
+            } else {
+                body.classList.remove('playing');
+                playIcon.className = "fas fa-play";
             }
         }
 
@@ -696,7 +696,7 @@
             }
         };
         audio.onended = () => {
-            document.body.classList.remove('playing'); // Stop animation on end
+            togglePlayState(false);
             next();
         };
 
@@ -712,7 +712,6 @@
             audio.currentTime = pct * audio.duration;
         }
 
-        // --- UI Navigation ---
         function nav(id) {
             document.querySelectorAll('.section').forEach(e=>e.classList.remove('active'));
             document.querySelectorAll('.nav-btn, .mob-nav-item').forEach(e=>e.classList.remove('active'));
@@ -742,7 +741,6 @@
             alert("تم حفظ الإعدادات!");
         }
 
-        // --- Diaries ---
         function initDiarySystem() {
             const feed = document.getElementById('diary-feed');
             const ref = db.ref('diaries').limitToLast(50);
@@ -776,7 +774,6 @@
             document.getElementById('d-msg').value="";
         }
 
-        // --- Admin Functions ---
         function initAdmin() {
             db.ref('inbox').on('value', s=>{ 
                 const l=document.getElementById('inbox-list'); l.innerHTML=""; 
@@ -808,7 +805,6 @@
         }
         function setDefaultSong(id) { 
             db.ref('settings').update({defaultSongId: id}); 
-            // التحديث الفوري للواجهة سيتم عبر Listener الإعدادات
         }
         function deleteSong(id) { if(confirm('حذف؟')) db.ref('music/'+id).remove(); }
         function savePage() { const id=document.getElementById('page-id').value; if(id) db.ref('custom_pages/'+id).set({title:document.getElementById('page-title').value, icon:document.getElementById('page-icon').value, content:document.getElementById('page-content').value}); alert("تم"); }
